@@ -1,18 +1,49 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useColorScheme } from 'react-native';
+// src/app/_layout.tsx
+import "../../global.css";
+import { Stack, useRouter, useSegments } from "expo-router";
+import { useEffect, useState } from "react";
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
+export default function RootLayout() {
+  const router = useRouter();
+  const segments = useSegments();
 
-SplashScreen.preventAutoHideAsync();
+  // Simularemos que el usuario NO está logueado por defecto
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const [isReady, setIsReady] = useState(false);
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  useEffect(() => {
+    // Pequeño timeout para asegurar que el router montó las rutas
+    setTimeout(() => setIsReady(true), 100);
+  }, []);
+
+  useEffect(() => {
+    if (!isReady) return;
+
+    // Verificamos si el usuario intenta acceder a una ruta de autenticación
+    const inAuthGroup = segments[0] === "(auth)";
+
+    if (!isAuthenticated && !inAuthGroup) {
+      // Si NO está logueado y NO está en la pantalla de login/registro, lo mandamos al login
+      router.replace("/(auth)/register" as any);
+    } else if (isAuthenticated && inAuthGroup) {
+      // Si SÍ está logueado y está en la pantalla de login, lo mandamos a los tabs
+      router.replace("/(tabs)" as any);
+    }
+  }, [isAuthenticated, segments, isReady]);
+
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AnimatedSplashOverlay />
-      <AppTabs />
-    </ThemeProvider>
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        contentStyle: { backgroundColor: "#0d1117" },
+      }}
+    >
+      <Stack.Screen name="(auth)" />
+      <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="course/[id]" />
+      <Stack.Screen name="lesson/markdown" />
+      <Stack.Screen name="lesson/quiz" />
+      <Stack.Screen name="achievements" options={{ presentation: "modal" }} />
+    </Stack>
   );
 }

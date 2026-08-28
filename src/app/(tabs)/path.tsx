@@ -4,7 +4,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 
 export default function PathScreen() {
-  // Objeto simulado de lecciones con los estados que definimos
+  // PA SIMULAR
   const lessons = [
     {
       id: "1",
@@ -15,16 +15,9 @@ export default function PathScreen() {
     { id: "2", number: "02", title: "Funciones en JS", state: "in-progress" },
     { id: "3", number: "03", title: "Librerías", state: "locked" },
     { id: "4", number: "04", title: "Proyectos Avanzados", state: "locked" },
-    { id: "5", number: "05", title: "Proyectos Avanzados", state: "locked" },
-    { id: "6", number: "06", title: "Proyectos Avanzados", state: "locked" },
-    { id: "7", number: "07", title: "Proyectos Avanzados", state: "locked" },
-    { id: "8", number: "08", title: "Proyectos Avanzados", state: "locked" },
-    { id: "9", number: "09", title: "Proyectos Avanzados", state: "locked" },
-    { id: "10", number: "10", title: "Proyectos Avanzados", state: "locked" },
   ];
 
   return (
-    // Usamos ScrollView por si la ruta crece y tiene más de 4 lecciones
     <ScrollView
       className="flex-1 bg-[#0d1117]"
       contentContainerStyle={{ alignItems: "center", paddingBottom: 40 }}
@@ -35,10 +28,10 @@ export default function PathScreen() {
           Aprendiendo JS
         </Text>
 
-        {/* Árbol de Progreso Vertical */}
+        {/* Árbol de Progreso*/}
         <View className="items-center w-full">
           {lessons.map((lesson, index) => {
-            // Variables por defecto (Estado: locked) [cite: 339, 394]
+            // Variables por defecto (Estado: locked)
             let borderCard = "border-gray-800";
             let borderCircle = "border-gray-700";
             let bgCircle = "bg-gray-800/50";
@@ -47,7 +40,7 @@ export default function PathScreen() {
             let iconName: any = "lock";
             let iconColor = "#ef4444"; // red-500
 
-            // Estilos dinámicos para completado [cite: 337, 392]
+            // Estilos dinámicos para completado
             if (lesson.state === "completed") {
               borderCard = "border-gray-700";
               borderCircle = "border-gray-600";
@@ -55,7 +48,7 @@ export default function PathScreen() {
               textTitle = "text-white";
               textNumber = "text-gray-400";
               iconName = "check-circle";
-              iconColor = "#9ca3af"; // gris o verde sutil
+              iconColor = "#9ca3af";
             }
             // Estilos dinámicos para en progreso [cite: 338, 393]
             else if (lesson.state === "in-progress") {
@@ -65,7 +58,7 @@ export default function PathScreen() {
               textTitle = "text-blue-400";
               textNumber = "text-blue-500";
               iconName = "play-circle-filled";
-              iconColor = "#3b82f6"; // blue-500
+              iconColor = "#3b82f6";
             }
 
             return (
@@ -96,6 +89,7 @@ export default function PathScreen() {
                         {lesson.number}
                       </Text>
                     </View>
+
                     {/* Título de la Lección */}
                     <Text className={`text-base font-bold ${textTitle}`}>
                       {lesson.title}
@@ -106,7 +100,7 @@ export default function PathScreen() {
                   <MaterialIcons name={iconName} size={24} color={iconColor} />
                 </Pressable>
 
-                {/* Línea conectora (se renderiza en todos menos en el último elemento) */}
+                {/* Línea conectora  */}
                 {index < lessons.length - 1 && (
                   <View className="w-[2px] h-8 bg-gray-700" />
                 )}

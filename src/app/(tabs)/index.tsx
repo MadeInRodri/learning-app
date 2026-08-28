@@ -2,7 +2,7 @@ import { View, Text, Pressable } from "react-native";
 import { router } from "expo-router";
 
 export default function LearnScreen() {
-  // Arreglo de lenguajes para renderizar las tarjetas dinámicamente
+  // ARREGLO DE PRUEBA
   const languages = [
     { id: "python", name: "Python" },
     { id: "js", name: "JS" },
@@ -12,7 +12,6 @@ export default function LearnScreen() {
 
   return (
     <View className="flex-1 bg-[#0d1117] items-center">
-      {/* Contenedor responsivo (max-w-md centra el contenido en web/tablet) */}
       <View className="w-full max-w-md px-4 pt-10">
         {/* Títulos */}
         <View className="items-center mb-10">
@@ -24,19 +23,18 @@ export default function LearnScreen() {
           </Text>
         </View>
 
-        {/* Grid de Lenguajes */}
+        {/* Grid */}
         <View className="flex-row flex-wrap justify-between">
           {languages.map((lang) => (
             <Pressable
               key={lang.id}
-              // Navegación provisional a la pantalla de ruta
+              // Navegación a la pantalla de ruta (NO LISTO)
               onPress={() => router.push("/(tabs)/path" as any)}
               className="w-[47%] aspect-square bg-[#181c22] border border-gray-800 rounded-xl items-center justify-center mb-4 active:bg-gray-800 active:scale-95 transition-transform"
             >
               <Text className="text-white text-xl font-bold mb-3">
                 {lang.name}
               </Text>
-              {/* Pequeña barra decorativa debajo del texto */}
               <View className="w-8 h-1 rounded-full bg-gray-600" />
             </Pressable>
           ))}

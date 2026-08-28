@@ -1,0 +1,85 @@
+{
+  "id": 1,
+  "name": "Javascript",
+  "path": [
+    {
+      "id-path": "1",
+      "number": "01",
+      "title": "Aprendiendo lo básico",
+      "modules": [
+        {
+          "id-module": "1",
+          "title": "Variables",
+          "subtitle": "let, const, var",
+          "type": "lesson",
+          "content": "# Introducción a JavaScript\n¡Bienvenido a tu primera lección! Hoy aprenderemos sobre las **variables** y los **tipos de datos** fundamentales.\n\n## 1. ¿Qué es una variable?\nImagina que una variable es una \"caja\" donde puedes guardar información para usarla después. En JavaScript moderno, utilizamos dos palabras clave principales:\n* `let`: Para valores que van a cambiar en el futuro.\n* `const`: Para valores que serán constantes y no cambiarán.\n* ~~`var`~~: (Una forma antigua, ¡trata de no usarla!).\n\n## 2. Ejemplo en código\nMira cómo declaramos un par de variables:\n\n```javascript\n// Declaramos la edad y el nombre\nlet edad = 25;\nconst nombre = \"MadeInRodri\";\n\n// Como usamos 'let', podemos actualizar la edad:\nedad = 26; \n\n// Si intentamos reasignar 'nombre', JS nos dará un error.\n```\n\n> **Nota:** ¡Siempre es buena práctica usar `const` por defecto a menos que sepas que el valor va a cambiar!"
+        },
+        {
+          "id-module": "2",
+          "title": "Tipos de Datos",
+          "subtitle": "Strings, Numbers, Booleans",
+          "type": "lesson",
+          "content": "# Tipos de Datos\nEn JavaScript, los valores que guardamos en las variables tienen un **tipo**. Conocerlos es la base de la programación.\n\n## 1. Textos (Strings)\nSirven para guardar palabras o frases. Se escriben entre comillas simples o dobles.\n```javascript\nconst saludo = \"¡Hola, mundo!\";\n```\n\n## 2. Números (Numbers)\nSe usan para operaciones matemáticas. No llevan comillas. Pueden ser enteros o decimales.\n```javascript\nconst vidas = 3;\nconst precio = 19.99;\n```\n\n## 3. Booleanos (Booleans)\nSolo pueden tener dos valores: `true` (verdadero) o `false` (falso). Son como un interruptor de luz.\n```javascript\nconst estaLogueado = true;\nconst tieneErrores = false;\n```"
+        },
+        {
+          "id-module": "3",
+          "title": "Funciones",
+          "subtitle": "Declaración y Flecha",
+          "type": "lesson",
+          "content": "# Funciones en JS\nLas funciones son bloques de código que puedes reutilizar. ¡Son como pequeñas máquinas a las que les das materiales y te devuelven un producto!\n\n## 1. Funciones Tradicionales\nUsamos la palabra clave `function`. Tienen un nombre y pueden recibir parámetros.\n```javascript\nfunction saludar(nombre) {\n  return \"Hola \" + nombre;\n}\n```\n\n## 2. Funciones Flecha (Arrow Functions)\nSon una forma más moderna y corta de escribir funciones. Usamos `=>`.\n```javascript\nconst despedir = (nombre) => {\n  return \"Adiós \" + nombre;\n};\n\n// ¡Incluso se pueden hacer más cortas!\nconst sumar = (a, b) => a + b;\n```\n\nLas funciones flecha son las que más usarás en React y en el desarrollo moderno."
+        },
+        {
+          "id-module": "4",
+          "title": "Quiz final",
+          "subtitle": "Prueba tus conocimientos",
+          "type": "quiz",
+          "content": [
+            {
+              "id-question": "1",
+              "pregunta": "¿Qué palabra reservada se usa para declarar una variable cuyo valor NO va a cambiar?",
+              "opciones": [
+                { "texto": "let", "es_correcta": false },
+                { "texto": "const", "es_correcta": true },
+                { "texto": "var", "es_correcta": false },
+                { "texto": "static", "es_correcta": false }
+              ],
+              "explicacion": "¡Correcto! 'const' se usa para valores constantes. 'let' permite reasignación y 'var' está obsoleto."
+            },
+            {
+              "id-question": "2",
+              "pregunta": "¿Cuál de los siguientes valores es un tipo Booleano?",
+              "opciones": [
+                { "texto": "\"true\"", "es_correcta": false },
+                { "texto": "0", "es_correcta": false },
+                { "texto": "false", "es_correcta": true },
+                { "texto": "null", "es_correcta": false }
+              ],
+              "explicacion": "Los booleanos se escriben sin comillas y solo pueden ser true o false. '\"true\"' con comillas es un String (texto)."
+            },
+            {
+              "id-question": "3",
+              "pregunta": "¿Cómo se escribe una función flecha (arrow function) básica que no recibe parámetros?",
+              "opciones": [
+                { "texto": "function() {}", "es_correcta": false },
+                { "texto": "() => {}", "es_correcta": true },
+                { "texto": "=> function()", "es_correcta": false },
+                { "texto": "fun => {}", "es_correcta": false }
+              ],
+              "explicacion": "Las arrow functions se declaran con paréntesis para los parámetros, seguidos de la flecha => y las llaves {} para el bloque de código."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id-path": "2",
+      "number": "02",
+      "title": "Funciones en JS"
+    },
+    {
+      "id-path": "3",
+      "number": "03",
+      "title": "Librerías"
+    }
+  ]
+}

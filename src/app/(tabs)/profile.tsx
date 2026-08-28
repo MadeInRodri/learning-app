@@ -1,9 +1,11 @@
 import React from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { router } from "expo-router";
+import { useAuthStore } from "@/store/authStore";
 
 export default function ProfileScreen() {
-  // Objeto simulado con las estadísticas del usuario
+  // PA SIMUALAR
+  const logout = useAuthStore((state) => state.logout);
   const userStats = {
     name: "MadeInRodri",
     email: "rodrigo@gmail.com",
@@ -17,7 +19,6 @@ export default function ProfileScreen() {
   };
 
   return (
-    // Usamos ScrollView y un padding inferior (pb-24) para que el contenido no quede tapado por los Tabs
     <ScrollView className="flex-1 bg-[#0d1117] px-4 pt-10">
       <View className="w-full max-w-sm mx-auto pb-24">
         {/* Título */}
@@ -96,7 +97,10 @@ export default function ProfileScreen() {
 
         {/* Botones de Acción (Gamificados con bordes de neón) */}
         <View className="gap-4">
-          <Pressable className="w-full py-4 border border-orange-400/80 rounded-lg items-center justify-center active:bg-orange-400/10 transition-colors">
+          <Pressable
+            onPress={() => router.push("/lesson/markdown" as any)}
+            className="w-full py-4 border border-orange-400/80 rounded-lg items-center justify-center active:bg-orange-400/10 transition-colors"
+          >
             <Text className="text-orange-400 font-bold">
               Ver puntaje global
             </Text>
@@ -108,6 +112,13 @@ export default function ProfileScreen() {
             className="w-full py-4 border border-purple-500/80 rounded-lg items-center justify-center active:bg-purple-500/10 transition-colors"
           >
             <Text className="text-purple-400 font-bold">Ver logros</Text>
+          </Pressable>
+
+          <Pressable
+            onPress={() => logout()}
+            className="w-full py-4 border border-red-500 rounded-lg items-center justify-center active:bg-purple-500/10 transition-colors"
+          >
+            <Text className="text-red-500 font-bold">Cerrar Sesión</Text>
           </Pressable>
         </View>
       </View>

@@ -6,7 +6,7 @@ export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        // Configuración del Header Superior
+        // HEADER
         headerStyle: {
           backgroundColor: "#0d1117",
           borderBottomWidth: 1,
@@ -32,7 +32,7 @@ export default function TabsLayout() {
           />
         ),
 
-        // Configuración de la Barra Inferior (Bottom Tabs)
+        // EL FOOTER, LOS TABS
         tabBarStyle: {
           backgroundColor: "#181c22",
           borderTopColor: "#424754",
@@ -40,7 +40,7 @@ export default function TabsLayout() {
           paddingBottom: 10,
           paddingTop: 5,
         },
-        tabBarActiveTintColor: "#adc6ff", // Azul claro activo de Canva
+        tabBarActiveTintColor: "#adc6ff",
         tabBarInactiveTintColor: "#c2c6d6",
       }}
     >

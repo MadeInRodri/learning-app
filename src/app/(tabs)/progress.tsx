@@ -3,7 +3,7 @@ import { View, Text, ScrollView } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 
 export default function ProgressScreen() {
-  // Objeto dinámico simulando los datos de misiones desde la BD o estado
+  // SIMULACIÓN
   const missions = [
     {
       id: "1",
@@ -78,7 +78,7 @@ export default function ProgressScreen() {
               progressFill = "bg-blue-500";
               countBg = "bg-blue-900/20";
               countColor = "text-blue-400";
-              xpColor = "text-blue-400"; // Usamos azul como en tu diseño de Canva
+              xpColor = "text-blue-400";
             }
 
             // Cálculo del porcentaje para la barra

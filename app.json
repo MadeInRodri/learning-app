@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "learning-app",
+    "name": "Code Inventors",
     "slug": "learning-app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -12,12 +12,9 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
-      },
-      "predictiveBackGestureEnabled": false
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#0d1117"
+      }
     },
     "web": {
       "output": "static",
@@ -28,9 +25,9 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 76
+          "backgroundColor": "#0d1117",
+          "image": "./assets/images/splash.png",
+          "imageWidth": 200
         }
       ]
     ],

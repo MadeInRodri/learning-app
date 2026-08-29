@@ -95,7 +95,7 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        {/* Botones de Acción (Gamificados con bordes de neón) */}
+        {/* Botones de Acción */}
         <View className="gap-4">
           <Pressable
             onPress={() => router.push("/lesson/markdown" as any)}
@@ -106,7 +106,6 @@ export default function ProfileScreen() {
             </Text>
           </Pressable>
 
-          {/* Este botón ya te redirecciona a la pantalla modal de logros */}
           <Pressable
             onPress={() => router.push("/achievements" as any)}
             className="w-full py-4 border border-purple-500/80 rounded-lg items-center justify-center active:bg-purple-500/10 transition-colors"

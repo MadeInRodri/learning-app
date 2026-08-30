@@ -1,56 +1,55 @@
-# Welcome to your Expo app 👋
+# Learning App (CodeQuest)
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## Integrantes del grupo
 
-## Get started
+- **(MR230247)** Rodrigo Alexis Mejía Rivas
+- **(FC230433)** Leonardo Enrique Flores Coto
+- **(FM230331)** Bryan Josué Fuentes Molina
+- **(PD230540)** Andre Emanuel Preza Deras
+- **(MM230272)** Joaquín Eduardo Morán Mejía
 
-1. Install dependencies
+## Descripción del Proyecto
 
+El proyecto consiste en el desarrollo de una aplicación multiplataforma (móvil y web) orientada al aprendizaje interactivo de lenguajes de programación. Inspirada en modelos de gamificación, la plataforma ofrece rutas de aprendizaje estructuradas, un sistema de retención mediante rachas diarias y evaluaciones al final de cada sesión.
+
+El valor diferenciador de la aplicación radica en la integración de un tutor virtual inteligente impulsado por la API de Gemini, el cual actúa de forma contextual a la lección actual del usuario.
+
+## Características Principales
+
+- **Rutas de Aprendizaje:** Cursos divididos por lenguajes de programación (Python, JS, React, PHP) y estructurados en módulos.
+- **Teoría en Markdown:** Lecciones teóricas renderizadas dinámicamente con soporte para bloques de código embebido.
+- **Quizzes Interactivos:** Pruebas de opción múltiple al final de cada lección con retroalimentación inmediata sobre respuestas correctas o incorrectas.
+- **Gamificación Profunda:**
+  - Sistema de rachas, puntos de experiencia (XP) y niveles.
+  - Misiones diarias.
+  - Insignias y logros coleccionables.
+- **Diseño Minimalista:** Interfaz en modo oscuro inspirada en la paleta de colores de Visual Studio Code y GitHub, con retroalimentación visual basada en colores de estado.
+
+## Stack Tecnológico
+
+### Frontend
+
+- **React Native & Expo:** Desarrollo híbrido y empaquetado del proyecto.
+- **Expo Router:** Enrutamiento basado en archivos para la navegación principal, pestañas (Tabs) y modales.
+- **TypeScript:** Tipado estático para mayor escalabilidad.
+- **Tailwind CSS (NativeWind):** Estilización rápida y responsiva para vistas móviles y web.
+- **Zustand & MMKV:** Gestión de estado global y almacenamiento local ultrarrápido para caché de cursos y sesión.
+- **React Hook Form:** Manejo y validación de formularios de autenticación.
+
+### Backend & Almacenamiento
+
+- **Firebase (Firestore):** Base de datos documental utilizada para inyectar todo el contenido estático estructurado (rutas, lecciones teóricas en Markdown y quizzes).
+- **Node.js & MySQL:** API REST relacional encargada de gestionar la seguridad (JWT), usuarios, estadísticas, estado de rachas, misiones diarias y tokens IA.
+
+## Instalación y Configuración Local
+
+1. Clonar el repositorio.
+2. Instalar las dependencias del frontend:
    ```bash
    npm install
    ```
-
-2. Start the app
-
+3. Configurar variables de entorno (\`.env\`) para la conexión con Firebase, Laravel y la API de Gemini.
+4. Levantar el entorno de desarrollo (con limpieza de caché para cargar estilos y dependencias nativas):
    ```bash
-   npx expo start
+   npx expo start -c
    ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-### Other setup steps
-
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.

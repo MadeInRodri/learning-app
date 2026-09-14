@@ -44,6 +44,7 @@
 //   );
 // }
 
+import { useCourseStore } from "@/store/courseStore";
 import { router } from "expo-router";
 import { useEffect } from "react";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
@@ -76,10 +77,12 @@ export default function LearnScreen() {
             {languages.map((lang) => (
               <Pressable
                 key={lang.id}
-                // Pasamos el ID del lenguaje como parámetro en la ruta
-                onPress={() =>
-                  router.push(`/(tabs)/path?lang=${lang.id}` as any)
-                }
+                onPress={() => {
+                  useCourseStore
+                    .getState()
+                    .setActiveCourse(lang.id, lang.language);
+                  router.push("/(tabs)/path" as any);
+                }}
                 className="w-[47%] aspect-square bg-[#181c22] border border-gray-800 rounded-xl items-center justify-center mb-4 active:bg-gray-800 active:scale-95 transition-transform"
               >
                 <Text className="text-white text-xl font-bold mb-3">

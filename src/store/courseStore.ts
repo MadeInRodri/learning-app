@@ -54,7 +54,7 @@ export const useCourseStore = create<CourseState>()(
               state:
                 data.number === 1 || data.number === "01"
                   ? "in-progress"
-                  : "locked",
+                  : "in-progress",
             });
           });
 

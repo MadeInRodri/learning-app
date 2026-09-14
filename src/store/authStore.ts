@@ -1,4 +1,6 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
 
 interface AuthState {
   isLogged: boolean;
@@ -6,8 +8,16 @@ interface AuthState {
   logout: () => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
-  isLogged: false,
-  login: () => set({ isLogged: true }),
-  logout: () => set({ isLogged: false }),
-}));
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      isLogged: false,
+      login: () => set({ isLogged: true }),
+      logout: () => set({ isLogged: false }),
+    }),
+    {
+      name: "learning-app-auth",
+      storage: createJSONStorage(() => AsyncStorage),
+    },
+  ),
+);

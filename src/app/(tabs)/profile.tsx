@@ -1,7 +1,6 @@
-import React from "react";
-import { View, Text, ScrollView, Pressable } from "react-native";
-import { router } from "expo-router";
 import { useAuthStore } from "@/store/authStore";
+import { router } from "expo-router";
+import { Pressable, ScrollView, Text, View } from "react-native";
 
 export default function ProfileScreen() {
   // PA SIMUALAR
@@ -98,12 +97,10 @@ export default function ProfileScreen() {
         {/* Botones de Acción */}
         <View className="gap-4">
           <Pressable
-            onPress={() => router.push("/lesson/markdown" as any)}
+            onPress={() => router.push("/testing-gamification" as any)}
             className="w-full py-4 border border-orange-400/80 rounded-lg items-center justify-center active:bg-orange-400/10 transition-colors"
           >
-            <Text className="text-orange-400 font-bold">
-              Ver puntaje global
-            </Text>
+            <Text className="text-orange-400 font-bold">Testing</Text>
           </Pressable>
 
           <Pressable

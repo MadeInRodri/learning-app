@@ -4,6 +4,7 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { db } from "../config/firebase";
 
+//Ruta
 export interface PathLesson {
   id: string;
   number: string;
@@ -11,6 +12,7 @@ export interface PathLesson {
   state: string;
 }
 
+//Estado del curso
 interface CourseState {
   activeCourseId: string | null;
   activeCourseName: string;
@@ -23,6 +25,7 @@ interface CourseState {
 export const useCourseStore = create<CourseState>()(
   persist(
     (set, get) => ({
+      //Por defecto
       activeCourseId: null,
       activeCourseName: "",
       lessons: [],
@@ -41,11 +44,13 @@ export const useCourseStore = create<CourseState>()(
         try {
           // Consultamos la subcolección 'paths' del lenguaje seleccionado
           const pathRef = collection(db, "languages", activeCourseId, "paths");
+          //Aquí la data
           const querySnapshot = await getDocs(pathRef);
 
           const fetchedLessons: PathLesson[] = [];
           querySnapshot.forEach((doc) => {
             const data = doc.data();
+            //Vamos metiendo la data
             fetchedLessons.push({
               id: doc.id,
               number: data.number ? `0${data.number}`.slice(-2) : "00",

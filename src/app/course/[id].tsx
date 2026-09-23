@@ -204,20 +204,62 @@ import {
   Text,
   View,
 } from "react-native";
+import Toast from "react-native-toast-message"; // <-- Importamos Toast
 import { useCourseStore } from "../../store/courseStore";
 import { useModuleStore } from "../../store/moduleStore";
+import { useQuizStore } from "../../store/quizStore";
 
 export default function CourseScreen() {
   const { id: pathId } = useLocalSearchParams<{ id: string }>();
-  const { activeCourseName } = useCourseStore();
+  const { activeCourseId, activeCourseName } = useCourseStore();
   const { modules, isFetching, fetchModules, setActiveModule } =
     useModuleStore();
+  const { activeQuiz, forceStartQuiz } = useQuizStore();
 
   useEffect(() => {
     if (pathId) {
       fetchModules(pathId);
     }
   }, [pathId]);
+
+  // Centralizamos la lógica del click para mantener el código limpio
+  const handleModulePress = (mod: any) => {
+    if (mod.state === "locked") {
+      Toast.show({
+        type: "error",
+        text1: "Módulo bloqueado 🔒",
+        text2: "Completa las lecciones anteriores para acceder.",
+      });
+      return;
+    }
+
+    setActiveModule(mod.id);
+
+    if (mod.type === "quiz") {
+      if (
+        activeQuiz &&
+        (activeQuiz.languageId !== activeCourseId ||
+          activeQuiz.pathId !== pathId)
+      ) {
+        // Alerta interactiva con Toast
+        Toast.show({
+          type: "error",
+          text1: "Quiz en progreso ⚠️",
+          text2: "Toca esta alerta para reiniciar y descartar el anterior.",
+          visibilityTime: 5000,
+          onPress: () => {
+            forceStartQuiz(activeCourseId!, pathId);
+            Toast.hide(); // Ocultamos el toast manualmente
+            router.push("/lesson/quiz" as any);
+          },
+        });
+        return;
+      }
+      router.push("/lesson/quiz" as any);
+    } else {
+      router.push("/lesson/markdown" as any);
+    }
+  };
 
   return (
     <View className="flex-1 bg-[#0d1117]">
@@ -313,16 +355,7 @@ export default function CourseScreen() {
                       <>
                         <Pressable
                           className="w-1/2 pr-8"
-                          onPress={() => {
-                            if (mod.state !== "locked") {
-                              setActiveModule(mod.id); // Guardamos la lección activa
-                              const route =
-                                mod.type === "quiz"
-                                  ? "/lesson/quiz"
-                                  : "/lesson/markdown";
-                              router.push(route as any);
-                            }
-                          }}
+                          onPress={() => handleModulePress(mod)} // <-- Uso de la función centralizada
                         >
                           <View className={`${baseCardClasses} ${cardStyle}`}>
                             <Text
@@ -342,16 +375,7 @@ export default function CourseScreen() {
                         <View className="w-1/2" />
                         <Pressable
                           className="w-1/2 pl-8"
-                          onPress={() => {
-                            if (mod.state !== "locked") {
-                              setActiveModule(mod.id);
-                              const route =
-                                mod.type === "quiz"
-                                  ? "/lesson/quiz"
-                                  : "/lesson/markdown";
-                              router.push(route as any);
-                            }
-                          }}
+                          onPress={() => handleModulePress(mod)} // <-- Uso de la función centralizada
                         >
                           <View className={`${baseCardClasses} ${cardStyle}`}>
                             <Text

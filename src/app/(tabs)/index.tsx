@@ -44,6 +44,7 @@
 //   );
 // }
 
+import GamifiedHeader from "@/components/GamifiedHeader";
 import { useCourseStore } from "@/store/courseStore";
 import { router } from "expo-router";
 import { useEffect } from "react";
@@ -60,6 +61,7 @@ export default function LearnScreen() {
   return (
     <View className="flex-1 bg-[#0d1117] items-center">
       <View className="w-full max-w-md px-4 pt-10">
+        <GamifiedHeader></GamifiedHeader>
         <View className="items-center mb-10">
           <Text className="text-2xl font-bold text-white mb-2 tracking-tight">
             Lenguajes disponibles

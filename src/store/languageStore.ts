@@ -4,6 +4,7 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { db } from "../config/firebase";
 
+//Interfaz del lenguaje
 export interface Language {
   id: string;
   language: string;
@@ -19,6 +20,7 @@ interface LanguageState {
 export const useLanguageStore = create<LanguageState>()(
   persist(
     (set, get) => ({
+      //Por defecto
       languages: [],
       isFetching: false,
 
@@ -27,9 +29,11 @@ export const useLanguageStore = create<LanguageState>()(
         set({ isFetching: true });
 
         try {
+          //Traemos la data
           const querySnapshot = await getDocs(collection(db, "languages"));
           const fetchedLanguages: Language[] = [];
 
+          //Llenamos el array
           querySnapshot.forEach((doc) => {
             const data = doc.data();
             fetchedLanguages.push({

@@ -3,14 +3,18 @@ import { collection, getDocs } from "firebase/firestore";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { db } from "../config/firebase";
+//Estamos viendo el curso actual
 import { useCourseStore } from "./courseStore";
 
+//Data de la lección
 export interface ModuleLesson {
   id: string;
   title: string;
   subtitle: string;
+  // clase/quiz
   type: string;
   state: string;
+  //Este puede ser preguntas o markdown
   content: any;
 }
 
@@ -34,6 +38,8 @@ export const useModuleStore = create<ModuleState>()(
       fetchModules: async (pathId) => {
         // Obtenemos el lenguaje actual del store de cursos
         const languageId = useCourseStore.getState().activeCourseId;
+
+        //Si no está seleccionado, regresamos
         if (!languageId || !pathId) return;
 
         set({ isFetching: true });
@@ -49,6 +55,8 @@ export const useModuleStore = create<ModuleState>()(
           const snapshot = await getDocs(modulesRef);
 
           const fetchedModules: ModuleLesson[] = [];
+
+          //Lo llenamos
           snapshot.forEach((doc) => {
             const data = doc.data();
             fetchedModules.push({

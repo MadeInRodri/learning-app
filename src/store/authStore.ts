@@ -10,6 +10,7 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>()(
   persist(
+    //Función para loguearse, se guarda la sesión en el async, por ahora solo un true false
     (set) => ({
       isLogged: false,
       login: () => set({ isLogged: true }),

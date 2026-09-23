@@ -1,8 +1,9 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, Pressable } from "react-native";
-import { router, Link } from "expo-router";
+import { api } from "@/config/api";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useForm, Controller } from "react-hook-form";
+import { Link, router } from "expo-router";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { Pressable, Text, TextInput, View } from "react-native";
 
 //TYPE PARA EL FORM
 type FormData = {
@@ -22,10 +23,16 @@ export default function RegisterScreen() {
   });
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = async (data: FormData) => {
     //DATA ES UN OBJETO CON TODOS TUS DATOS DEL FORMULARIO
     console.log("Datos de registro validados:", data);
     reset();
+
+    try {
+      const response = await api.post("/registro", data);
+    } catch (error) {
+      // errores.
+    }
 
     //AQUÍ VA LA LÓGICA DE BACKEND, PETICIÓN Y SI TODO BN MANDAS A LOGIN PARA QUE SE REGISTRE CON LA CUENTA CREADA
 
@@ -62,13 +69,12 @@ export default function RegisterScreen() {
               }}
               render={({ field: { onChange, value } }) => (
                 <View
-                  className={`flex-row items-center bg-[#0d1117] border rounded-lg px-3 py-3 ${
-                    errors.username
+                  className={`flex-row items-center bg-[#0d1117] border rounded-lg px-3 py-3 ${errors.username
                       ? "border-red-500"
                       : focusedInput === "username"
                         ? "border-blue-500"
                         : "border-gray-700"
-                  }`}
+                    }`}
                 >
                   <MaterialIcons
                     name="alternate-email"
@@ -112,13 +118,12 @@ export default function RegisterScreen() {
               }}
               render={({ field: { onChange, value } }) => (
                 <View
-                  className={`flex-row items-center bg-[#0d1117] border rounded-lg px-3 py-3 ${
-                    errors.email
+                  className={`flex-row items-center bg-[#0d1117] border rounded-lg px-3 py-3 ${errors.email
                       ? "border-red-500"
                       : focusedInput === "email"
                         ? "border-blue-500"
                         : "border-gray-700"
-                  }`}
+                    }`}
                 >
                   <MaterialIcons
                     name="mail-outline"
@@ -163,13 +168,12 @@ export default function RegisterScreen() {
               }}
               render={({ field: { onChange, value } }) => (
                 <View
-                  className={`flex-row items-center bg-[#0d1117] border rounded-lg px-3 py-3 ${
-                    errors.password
+                  className={`flex-row items-center bg-[#0d1117] border rounded-lg px-3 py-3 ${errors.password
                       ? "border-red-500"
                       : focusedInput === "password"
                         ? "border-blue-500"
                         : "border-gray-700"
-                  }`}
+                    }`}
                 >
                   <MaterialIcons
                     name="lock-outline"

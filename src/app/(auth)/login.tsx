@@ -1,9 +1,10 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, Pressable } from "react-native";
-import { router, Link } from "expo-router";
-import { MaterialIcons } from "@expo/vector-icons";
-import { useForm, Controller } from "react-hook-form";
+import { api } from "@/config/api";
 import { useAuthStore } from "@/store/authStore";
+import { MaterialIcons } from "@expo/vector-icons";
+import { Link } from "expo-router";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { Pressable, Text, TextInput, View } from "react-native";
 
 type FormData = {
   email: string;
@@ -24,13 +25,19 @@ export default function LoginScreen() {
 
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
 
-  const mySubmit = (data: FormData) => {
+  const mySubmit = async (data: FormData) => {
     //AQUÍ TENES LA DATA
     console.log("¡Datos capturados con éxito!", data);
     reset();
 
     // TODO: Aquí irá la llamada fetch al backend
-
+    try{
+      const response = await api.post("/login", data);
+      //authRoutes.get("/logout",authMiddleware,AuthController.logout)
+      //
+    }catch(error){
+      // errores.
+    }
     //YA DE AQUÍ TE VAS AL MENÚ PRINCIPAL
     login();
   };

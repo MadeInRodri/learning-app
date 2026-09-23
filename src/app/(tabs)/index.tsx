@@ -58,6 +58,44 @@ export default function LearnScreen() {
     fetchLanguages();
   }, []);
 
+  // -- course---
+
+  //CUANDO SE REGISTRE UN CURSO POR PRIMERA VEZ
+  //await api.get(`/course/${idCourse}/register`, {params: { id:5}});
+
+  //PARA CUANDO PASE UN MODULO
+  //await api.post(`/course/${idCourse}/pass_module`)
+  // en el body me mandaras:
+  // percentage -->Avance del curso hasta este momento, userId, passedModule --> El nombre del modulo pasado, courseTitle
+  // VAS A RECIBIR EL QUIZ DE LA IA, PUEDE QUE SI Y PUEDE QUE NO
+
+  //PARA CUANDO COMPLETES UN EXAMEN
+  //await api.post(`/course/${idCourse}/exam_complete`, {params: { id:5}})
+  // En el body me mandaras: 
+  // const {percentage, titleExam, totalErrors -->Cantidad de errores numericamente, topicsHasError --> Un array de strings donde encadenes el ENUNCIADO del error, hasErrors --> Booleano para identificar si hubo un error.}
+
+  //PARA CUANDO FINALICE UN CURSO
+  //courseRoutes.post("/:course/finish", authMiddleware, CourseController.finishCourse); es esta la ruta pero creo que esta deprecado, pq esto ya lo hacen las demas rutas xd.
+
+
+  // --- GAMIFICATION ---- 
+
+  //PARA OBTENER LAS RECOMPENSAS QUE TENGO EN MI BACKEND
+  //await api.get("/game/rewards_catalogo"); y ya
+
+  //PARA REGISTRAR RACHA
+  //await api.get("/game/strike", {params: {id: 5, date: "FECHA EN FORMATO CORRECTO. VER BACKEND PARA SABER EL FORMATO. new Date()"}})
+
+
+  //PARA REGISTRAR UNA RECOMPENSA EN CATALOGO!!!!!!!!! OJO! EN CATALOGO!!!
+  //await api.post("/game/reward", {params: {id: 5, type: "AQUI ME TIENES QUE PASAR EL TIPO: SI ES STAR, ENERGY, XP, AI_HINT, ETC"}})
+  // Y en el body me mandaras
+  //const { source --> De que fuente nació, nameReward --> Un nombre de los que tengo en mi backend -> NAME REWARD} 
+
+  //PARA VER SI EXISTE UN WEEK QUIZ
+  //await api.get("/game/week_quiz", {params: { id:5}})
+  //OJO A ESTA EXPLICACION: ANOTAR
+
   return (
     <View className="flex-1 bg-[#0d1117] items-center">
       <View className="w-full max-w-md px-4 pt-10">

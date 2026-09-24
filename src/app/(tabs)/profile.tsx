@@ -1,10 +1,33 @@
 import { useAuthStore } from "@/store/authStore";
 import { router } from "expo-router";
+import { useEffect } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
 export default function ProfileScreen() {
+
+  //Para obtener informacion del usuario
+  useEffect(() => {
+    //Obtener info
+    //await api.get("/user", { params: { id:5}, })
+    //Modificar info
+    //await api.patch("/user",{nombre, email, password --> Password para validar, no es que cambie de password xd} ,{ params: { id:5}, })
+    //Borrar cuenta
+    //await api.delete("/user", { params: { id:5}, }) //RECUERDA BORRAR LOS TOKENS CUANDO HAGAS ESTO
+  }, []);
+
   // PA SIMUALAR
   const logout = useAuthStore((state) => state.logout);
+  //Para logout se necesita el refreshToken
+  /* const refreshToken = await TokenStorage.getRefreshToken();
+
+  await api.get("/user/logout?id", {
+    params: {
+      id: 5,
+    },
+    headers: {
+      "x-refresh-token": refreshToken,
+    },
+  }); */
   const userStats = {
     name: "MadeInRodri",
     email: "rodrigo@gmail.com",

@@ -22,7 +22,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 //     question: string;
 //     code: string | null;
 //     options: string[];
-//     correctAnswer: "A" | "B" | "C" | "D";e
+//     correctAnswer: "A" | "B" | "C" | "D";
 //     explanation: string;
 //   }[];
 // }

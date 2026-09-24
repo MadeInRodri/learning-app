@@ -59,6 +59,7 @@ export default function RootLayout() {
         <Stack.Screen name="course/[id]" />
         <Stack.Screen name="lesson/markdown" />
         <Stack.Screen name="lesson/quiz" />
+        <Stack.Screen name="lesson/ai-quiz" />
         <Stack.Screen name="achievements" options={{ presentation: "modal" }} />
       </Stack>
 

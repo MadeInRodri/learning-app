@@ -1,6 +1,9 @@
 import { MaterialIcons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import GamifiedHeader from "../components/GamifiedHeader";
+import { fetchMockAiQuiz } from "../services/mockAiQuizApi";
+import { useAiQuizStore } from "../store/aiQuizStore";
 import { useGamificationStore } from "../store/gamificationStore";
 
 import Toast from "react-native-toast-message";
@@ -24,6 +27,36 @@ export default function TestGamificationScreen() {
         text1: "-5 Energía",
         text2: "Acción realizada con éxito.",
         position: "top",
+      });
+    }
+  };
+
+  const { startAiQuiz } = useAiQuizStore();
+
+  const handleTriggerAiQuiz = async () => {
+    try {
+      Toast.show({
+        type: "info",
+        text1: "Analizando progreso...",
+        text2: "La IA está generando tu reto personalizado.",
+      });
+
+      // 1. Llamamos a la API falsa
+      const response = await fetchMockAiQuiz();
+
+      if (!response.error) {
+        // 2. Cargamos la data en el store temporal
+        startAiQuiz(response.payload);
+
+        // 3. Ocultamos el toast de carga y redirigimos a la vista express
+        Toast.hide();
+        router.push("/lesson/ai-quiz" as any);
+      }
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Error de conexión",
+        text2: "No se pudo contactar a la IA.",
       });
     }
   };
@@ -124,6 +157,22 @@ export default function TestGamificationScreen() {
           >
             <Text className="text-gray-400 font-medium">Romper Racha</Text>
             <MaterialIcons name="heart-broken" size={20} color="#9ca3af" />
+          </Pressable>
+        </View>
+
+        {/* Controles de Eventos IA */}
+        <View className="mb-6 space-y-3">
+          <Text className="text-purple-400 font-bold mb-2 mt-2">
+            🧠 Eventos de IA
+          </Text>
+          <Pressable
+            onPress={handleTriggerAiQuiz}
+            className="bg-[#181c22] border border-purple-500/50 p-4 rounded-xl flex-row items-center justify-between active:bg-purple-500/20"
+          >
+            <Text className="text-purple-400 font-medium">
+              Simular Reto Sorpresa IA
+            </Text>
+            <MaterialIcons name="auto-awesome" size={20} color="#a855f7" />
           </Pressable>
         </View>
       </View>

@@ -1,10 +1,13 @@
 import { api } from "@/config/api";
 import { useAuthStore } from "@/store/authStore";
+import { TokenStorage } from "@/store/tokenStore";
 import { MaterialIcons } from "@expo/vector-icons";
-import { Link } from "expo-router";
+import axios from "axios";
+import { Link, router } from "expo-router";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Pressable, Text, TextInput, View } from "react-native";
+import Toast from "react-native-toast-message";
 
 type FormData = {
   email: string;
@@ -21,27 +24,51 @@ export default function LoginScreen() {
     defaultValues: { email: "", password: "" },
   });
 
+  // Ahora login espera recibir el payload del usuario
   const login = useAuthStore((state) => state.login);
 
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
 
   const mySubmit = async (data: FormData) => {
-    //AQUÍ TENES LA DATA
-    console.log("¡Datos capturados con éxito!", data);
-    reset();
-
-    // TODO: Aquí irá la llamada fetch al backend
-    try{
+    try {
+      // 1. Petición POST al backend
       const response = await api.post("/login", data);
-      //authRoutes.get("/logout",authMiddleware,AuthController.logout)
-      //
-    }catch(error){
-      // errores.
-    }
-    //YA DE AQUÍ TE VAS AL MENÚ PRINCIPAL
-    login();
-  };
 
+      // 2. Extraer todo del JSON que te devuelve la API
+      const { jwt, refresh_token, payload } = response.data;
+
+      // 3. Guardar los tokens de forma encriptada en el teléfono
+      await TokenStorage.saveTokens(jwt, refresh_token);
+
+      // 4. Inyectar la información gamificada al estado global
+      login(payload);
+
+      reset();
+
+      Toast.show({
+        type: "success",
+        text1: "¡Bienvenido de vuelta!",
+        text2: `Tus ${payload.xpTotales} XP te están esperando, ${payload.nombre}.`,
+      });
+
+      // 5. Mandar a la pantalla principal
+      router.replace("/(tabs)" as any);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        Toast.show({
+          type: "error",
+          text1: "Error de acceso",
+          text2: error.response?.data?.message || "Credenciales incorrectas.",
+        });
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "Error inesperado",
+          text2: "No pudimos conectar con el servidor.",
+        });
+      }
+    }
+  };
   return (
     <View className="flex-1 items-center justify-center bg-[#0d1117] p-4">
       <View className="w-full max-w-sm rounded-2xl p-2 ">

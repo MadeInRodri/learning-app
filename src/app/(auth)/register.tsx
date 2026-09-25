@@ -1,11 +1,55 @@
-import { api } from "@/config/api";
+// import { api } from "@/config/api";
+// import { MaterialIcons } from "@expo/vector-icons";
+// import { Link, router } from "expo-router";
+// import { useState } from "react";
+// import { Controller, useForm } from "react-hook-form";
+// import { Pressable, Text, TextInput, View } from "react-native";
+
+// //TYPE PARA EL FORM
+// type FormData = {
+//   username: string;
+//   email: string;
+//   password: string;
+// };
+
+// export default function RegisterScreen() {
+//   const {
+//     control,
+//     handleSubmit,
+//     reset,
+//     formState: { errors },
+//   } = useForm<FormData>({
+//     defaultValues: { username: "", email: "", password: "" },
+//   });
+//   const [focusedInput, setFocusedInput] = useState<string | null>(null);
+
+//   const onSubmit = async (data: FormData) => {
+//     //DATA ES UN OBJETO CON TODOS TUS DATOS DEL FORMULARIO
+//     console.log("Datos de registro validados:", data);
+//     reset();
+
+//     try {
+//       const response = await api.post("/registro", data);
+//     } catch (error) {
+//       // errores.
+//     }
+
+//     //AQUÍ VA LA LÓGICA DE BACKEND, PETICIÓN Y SI TODO BN MANDAS A LOGIN PARA QUE SE REGISTRE CON LA CUENTA CREADA
+
+//     router.replace("/login" as any);
+//   };
+
 import { MaterialIcons } from "@expo/vector-icons";
+import axios from "axios";
 import { Link, router } from "expo-router";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Pressable, Text, TextInput, View } from "react-native";
+import Toast from "react-native-toast-message";
 
-//TYPE PARA EL FORM
+// Instancia de tu API configurada con los interceptores
+import { api } from "../../config/api";
+
 type FormData = {
   username: string;
   email: string;
@@ -21,22 +65,50 @@ export default function RegisterScreen() {
   } = useForm<FormData>({
     defaultValues: { username: "", email: "", password: "" },
   });
+
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
 
   const onSubmit = async (data: FormData) => {
-    //DATA ES UN OBJETO CON TODOS TUS DATOS DEL FORMULARIO
-    console.log("Datos de registro validados:", data);
-    reset();
-
     try {
-      const response = await api.post("/registro", data);
+      // 1. Mapeamos 'username' al campo 'name' que exige tu backend
+      const payload = {
+        name: data.username,
+        email: data.email,
+        password: data.password,
+      };
+
+      // 2. Ejecutamos la petición POST
+      const response = await api.post("/registro", payload);
+
+      // 3. Notificamos el éxito y limpiamos el formulario
+      Toast.show({
+        type: "success",
+        text1: "¡Cuenta creada con éxito!",
+        text2: "Ya puedes iniciar sesión para comenzar.",
+      });
+
+      reset();
+
+      // 4. Redirigimos al login
+      router.replace("/(auth)/login" as any);
     } catch (error) {
-      // errores.
+      // Manejo de errores devueltos por el backend (ej. correo duplicado)
+      if (axios.isAxiosError(error)) {
+        Toast.show({
+          type: "error",
+          text1: "Error en el registro",
+          text2:
+            error.response?.data?.message ||
+            "Verifica tus datos e intenta de nuevo.",
+        });
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "Error inesperado",
+          text2: "Ocurrió un problema de conexión.",
+        });
+      }
     }
-
-    //AQUÍ VA LA LÓGICA DE BACKEND, PETICIÓN Y SI TODO BN MANDAS A LOGIN PARA QUE SE REGISTRE CON LA CUENTA CREADA
-
-    router.replace("/login" as any);
   };
 
   return (
@@ -69,12 +141,13 @@ export default function RegisterScreen() {
               }}
               render={({ field: { onChange, value } }) => (
                 <View
-                  className={`flex-row items-center bg-[#0d1117] border rounded-lg px-3 py-3 ${errors.username
+                  className={`flex-row items-center bg-[#0d1117] border rounded-lg px-3 py-3 ${
+                    errors.username
                       ? "border-red-500"
                       : focusedInput === "username"
                         ? "border-blue-500"
                         : "border-gray-700"
-                    }`}
+                  }`}
                 >
                   <MaterialIcons
                     name="alternate-email"
@@ -118,12 +191,13 @@ export default function RegisterScreen() {
               }}
               render={({ field: { onChange, value } }) => (
                 <View
-                  className={`flex-row items-center bg-[#0d1117] border rounded-lg px-3 py-3 ${errors.email
+                  className={`flex-row items-center bg-[#0d1117] border rounded-lg px-3 py-3 ${
+                    errors.email
                       ? "border-red-500"
                       : focusedInput === "email"
                         ? "border-blue-500"
                         : "border-gray-700"
-                    }`}
+                  }`}
                 >
                   <MaterialIcons
                     name="mail-outline"
@@ -168,12 +242,13 @@ export default function RegisterScreen() {
               }}
               render={({ field: { onChange, value } }) => (
                 <View
-                  className={`flex-row items-center bg-[#0d1117] border rounded-lg px-3 py-3 ${errors.password
+                  className={`flex-row items-center bg-[#0d1117] border rounded-lg px-3 py-3 ${
+                    errors.password
                       ? "border-red-500"
                       : focusedInput === "password"
                         ? "border-blue-500"
                         : "border-gray-700"
-                    }`}
+                  }`}
                 >
                   <MaterialIcons
                     name="lock-outline"

@@ -3,6 +3,7 @@ import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
 import "../../global.css";
+import "../config/interceptors";
 import { useAuthStore } from "../store/authStore";
 //Alertas
 import Toast from "react-native-toast-message";

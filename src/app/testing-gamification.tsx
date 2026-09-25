@@ -1,65 +1,57 @@
-import { MaterialIcons } from "@expo/vector-icons";
-import { router } from "expo-router";
-import { Pressable, ScrollView, Text, View } from "react-native";
-import GamifiedHeader from "../components/GamifiedHeader";
-import { fetchMockAiQuiz } from "../services/mockAiQuizApi";
-import { useAiQuizStore } from "../store/aiQuizStore";
-import { useGamificationStore } from "../store/gamificationStore";
-
-import Toast from "react-native-toast-message";
+import { ScrollView, Text, View } from "react-native";
 
 export default function TestGamificationScreen() {
-  const { addXP, useEnergy, addEnergy, incrementStreak, breakStreak } =
-    useGamificationStore();
+  // const { addXP, useEnergy, addEnergy, incrementStreak, breakStreak } =
+  //   useGamificationStore();
 
-  const handleUseEnergy = () => {
-    const success = useEnergy(5);
-    if (!success) {
-      Toast.show({
-        type: "error",
-        text1: "Energía Insuficiente ⚡",
-        text2: "No tienes suficiente energía para esta acción.",
-        position: "top",
-      });
-    } else {
-      Toast.show({
-        type: "success",
-        text1: "-5 Energía",
-        text2: "Acción realizada con éxito.",
-        position: "top",
-      });
-    }
-  };
+  // const handleUseEnergy = () => {
+  //   const success = useEnergy(5);
+  //   if (!success) {
+  //     Toast.show({
+  //       type: "error",
+  //       text1: "Energía Insuficiente ⚡",
+  //       text2: "No tienes suficiente energía para esta acción.",
+  //       position: "top",
+  //     });
+  //   } else {
+  //     Toast.show({
+  //       type: "success",
+  //       text1: "-5 Energía",
+  //       text2: "Acción realizada con éxito.",
+  //       position: "top",
+  //     });
+  //   }
+  // };
 
-  const { startAiQuiz } = useAiQuizStore();
+  // const { startAiQuiz } = useAiQuizStore();
 
-  const handleTriggerAiQuiz = async () => {
-    try {
-      Toast.show({
-        type: "info",
-        text1: "Analizando progreso...",
-        text2: "La IA está generando tu reto personalizado.",
-      });
+  // const handleTriggerAiQuiz = async () => {
+  //   try {
+  //     Toast.show({
+  //       type: "info",
+  //       text1: "Analizando progreso...",
+  //       text2: "La IA está generando tu reto personalizado.",
+  //     });
 
-      // 1. Llamamos a la API falsa
-      const response = await fetchMockAiQuiz();
+  //     // 1. Llamamos a la API falsa
+  //     const response = await fetchMockAiQuiz();
 
-      if (!response.error) {
-        // 2. Cargamos la data en el store temporal
-        startAiQuiz(response.payload);
+  //     if (!response.error) {
+  //       // 2. Cargamos la data en el store temporal
+  //       startAiQuiz(response.payload);
 
-        // 3. Ocultamos el toast de carga y redirigimos a la vista express
-        Toast.hide();
-        router.push("/lesson/ai-quiz" as any);
-      }
-    } catch (error) {
-      Toast.show({
-        type: "error",
-        text1: "Error de conexión",
-        text2: "No se pudo contactar a la IA.",
-      });
-    }
-  };
+  //       // 3. Ocultamos el toast de carga y redirigimos a la vista express
+  //       Toast.hide();
+  //       router.push("/lesson/ai-quiz" as any);
+  //     }
+  //   } catch (error) {
+  //     Toast.show({
+  //       type: "error",
+  //       text1: "Error de conexión",
+  //       text2: "No se pudo contactar a la IA.",
+  //     });
+  //   }
+  // };
 
   return (
     <ScrollView
@@ -67,12 +59,12 @@ export default function TestGamificationScreen() {
       contentContainerStyle={{ paddingBottom: 40 }}
     >
       {/* Encabezado Real */}
-      <View className="pt-10 pb-4">
+      {/* <View className="pt-10 pb-4">
         <Text className="text-white text-center font-bold text-lg mb-2 font-mono">
           Entorno de Pruebas
         </Text>
         <GamifiedHeader />
-      </View>
+      </View> */}
 
       {/* Panel de Control */}
       <View className="px-4 mt-6">
@@ -81,7 +73,7 @@ export default function TestGamificationScreen() {
         </Text>
 
         {/* Controles de Experiencia */}
-        <View className="mb-6">
+        {/* <View className="mb-6">
           <Text className="text-[#adc6ff] font-bold mb-2">
             ⭐ Experiencia (XP)
           </Text>
@@ -96,10 +88,10 @@ export default function TestGamificationScreen() {
               color="#adc6ff"
             />
           </Pressable>
-        </View>
+        </View> */}
 
         {/* Controles de Energía */}
-        <View className="mb-6 space-y-3">
+        {/* <View className="mb-6 space-y-3">
           <Text className="text-emerald-400 font-bold mb-2 mt-2">
             ⚡ Energía
           </Text>
@@ -130,10 +122,10 @@ export default function TestGamificationScreen() {
               color="#10b981"
             />
           </Pressable>
-        </View>
+        </View> */}
 
         {/* Controles de Racha */}
-        <View className="mb-6 space-y-3">
+        {/* <View className="mb-6 space-y-3">
           <Text className="text-orange-400 font-bold mb-2 mt-2">
             🔥 Racha Diaria
           </Text>
@@ -158,10 +150,10 @@ export default function TestGamificationScreen() {
             <Text className="text-gray-400 font-medium">Romper Racha</Text>
             <MaterialIcons name="heart-broken" size={20} color="#9ca3af" />
           </Pressable>
-        </View>
+        </View> */}
 
         {/* Controles de Eventos IA */}
-        <View className="mb-6 space-y-3">
+        {/* <View className="mb-6 space-y-3">
           <Text className="text-purple-400 font-bold mb-2 mt-2">
             🧠 Eventos de IA
           </Text>
@@ -174,7 +166,7 @@ export default function TestGamificationScreen() {
             </Text>
             <MaterialIcons name="auto-awesome" size={20} color="#a855f7" />
           </Pressable>
-        </View>
+        </View> */}
       </View>
     </ScrollView>
   );

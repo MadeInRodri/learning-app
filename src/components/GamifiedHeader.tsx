@@ -1,19 +1,28 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import { Text, View } from "react-native";
-import { useGamificationStore } from "../store/gamificationStore";
+import { useAuthStore } from "../store/authStore";
+import { calculateLevelInfo } from "../store/gamificationStore";
 
 export default function GamifiedHeader() {
-  const { energy, streak, experience } = useGamificationStore();
+  // 1. Obtenemos el usuario activo desde el store que guarda el payload del backend
+  const activeUser = useAuthStore((state) => state.activeUser);
 
-  const xpPercentage = Math.min(
-    100,
-    Math.round((experience.currentXP / experience.maxXP) * 100),
+  // 2. Calculamos nivel, progreso y límites usando la XP total
+  const { level, currentXP, maxXP, progress } = calculateLevelInfo(
+    activeUser?.xpTotales,
   );
-  const energyPercentage = Math.round((energy.current / energy.max) * 100);
+
+  // 3. Obtenemos la energía (Asumimos 50 como máximo en base a tu backend)
+  const currentEnergy = activeUser?.energiaBalance || 0;
+  const maxEnergy = 50;
+  const energyPercentage = Math.round((currentEnergy / maxEnergy) * 100);
+
+  // 4. Racha MOCK (Pendiente de que el backend lo envíe en el login)
+  const streak = { days: 5, isActive: true };
 
   const renderEnergySegments = () => {
     const segments = 4;
-    const segmentsActive = Math.ceil((energy.current / energy.max) * segments);
+    const segmentsActive = Math.ceil((currentEnergy / maxEnergy) * segments);
 
     return Array.from({ length: segments }).map((_, index) => {
       const isActive = segments - index <= segmentsActive;
@@ -27,6 +36,9 @@ export default function GamifiedHeader() {
       );
     });
   };
+
+  // Previene errores de renderizado si el usuario aún no carga
+  if (!activeUser) return null;
 
   return (
     <View className="relative bg-[#181c22] rounded-2xl border border-[#30363d] p-3.5 shadow-lg mx-2 mb-5">
@@ -47,10 +59,8 @@ export default function GamifiedHeader() {
                 ENERGÍA
               </Text>
               <Text className="text-xs font-mono font-bold text-[#adc6ff]">
-                {energy.current}{" "}
-                <Text className="text-gray-500 font-normal">
-                  / {energy.max}
-                </Text>
+                {currentEnergy}{" "}
+                <Text className="text-gray-500 font-normal">/ {maxEnergy}</Text>
               </Text>
             </View>
           </View>
@@ -102,12 +112,16 @@ export default function GamifiedHeader() {
           </View>
           <View className="items-center mt-1">
             <Text
-              className={`text-xs font-bold font-mono ${streak.isActive ? "text-white" : "text-gray-400"}`}
+              className={`text-xs font-bold font-mono ${
+                streak.isActive ? "text-white" : "text-gray-400"
+              }`}
             >
               {streak.days} DÍAS
             </Text>
             <Text
-              className={`text-[9px] uppercase font-mono font-medium ${streak.isActive ? "text-orange-400" : "text-[#f85149]"}`}
+              className={`text-[9px] uppercase font-mono font-medium ${
+                streak.isActive ? "text-orange-400" : "text-[#f85149]"
+              }`}
             >
               {streak.isActive ? "RACHA ACTIVA" : "RACHA PERDIDA"}
             </Text>
@@ -120,7 +134,7 @@ export default function GamifiedHeader() {
             <View className="flex-row items-center gap-1">
               <MaterialIcons name="military-tech" size={13} color="#adc6ff" />
               <Text className="text-xs font-bold text-[#adc6ff] font-mono">
-                Lvl {experience.level}
+                Lvl {level}
               </Text>
             </View>
           </View>
@@ -128,14 +142,14 @@ export default function GamifiedHeader() {
           <View className="w-full h-2 rounded-full bg-[#0d1117] border border-[#30363d] p-[1px] mb-1">
             <View
               className="h-full rounded-full bg-blue-500"
-              style={{ width: `${xpPercentage}%` }}
+              style={{ width: `${progress}%` }}
             />
           </View>
 
           <View className="flex-row items-center justify-between">
             <Text className="text-[9px] font-mono text-gray-500">XP</Text>
             <Text className="text-[9px] text-[#adc6ff] font-medium font-mono">
-              {experience.currentXP} / {experience.maxXP}
+              {currentXP} / {maxXP}
             </Text>
           </View>
         </View>

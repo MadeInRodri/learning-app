@@ -1,117 +1,116 @@
+import { api } from "@/config/api";
 import { useAuthStore } from "@/store/authStore";
+import { calculateLevelInfo } from "@/store/gamificationStore";
+import { TokenStorage } from "@/store/tokenStore";
 import { router } from "expo-router";
-import { useEffect } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
 export default function ProfileScreen() {
+  const { activeUser, logout } = useAuthStore();
 
-  //Para obtener informacion del usuario
-  useEffect(() => {
-    //Obtener info
-    //await api.get("/user", { params: { id:5}, })
-    //Modificar info
-    //await api.patch("/user",{nombre, email, password --> Password para validar, no es que cambie de password xd} ,{ params: { id:5}, })
-    //Borrar cuenta
-    //await api.delete("/user", { params: { id:5}, }) //RECUERDA BORRAR LOS TOKENS CUANDO HAGAS ESTO
-  }, []);
+  // Desestructuramos el nivel y el progreso en tiempo real usando la XP del backend
+  const { level, currentXP, maxXP, progress } = calculateLevelInfo(
+    activeUser?.xpTotales,
+  );
 
-  // PA SIMUALAR
-  const logout = useAuthStore((state) => state.logout);
-  //Para logout se necesita el refreshToken
-  /* const refreshToken = await TokenStorage.getRefreshToken();
+  const handleLogout = async () => {
+    try {
+      if (activeUser?.id) {
+        const refreshToken = await TokenStorage.getRefreshToken();
 
-  await api.get("/user/logout?id", {
-    params: {
-      id: 5,
-    },
-    headers: {
-      "x-refresh-token": refreshToken,
-    },
-  }); */
-  const userStats = {
-    name: "MadeInRodri",
-    email: "rodrigo@gmail.com",
-    level: 1,
-    progress: "25%", // Porcentaje para la barra de nivel
-    streak: 1,
-    lastCourse: "Python",
-    testsPassed: 3,
-    coursesFinished: 0,
-    score: 320,
+        await api.get("/logout", {
+          params: { id: activeUser.id },
+          headers: { "x-refresh-token": refreshToken },
+        });
+      }
+    } catch (error) {
+      console.error("Error cerrando sesión en backend", error);
+    } finally {
+      // Independientemente de si el backend falla, matamos la sesión local
+      await TokenStorage.clearTokens();
+      logout();
+      router.replace("/(auth)/login" as any);
+    }
   };
+
+  // Previene crasheos si la vista se renderiza un microsegundo antes de redirigir al login
+  if (!activeUser) return null;
 
   return (
     <ScrollView className="flex-1 bg-[#0d1117] px-4 pt-10">
       <View className="w-full max-w-sm mx-auto pb-24">
-        {/* Título */}
         <Text className="text-2xl font-bold text-white text-center mb-10">
           Tu perfil
         </Text>
 
-        {/* Cabecera del Perfil (Avatar + Info) */}
+        {/* Cabecera del Perfil */}
         <View className="flex-row items-center mb-10">
-          {/* Avatar Placeholder */}
           <View className="w-20 h-20 rounded-full border-2 border-gray-700 bg-[#161b22] items-center justify-center mr-5 shadow-lg">
-            <Text className="text-gray-400 font-mono text-xl font-bold tracking-widest">
-              MR
+            <Text className="text-gray-400 font-mono text-xl font-bold uppercase tracking-widest">
+              {activeUser.nombre.substring(0, 2)}
             </Text>
           </View>
 
-          {/* Info de Usuario */}
           <View className="flex-1">
             <Text className="text-xl font-bold text-white mb-1">
-              {userStats.name}
+              {activeUser.nombre}
             </Text>
             <Text className="text-sm text-gray-400 mb-3">
-              {userStats.email}
+              {activeUser.email}
             </Text>
 
-            {/* Barra de Nivel */}
-            <View className="w-32">
+            {/* Barra de Nivel Algorítmica */}
+            <View className="w-full">
               <Text className="text-xs font-mono text-gray-400 mb-1">
-                Lvl {userStats.level}
+                Lvl {level}{" "}
+                <Text className="text-gray-600">
+                  ({currentXP}/{maxXP} XP)
+                </Text>
               </Text>
-              <View className="w-full h-1 bg-gray-800 rounded-full overflow-hidden">
+              <View className="w-40 h-1.5 bg-gray-800 rounded-full overflow-hidden">
                 <View
                   className="h-full bg-orange-400 rounded-full"
-                  style={{ width: userStats.progress as any }}
+                  style={{ width: `${progress}%` }}
                 />
               </View>
             </View>
           </View>
         </View>
 
-        {/* Tarjeta de Estadísticas Detalladas */}
+        {/* Tarjeta de Estadísticas (Valores devueltos por la API) */}
         <View className="bg-[#181c22] border border-gray-800 rounded-xl p-5 mb-8 shadow-md">
           <View className="flex-row justify-between items-center border-b border-gray-800 pb-3 mb-3">
-            <Text className="text-gray-400">Racha actual</Text>
-            <Text className="text-white font-bold">{userStats.streak} día</Text>
+            <Text className="text-gray-400">Energía Máxima</Text>
+            <Text className="text-emerald-400 font-bold">
+              {activeUser.energiaBalance} ⚡
+            </Text>
           </View>
 
           <View className="flex-row justify-between items-center border-b border-gray-800 pb-3 mb-3">
-            <Text className="text-gray-400">Último curso visitado</Text>
-            <Text className="text-white font-bold">{userStats.lastCourse}</Text>
+            <Text className="text-gray-400">Estrellas Acumuladas</Text>
+            <Text className="text-yellow-400 font-bold">
+              {activeUser.estrellasBalance} ⭐
+            </Text>
           </View>
 
           <View className="flex-row justify-between items-center border-b border-gray-800 pb-3 mb-3">
-            <Text className="text-gray-400">Test aprobados</Text>
-            <Text className="text-white font-bold">
-              {userStats.testsPassed}
+            <Text className="text-gray-400">Ayudas de IA Restantes</Text>
+            <Text className="text-purple-400 font-bold">
+              {activeUser.aiPistaBalance} 🤖
             </Text>
           </View>
 
           <View className="flex-row justify-between items-center mb-5">
-            <Text className="text-gray-400">Cursos finalizados</Text>
-            <Text className="text-white font-bold">
-              {userStats.coursesFinished}
+            <Text className="text-gray-400">Protectores de Racha</Text>
+            <Text className="text-blue-400 font-bold">
+              {activeUser.protectorRachaBalance} 🛡️
             </Text>
           </View>
 
-          {/* Badge de Puntaje Actual */}
           <View className="items-end">
-            <View className="border border-blue-500/40 bg-blue-500/10 px-3 py-1.5 rounded">
-              <Text className="text-blue-400 font-mono text-xs font-semibold tracking-wide">
-                Puntaje actual: {userStats.score}
+            <View className="border border-orange-500/40 bg-orange-500/10 px-3 py-1.5 rounded">
+              <Text className="text-orange-400 font-mono text-xs font-semibold tracking-wide">
+                EXPERIENCIA TOTAL: {activeUser.xpTotales} XP
               </Text>
             </View>
           </View>
@@ -123,19 +122,21 @@ export default function ProfileScreen() {
             onPress={() => router.push("/testing-gamification" as any)}
             className="w-full py-4 border border-orange-400/80 rounded-lg items-center justify-center active:bg-orange-400/10 transition-colors"
           >
-            <Text className="text-orange-400 font-bold">Testing</Text>
+            <Text className="text-orange-400 font-bold">Testing API</Text>
           </Pressable>
 
           <Pressable
             onPress={() => router.push("/achievements" as any)}
             className="w-full py-4 border border-purple-500/80 rounded-lg items-center justify-center active:bg-purple-500/10 transition-colors"
           >
-            <Text className="text-purple-400 font-bold">Ver logros</Text>
+            <Text className="text-purple-400 font-bold">
+              Catálogo de recompensas
+            </Text>
           </Pressable>
 
           <Pressable
-            onPress={() => logout()}
-            className="w-full py-4 border border-red-500 rounded-lg items-center justify-center active:bg-purple-500/10 transition-colors"
+            onPress={handleLogout}
+            className="w-full py-4 border border-red-500 rounded-lg items-center justify-center active:bg-red-500/10 transition-colors"
           >
             <Text className="text-red-500 font-bold">Cerrar Sesión</Text>
           </Pressable>

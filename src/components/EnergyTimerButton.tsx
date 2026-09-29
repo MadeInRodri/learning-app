@@ -6,21 +6,21 @@ import { ActivityIndicator, Pressable, Text, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { useAuthStore } from "../store/authStore";
 
-// 10 minutos expresados en milisegundos
+// 1 minuto expresados en milisegundos, se puede cambiar
 const COOLDOWN_DURATION = 1 * 60 * 1000;
 const MAX_ENERGY = 50; // Límite máximo de energía
 
 export default function EnergyTimerButton() {
   const { claimReward } = useGamificationStore();
 
-  // 1. Extraemos al activeUser para poder leer su ID único
+  // Extraemos al activeUser para poder leer su ID único
   const { activeUser, updateGamificationStats } = useAuthStore();
 
   const [timeLeft, setTimeLeft] = useState<number>(0);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
 
-  // 2. Creamos una llave dinámica basada en el ID del usuario actual
+  // Creamos una llave dinámica basada en el ID del usuario actual
   const timerKey = activeUser ? `@energy_last_claim_${activeUser.id}` : null;
 
   useEffect(() => {
@@ -29,7 +29,7 @@ export default function EnergyTimerButton() {
       if (!timerKey) return;
 
       try {
-        // 3. Leemos específicamente el tiempo guardado de este usuario
+        // Leemos específicamente el tiempo guardado de este usuario
         const lastClaimStr = await AsyncStorage.getItem(timerKey);
 
         if (lastClaimStr) {
@@ -54,7 +54,7 @@ export default function EnergyTimerButton() {
     };
 
     initializeTimer();
-  }, [timerKey]); // 4. El useEffect se vuelve a ejecutar si el usuario cambia de cuenta
+  }, [timerKey]); // El useEffect se vuelve a ejecutar si el usuario cambia de cuenta
 
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
@@ -98,6 +98,7 @@ export default function EnergyTimerButton() {
 
     setIsProcessing(true);
 
+    //Mandamos a la API pa que de energía
     try {
       const success = await claimReward(
         "ENERGY",
@@ -108,7 +109,7 @@ export default function EnergyTimerButton() {
       if (success) {
         updateGamificationStats(0, 10);
 
-        // 5. Guardamos el tiempo de reclamo usando su llave única
+        // Guardamos el tiempo de reclamo usando su llave única
         const now = Date.now();
         await AsyncStorage.setItem(timerKey, now.toString());
         setTimeLeft(COOLDOWN_DURATION);

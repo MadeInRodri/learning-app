@@ -94,7 +94,9 @@ export default function ProfileScreen() {
             </Text>
           </View>
 
-          <View className="flex-row justify-between items-center border-b border-gray-800 pb-3 mb-3">
+          {/* Oculto por si las móscas */}
+
+          {/* <View className="flex-row justify-between items-center border-b border-gray-800 pb-3 mb-3">
             <Text className="text-gray-400">Ayudas de IA Restantes</Text>
             <Text className="text-purple-400 font-bold">
               {activeUser.aiPistaBalance} 🤖
@@ -106,7 +108,7 @@ export default function ProfileScreen() {
             <Text className="text-blue-400 font-bold">
               {activeUser.protectorRachaBalance} 🛡️
             </Text>
-          </View>
+          </View> */}
 
           <View className="items-end">
             <View className="border border-orange-500/40 bg-orange-500/10 px-3 py-1.5 rounded">

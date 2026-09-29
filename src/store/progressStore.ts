@@ -1,3 +1,5 @@
+//Delicado, maneja todo el progreso
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
@@ -18,14 +20,14 @@ interface ProgressState {
 
   registerCourse: (courseId: string) => Promise<void>;
 
-  // 1. NUEVA FUNCIÓN: Para lecciones de Markdown (avanza internamente)
+  // Este es para las lecciones normales, de markdown.tsx
   completeNormalLesson: (
     courseId: string,
     pathId: string,
     moduleId: string,
   ) => void;
 
-  // 2. FUNCIÓN DE QUIZ: Termina la ruta y avanza a la siguiente
+  // Este es para cuando pasamos un quiz, desbloqueamos la ruta siguiente
   passModule: (
     courseId: string,
     pathId: string,
@@ -35,6 +37,7 @@ interface ProgressState {
     courseTitle: string,
   ) => Promise<void>;
 
+  //Examen completado, maneja la data
   completeExam: (
     courseId: string,
     pathId: string,
@@ -49,10 +52,13 @@ export const useProgressStore = create<ProgressState>()(
     (set, get) => ({
       progressCache: {},
 
+      //Registrar curso (Solo ocurre una vez, cuando se entra al lenguaje por primera vez)
       registerCourse: async (courseId) => {
+        //Traigo al usuario
         const user = useAuthStore.getState().activeUser;
         if (!user) return;
 
+        //Traigo su progreso, sino creo todo vacío
         const currentCache = get().progressCache[user.id] || {
           registeredCourses: [],
           unlockedPaths: [],
@@ -61,24 +67,30 @@ export const useProgressStore = create<ProgressState>()(
           completedPaths: [],
         };
 
+        //Si ya está registrado el curso, no hago nada
         if (currentCache.registeredCourses.includes(courseId)) return;
 
+        //Mandamos a la API para que registre al usuario en el curso
         try {
           const mysqlCourseId = COURSE_DB_MAP[courseId];
           await api.get(`/course/${mysqlCourseId}/register`, {
             params: { id: user.id },
           });
 
+          //Aquí actualizamos todo, delicado
           set((state) => ({
             progressCache: {
               ...state.progressCache,
               [user.id]: {
                 ...currentCache,
+                //Registra internamente el curso nuevo
                 registeredCourses: [
                   ...currentCache.registeredCourses,
                   courseId,
                 ],
+                //Le desbloquea la primera ruta
                 unlockedPaths: [...currentCache.unlockedPaths, `${courseId}-1`],
+                //Le desbloquea el primer módulo
                 unlockedModules: [
                   ...currentCache.unlockedModules,
                   `${courseId}-1-1`,
@@ -91,8 +103,9 @@ export const useProgressStore = create<ProgressState>()(
         }
       },
 
-      // LÓGICA DE MARKDOWN: Desbloquea solo la siguiente lección
+      // Clases normales, desbloquea solo la siguiente lección
       completeNormalLesson: (courseId, pathId, moduleId) => {
+        //Traigo usuario
         const user = useAuthStore.getState().activeUser;
         if (!user) return;
 
@@ -104,20 +117,24 @@ export const useProgressStore = create<ProgressState>()(
           completedPaths: [],
         };
 
+        //Creo los id's del modulo, y del siguiente por si lo pasa
         const moduleKey = `${courseId}-${pathId}-${moduleId}`;
         const nextModuleNum = parseInt(moduleId) + 1;
         const nextModuleKey = `${courseId}-${pathId}-${nextModuleNum}`;
 
+        //Si lo completa lo agregamos a los completados
         const newCompletedModules = cache.completedModules?.includes(moduleKey)
           ? cache.completedModules
           : [...(cache.completedModules || []), moduleKey];
 
+        // Y el siguiente para ser desbloqueado
         const newUnlockedModules = cache.unlockedModules?.includes(
           nextModuleKey,
         )
           ? cache.unlockedModules
           : [...(cache.unlockedModules || []), nextModuleKey];
 
+        //Actualizamos el cache
         set((state) => ({
           progressCache: {
             ...state.progressCache,
@@ -130,7 +147,7 @@ export const useProgressStore = create<ProgressState>()(
         }));
       },
 
-      // LÓGICA DE QUIZ: Termina la ruta, llama a la API y abre la sig. ruta
+      // Para el quiz, termina la ruta, llama a la API y abre la sig. ruta
       passModule: async (
         courseId,
         pathId,
@@ -139,6 +156,7 @@ export const useProgressStore = create<ProgressState>()(
         totalCoursePaths,
         courseTitle,
       ) => {
+        //Usuario
         const user = useAuthStore.getState().activeUser;
         if (!user) return;
 
@@ -150,26 +168,32 @@ export const useProgressStore = create<ProgressState>()(
           completedPaths: [],
         };
 
+        //Creamos los id's de la ruta y el módulo
         const pathKey = `${courseId}-${pathId}`;
         const moduleKey = `${courseId}-${pathId}-${moduleId}`;
 
+        //Si y pasó el test, nada de esto va a suceder
         if (cache.completedPaths?.includes(pathKey)) return;
 
+        //agregamos la ruta que acaba de completar
         const newCompletedPaths = [...(cache.completedPaths || []), pathKey];
+        // Y el módulo, en este caso el del quiz
         const newCompletedModules = cache.completedModules?.includes(moduleKey)
           ? cache.completedModules
           : [...(cache.completedModules || []), moduleKey];
 
+        //Esto es para el progreso
         const rawPercentage = Math.round(
           (newCompletedPaths.length / totalCoursePaths) * 100,
         );
         const percentage = rawPercentage > 100 ? 100 : rawPercentage;
 
-        // Calculamos la siguiente RUTA y su primer módulo
+        // Calculamos la siguiente ruta y su primer módulo
         const nextPathNum = parseInt(pathId) + 1;
         const nextPathKey = `${courseId}-${nextPathNum}`;
         const firstModuleOfNextPath = `${courseId}-${nextPathNum}-1`;
 
+        //Hacemos lo mismo, actualizamos
         set((state) => ({
           progressCache: {
             ...state.progressCache,
@@ -186,6 +210,7 @@ export const useProgressStore = create<ProgressState>()(
           },
         }));
 
+        //Además de mandar a la API que ya pasó el módulo
         try {
           const mysqlCourseId = COURSE_DB_MAP[courseId];
           await api.post(`/course/${mysqlCourseId}/pass_module`, {
@@ -199,6 +224,7 @@ export const useProgressStore = create<ProgressState>()(
         }
       },
 
+      //Función para cuando completa el quiz
       completeExam: async (
         courseId,
         pathId,
@@ -206,9 +232,11 @@ export const useProgressStore = create<ProgressState>()(
         totalCourseModules,
         examData,
       ) => {
+        //Usuario
         const user = useAuthStore.getState().activeUser;
         if (!user) return null;
 
+        //Mandamos a decir que el examen sí se completó en la API, y los errores
         try {
           const mysqlCourseId = COURSE_DB_MAP[courseId];
           const response = await api.post(
@@ -218,7 +246,7 @@ export const useProgressStore = create<ProgressState>()(
           );
           return response.data.payload;
         } catch (error) {
-          return null; // Bypass temporal anti-crasheo
+          return null;
         }
       },
     }),

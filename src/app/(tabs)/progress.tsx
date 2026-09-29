@@ -1,6 +1,7 @@
-import React from "react";
-import { View, Text, ScrollView } from "react-native";
+// Misiones, es estático, no funciona
+
 import { MaterialIcons } from "@expo/vector-icons";
+import { ScrollView, Text, View } from "react-native";
 
 export default function ProgressScreen() {
   // SIMULACIÓN

@@ -39,14 +39,14 @@ export default function QuizScreen() {
   const [isAnswered, setIsAnswered] = useState(false);
   const [quizFinished, setQuizFinished] = useState(false);
 
-  // Nuevos estados para la lógica de evaluación y API
+  // Estados del quiz
   const [earnedXP, setEarnedXP] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
   const [correctAnswersCount, setCorrectAnswersCount] = useState(0);
   const [failedTopicsTexts, setFailedTopicsTexts] = useState<string[]>([]);
   const [isPassed, setIsPassed] = useState(false);
 
-  // 2. Calculamos las iniciales dinámicamente
+  // Para las iniciales del encabezado, solo visual
   const initials = activeUser?.nombre
     ? activeUser.nombre.substring(0, 2).toUpperCase()
     : "US";
@@ -55,6 +55,7 @@ export default function QuizScreen() {
     return modules.find((m) => m.id === activeModuleId);
   }, [modules, activeModuleId]);
 
+  //Traemos la data del quiz
   const quizData = Array.isArray(quizModule?.content) ? quizModule.content : [];
   const currentPathId = pathId || "1";
 

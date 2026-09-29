@@ -1,3 +1,5 @@
+// Logros, es estático, no funciona
+
 import { MaterialIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { Pressable, ScrollView, Text, View } from "react-native";

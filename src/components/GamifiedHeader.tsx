@@ -4,24 +4,24 @@ import { useAuthStore } from "../store/authStore";
 import { calculateLevelInfo } from "../store/gamificationStore";
 
 export default function GamifiedHeader() {
-  // 1. Obtenemos el usuario activo desde el store que guarda el payload del backend
+  // Obtenemos el usuario activo desde el store que guarda el payload del backend
   const activeUser = useAuthStore((state) => state.activeUser);
 
-  // 2. Calculamos nivel, progreso y límites usando la XP total
+  // Calculamos nivel, progreso y límites usando la XP total
   const { level, currentXP, maxXP, progress } = calculateLevelInfo(
     activeUser?.xpTotales,
   );
 
-  // 3. Obtenemos la energía (Asumimos 50 como máximo en base a tu backend)
+  // Obtenemos la energía, límite 50
   const currentEnergy = activeUser?.energiaBalance || 0;
   const maxEnergy = 50;
   const energyPercentage = Math.round((currentEnergy / maxEnergy) * 100);
 
   // 4. Racha MOCK (Pendiente de que el backend lo envíe en el login)
-  const streak = { days: 5, isActive: true };
+  const streak = { isActive: true };
 
   const renderEnergySegments = () => {
-    const segments = 4;
+    const segments = 3;
     const segmentsActive = Math.ceil((currentEnergy / maxEnergy) * segments);
 
     return Array.from({ length: segments }).map((_, index) => {
@@ -111,13 +111,6 @@ export default function GamifiedHeader() {
             )}
           </View>
           <View className="items-center mt-1">
-            <Text
-              className={`text-xs font-bold font-mono ${
-                streak.isActive ? "text-white" : "text-gray-400"
-              }`}
-            >
-              {streak.days} DÍAS
-            </Text>
             <Text
               className={`text-[9px] uppercase font-mono font-medium ${
                 streak.isActive ? "text-orange-400" : "text-[#f85149]"

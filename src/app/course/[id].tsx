@@ -25,6 +25,7 @@ export default function CourseScreen() {
   const { claimReward } = useGamificationStore();
 
   // Refrescamos los módulos siempre que la pantalla retome el foco
+  // Quizá el problema
   useFocusEffect(
     useCallback(() => {
       if (pathId) {
@@ -34,6 +35,7 @@ export default function CourseScreen() {
   );
 
   const handleModulePress = async (mod: any) => {
+    //Acciones dependiendo de si ta bloqueado o no
     if (mod.state === "locked") {
       Toast.show({
         type: "error",
@@ -47,6 +49,7 @@ export default function CourseScreen() {
 
     if (mod.type === "quiz") {
       // Creamos una sub-función para manejar la entrada y el cobro de energía
+      // Solo para el quiz, cobra antes de entrar para evitar trampa
       const enterQuiz = async () => {
         if ((activeUser?.energiaBalance || 0) < 20) {
           Toast.show({
@@ -72,18 +75,7 @@ export default function CourseScreen() {
         (activeQuiz.languageId !== activeCourseId ||
           activeQuiz.pathId !== pathId)
       ) {
-        // Alert.alert(
-        //   "Quiz en progreso",
-        //   "Tienes un cuestionario a medias en otro módulo. ¿Deseas abandonarlo y perder tu progreso?",
-        //   [
-        //     { text: "Cancelar", style: "cancel" },
-        //     {
-        //       text: "Empezar nuevo",
-        //       style: "destructive",
-        //       onPress: () => enterQuiz(), // Llamamos a la función de entrada
-        //     },
-        //   ],
-        // );
+        // Por si ya han empezado uno
         Toast.show({
           type: "error",
           text1: "Quiz en progreso ⚠️",
@@ -110,6 +102,7 @@ export default function CourseScreen() {
   };
   return (
     // Asignamos un Key estático para evitar que el router pierda el contexto
+    // No sé si hará algo
     <View key="course-view" className="flex-1 bg-[#0d1117]">
       <View className="flex-row items-center justify-between px-4 pt-12 pb-4 border-b border-gray-800 bg-[#0d1117]">
         <Pressable

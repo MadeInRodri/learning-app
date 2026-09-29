@@ -1,3 +1,5 @@
+// 1 -> Aún no uso la parte del quiz IA con checkWeekQuiz
+
 import { api } from "@/config/api";
 import { create } from "zustand";
 import { useAuthStore } from "./authStore";
@@ -8,7 +10,7 @@ export const calculateLevelInfo = (totalXP: number = 0) => {
   let currentXP = totalXP;
   let maxXP = 200; // XP base requerida para pasar del Nivel 1 al 2
 
-  // Escala de dificultad idéntica a la que tenías localmente
+  // Escala de dificultad
   while (currentXP >= maxXP) {
     currentXP -= maxXP;
     level += 1;
@@ -21,7 +23,7 @@ export const calculateLevelInfo = (totalXP: number = 0) => {
 };
 
 interface GamificationState {
-  // Peticiones al backend basadas en la API de tu amigo
+  // Peticiones al backend basadas en la API
   fetchRewardsCatalog: () => Promise<any>;
   registerStreak: (dateISO: string) => Promise<void>;
   claimReward: (
@@ -33,6 +35,7 @@ interface GamificationState {
 }
 
 export const useGamificationStore = create<GamificationState>()((set, get) => ({
+  //Me traigo las recompensas
   fetchRewardsCatalog: async () => {
     try {
       const response = await api.get("/game/rewards_catalogo");
@@ -43,6 +46,7 @@ export const useGamificationStore = create<GamificationState>()((set, get) => ({
     }
   },
 
+  //La racha
   registerStreak: async (dateISO) => {
     const user = useAuthStore.getState().activeUser;
     if (!user) return;
@@ -56,6 +60,7 @@ export const useGamificationStore = create<GamificationState>()((set, get) => ({
     }
   },
 
+  //Reclamar recompensa, en cada vista solo le paso el name y el tipo
   claimReward: async (type, source, nameReward) => {
     const user = useAuthStore.getState().activeUser;
     if (!user) return false;
@@ -74,6 +79,7 @@ export const useGamificationStore = create<GamificationState>()((set, get) => ({
     }
   },
 
+  //Esto para el quiz IA, todavía no lo uso
   checkWeekQuiz: async () => {
     const user = useAuthStore.getState().activeUser;
     if (!user) return null;

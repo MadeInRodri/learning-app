@@ -14,7 +14,8 @@ export default function PathScreen() {
   const { activeCourseId, activeCourseName, lessons, isFetching, fetchPath } =
     useCourseStore();
 
-  // Cambiamos useEffect por useFocusEffect para que se refresque al volver de una lección
+  // useFocusEffect para que se refresque al volver de una lección
+  //Creo que esto da problemas
   useFocusEffect(
     useCallback(() => {
       if (activeCourseId) {
@@ -59,6 +60,7 @@ export default function PathScreen() {
           Aprendiendo {activeCourseName}
         </Text>
 
+        {/* Mientras haya al menos una lección, recorremos el map */}
         {isFetching && lessons.length === 0 ? (
           <ActivityIndicator size="large" color="#3b82f6" className="mt-10" />
         ) : (
@@ -91,10 +93,12 @@ export default function PathScreen() {
               }
 
               return (
+                //La vista con la key
                 <View key={lesson.id} className="w-full items-center">
                   <Pressable
                     onPress={() => {
                       if (lesson.state !== "locked") {
+                        //Si no está bloqueada, cuando clickee vamos para [id].tsx con el id que cliqueó
                         router.push(`/course/${lesson.id}` as any);
                       }
                     }}

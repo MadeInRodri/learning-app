@@ -1,3 +1,4 @@
+import EnergyTimerButton from "@/components/EnergyTimerButton";
 import { api } from "@/config/api";
 import { useAuthStore } from "@/store/authStore";
 import { calculateLevelInfo } from "@/store/gamificationStore";
@@ -118,16 +119,17 @@ export default function ProfileScreen() {
 
         {/* Botones de Acción */}
         <View className="gap-4">
-          <Pressable
+          {/* <Pressable
             onPress={() => router.push("/testing-gamification" as any)}
             className="w-full py-4 border border-orange-400/80 rounded-lg items-center justify-center active:bg-orange-400/10 transition-colors"
           >
             <Text className="text-orange-400 font-bold">Testing API</Text>
-          </Pressable>
+          </Pressable> */}
+          <EnergyTimerButton></EnergyTimerButton>
 
           <Pressable
             onPress={() => router.push("/achievements" as any)}
-            className="w-full py-4 border border-purple-500/80 rounded-lg items-center justify-center active:bg-purple-500/10 transition-colors"
+            className="w-full py-4 border border-purple-500/80 rounded-lg items-center justify-center active:bg-purple-500/10 "
           >
             <Text className="text-purple-400 font-bold">
               Catálogo de recompensas
@@ -136,7 +138,7 @@ export default function ProfileScreen() {
 
           <Pressable
             onPress={handleLogout}
-            className="w-full py-4 border border-red-500 rounded-lg items-center justify-center active:bg-red-500/10 transition-colors"
+            className="w-full py-4 border border-red-500 rounded-lg items-center justify-center active:bg-red-500/10 "
           >
             <Text className="text-red-500 font-bold">Cerrar Sesión</Text>
           </Pressable>

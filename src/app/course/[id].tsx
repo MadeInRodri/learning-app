@@ -1,6 +1,8 @@
+import { useAuthStore } from "@/store/authStore";
+import { useGamificationStore } from "@/store/gamificationStore";
 import { MaterialIcons } from "@expo/vector-icons";
-import { router, useLocalSearchParams } from "expo-router";
-import { useEffect } from "react";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
+import { useCallback } from "react";
 import {
   ActivityIndicator,
   Pressable,
@@ -8,7 +10,7 @@ import {
   Text,
   View,
 } from "react-native";
-import Toast from "react-native-toast-message"; // <-- Importamos Toast
+import Toast from "react-native-toast-message";
 import { useCourseStore } from "../../store/courseStore";
 import { useModuleStore } from "../../store/moduleStore";
 import { useQuizStore } from "../../store/quizStore";
@@ -19,15 +21,19 @@ export default function CourseScreen() {
   const { modules, isFetching, fetchModules, setActiveModule } =
     useModuleStore();
   const { activeQuiz, forceStartQuiz } = useQuizStore();
+  const { activeUser, updateGamificationStats } = useAuthStore();
+  const { claimReward } = useGamificationStore();
 
-  useEffect(() => {
-    if (pathId) {
-      fetchModules(pathId);
-    }
-  }, [pathId]);
+  // Refrescamos los módulos siempre que la pantalla retome el foco
+  useFocusEffect(
+    useCallback(() => {
+      if (pathId) {
+        fetchModules(pathId);
+      }
+    }, [pathId]),
+  );
 
-  // Centralizamos la lógica del click para mantener el código limpio
-  const handleModulePress = (mod: any) => {
+  const handleModulePress = async (mod: any) => {
     if (mod.state === "locked") {
       Toast.show({
         type: "error",
@@ -40,12 +46,44 @@ export default function CourseScreen() {
     setActiveModule(mod.id);
 
     if (mod.type === "quiz") {
+      // Creamos una sub-función para manejar la entrada y el cobro de energía
+      const enterQuiz = async () => {
+        if ((activeUser?.energiaBalance || 0) < 20) {
+          Toast.show({
+            type: "error",
+            text1: "Energía Insuficiente ⚡",
+            text2: "Necesitas al menos 20 de energía para el examen final.",
+          });
+          return;
+        }
+
+        // Cobramos la energía antes de entrar
+        await claimReward("ENERGY", "quiz_attempt", "LESS_ENERGY");
+        updateGamificationStats(0, -20);
+
+        // Forzamos el inicio limpio para evitar cruces
+        forceStartQuiz(activeCourseId!, pathId);
+        router.push({ pathname: "/lesson/quiz", params: { pathId } } as any);
+      };
+
+      // Verificamos si hay un quiz abandonado
       if (
         activeQuiz &&
         (activeQuiz.languageId !== activeCourseId ||
           activeQuiz.pathId !== pathId)
       ) {
-        // Alerta interactiva con Toast
+        // Alert.alert(
+        //   "Quiz en progreso",
+        //   "Tienes un cuestionario a medias en otro módulo. ¿Deseas abandonarlo y perder tu progreso?",
+        //   [
+        //     { text: "Cancelar", style: "cancel" },
+        //     {
+        //       text: "Empezar nuevo",
+        //       style: "destructive",
+        //       onPress: () => enterQuiz(), // Llamamos a la función de entrada
+        //     },
+        //   ],
+        // );
         Toast.show({
           type: "error",
           text1: "Quiz en progreso ⚠️",
@@ -53,24 +91,30 @@ export default function CourseScreen() {
           visibilityTime: 5000,
           onPress: () => {
             forceStartQuiz(activeCourseId!, pathId);
-            Toast.hide(); // Ocultamos el toast manualmente
-            router.push("/lesson/quiz" as any);
+            Toast.hide();
+            // Navegación directa
+            router.push({
+              pathname: "/lesson/quiz",
+              params: { pathId },
+            } as any);
           },
         });
         return;
       }
-      router.push("/lesson/quiz" as any);
+
+      // Si no hay conflictos, intentamos entrar directamente
+      await enterQuiz();
     } else {
-      router.push("/lesson/markdown" as any);
+      router.push({ pathname: "/lesson/markdown", params: { pathId } } as any);
     }
   };
-
   return (
-    <View className="flex-1 bg-[#0d1117]">
+    // Asignamos un Key estático para evitar que el router pierda el contexto
+    <View key="course-view" className="flex-1 bg-[#0d1117]">
       <View className="flex-row items-center justify-between px-4 pt-12 pb-4 border-b border-gray-800 bg-[#0d1117]">
         <Pressable
           onPress={() => router.back()}
-          className="w-10 h-10 rounded-full bg-[#181c22] border border-gray-700 items-center justify-center active:bg-gray-700 transition-colors"
+          className="w-10 h-10 rounded-full bg-[#181c22] border border-gray-700 items-center justify-center active:bg-gray-700 "
         >
           <MaterialIcons name="arrow-back" size={24} color="#9ca3af" />
         </Pressable>
@@ -94,10 +138,11 @@ export default function CourseScreen() {
             </Text>
           </View>
 
-          {isFetching ? (
+          {isFetching && modules.length === 0 ? (
             <ActivityIndicator size="large" color="#3b82f6" className="mt-10" />
           ) : (
             <View className="relative w-full py-4">
+              {/* 1. Línea Central Vertical con z-0 */}
               <View className="absolute top-0 bottom-0 left-1/2 w-[2px] bg-gray-700 -translate-x-[1px] z-0" />
 
               {modules.map((mod, index) => {
@@ -136,7 +181,7 @@ export default function CourseScreen() {
                   iconName = "emoji-events";
                 }
 
-                const baseCardClasses = `p-4 bg-[#161b22] rounded-xl border transition-transform ${
+                const baseCardClasses = `p-4 bg-[#161b22] rounded-xl border ${
                   mod.state !== "locked" ? "active:scale-95" : ""
                 }`;
 
@@ -159,7 +204,7 @@ export default function CourseScreen() {
                       <>
                         <Pressable
                           className="w-1/2 pr-8"
-                          onPress={() => handleModulePress(mod)} // <-- Uso de la función centralizada
+                          onPress={() => handleModulePress(mod)}
                         >
                           <View className={`${baseCardClasses} ${cardStyle}`}>
                             <Text
@@ -179,7 +224,7 @@ export default function CourseScreen() {
                         <View className="w-1/2" />
                         <Pressable
                           className="w-1/2 pl-8"
-                          onPress={() => handleModulePress(mod)} // <-- Uso de la función centralizada
+                          onPress={() => handleModulePress(mod)}
                         >
                           <View className={`${baseCardClasses} ${cardStyle}`}>
                             <Text

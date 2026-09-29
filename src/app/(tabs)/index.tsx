@@ -75,7 +75,7 @@ export default function LearnScreen() {
                     .setActiveCourse(lang.id, lang.language);
                   router.push("/(tabs)/path" as any);
                 }}
-                className="w-[47%] aspect-square bg-[#181c22] border border-gray-800 rounded-xl items-center justify-center mb-4 active:bg-gray-800 active:scale-95 transition-transform"
+                className="w-[47%] aspect-square bg-[#181c22] border border-gray-800 rounded-xl items-center justify-center mb-4 active:bg-gray-800 active:scale-95 "
               >
                 <Text className="text-white text-xl font-bold mb-3">
                   {lang.language}

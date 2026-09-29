@@ -3,18 +3,16 @@ import { collection, getDocs } from "firebase/firestore";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { db } from "../config/firebase";
-//Estamos viendo el curso actual
+import { useAuthStore } from "./authStore";
 import { useCourseStore } from "./courseStore";
+import { useProgressStore } from "./progressStore";
 
-//Data de la lección
 export interface ModuleLesson {
   id: string;
   title: string;
   subtitle: string;
-  // clase/quiz
   type: string;
-  state: string;
-  //Este puede ser preguntas o markdown
+  state: "locked" | "in-progress" | "completed";
   content: any;
 }
 
@@ -36,11 +34,9 @@ export const useModuleStore = create<ModuleState>()(
       setActiveModule: (id) => set({ activeModuleId: id }),
 
       fetchModules: async (pathId) => {
-        // Obtenemos el lenguaje actual del store de cursos
         const languageId = useCourseStore.getState().activeCourseId;
-
-        //Si no está seleccionado, regresamos
-        if (!languageId || !pathId) return;
+        const user = useAuthStore.getState().activeUser;
+        if (!languageId || !pathId || !user) return;
 
         set({ isFetching: true });
         try {
@@ -54,23 +50,31 @@ export const useModuleStore = create<ModuleState>()(
           );
           const snapshot = await getDocs(modulesRef);
 
-          const fetchedModules: ModuleLesson[] = [];
+          const progress = useProgressStore.getState().progressCache[user.id];
 
-          //Lo llenamos
+          const fetchedModules: ModuleLesson[] = [];
           snapshot.forEach((doc) => {
             const data = doc.data();
+            const moduleKey = `${languageId}-${pathId}-${doc.id}`;
+
+            // Evaluamos estado dinámicamente
+            let currentState: "locked" | "in-progress" | "completed" = "locked";
+            if (progress?.completedModules.includes(moduleKey)) {
+              currentState = "completed";
+            } else if (progress?.unlockedModules.includes(moduleKey)) {
+              currentState = "in-progress";
+            }
+
             fetchedModules.push({
               id: doc.id,
               title: data.title || "Módulo",
               subtitle: data.subtitle || "",
               type: data.type || "lesson",
-              // HACK DE PRUEBA: Todo desbloqueado por ahora
-              state: data.type === "quiz" ? "in-progress" : "completed",
+              state: currentState,
               content: data.content || "",
             });
           });
 
-          // Ordenamos por ID para mantener la secuencia (1, 2, 3...)
           fetchedModules.sort((a, b) => Number(a.id) - Number(b.id));
 
           set({ modules: fetchedModules, isFetching: false });

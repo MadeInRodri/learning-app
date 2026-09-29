@@ -1,6 +1,6 @@
 import { MaterialIcons } from "@expo/vector-icons";
-import { router } from "expo-router";
-import { useEffect } from "react";
+import { router, useFocusEffect } from "expo-router";
+import { useCallback } from "react";
 import {
   ActivityIndicator,
   Pressable,
@@ -14,11 +14,14 @@ export default function PathScreen() {
   const { activeCourseId, activeCourseName, lessons, isFetching, fetchPath } =
     useCourseStore();
 
-  useEffect(() => {
-    if (activeCourseId && lessons.length === 0) {
-      fetchPath();
-    }
-  }, [activeCourseId]);
+  // Cambiamos useEffect por useFocusEffect para que se refresque al volver de una lección
+  useFocusEffect(
+    useCallback(() => {
+      if (activeCourseId) {
+        fetchPath();
+      }
+    }, [activeCourseId]),
+  );
 
   // Pantalla de Restricción
   if (!activeCourseId) {
@@ -38,7 +41,7 @@ export default function PathScreen() {
         </Text>
         <Pressable
           onPress={() => router.replace("/(tabs)" as any)}
-          className="bg-blue-600 active:bg-blue-700 px-6 py-3 rounded-lg transition-colors"
+          className="bg-blue-600 active:bg-blue-700 px-6 py-3 rounded-lg "
         >
           <Text className="text-white font-bold">Explorar lenguajes</Text>
         </Pressable>
@@ -52,12 +55,11 @@ export default function PathScreen() {
       contentContainerStyle={{ alignItems: "center", paddingBottom: 40 }}
     >
       <View className="w-full max-w-sm px-4 pt-10">
-        {/* Título Dinámico */}
         <Text className="text-2xl font-bold text-white text-center mb-8 tracking-tight">
           Aprendiendo {activeCourseName}
         </Text>
 
-        {isFetching ? (
+        {isFetching && lessons.length === 0 ? (
           <ActivityIndicator size="large" color="#3b82f6" className="mt-10" />
         ) : (
           <View className="items-center w-full">
@@ -93,14 +95,13 @@ export default function PathScreen() {
                   <Pressable
                     onPress={() => {
                       if (lesson.state !== "locked") {
-                        // Enviamos el ID real de la ruta seleccionada
                         router.push(`/course/${lesson.id}` as any);
                       }
                     }}
                     className={`w-full flex-row items-center justify-between p-4 rounded-xl bg-[#181c22] border-2 ${borderCard} ${
                       lesson.state === "locked"
                         ? "opacity-70"
-                        : "active:scale-95 transition-transform"
+                        : "active:scale-95 "
                     }`}
                   >
                     <View className="flex-row items-center">

@@ -1,7 +1,6 @@
-import React from "react";
-import { View, Text, ScrollView, Pressable } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { Pressable, ScrollView, Text, View } from "react-native";
 
 export default function AchievementsScreen() {
   // Objeto dinámico de logros
@@ -55,7 +54,7 @@ export default function AchievementsScreen() {
       <View className="flex-row items-center justify-end px-4 pt-10 pb-2">
         <Pressable
           onPress={() => router.back()}
-          className="w-10 h-10 rounded-full bg-[#181c22] border border-gray-700 items-center justify-center active:bg-gray-700 transition-colors"
+          className="w-10 h-10 rounded-full bg-[#181c22] border border-gray-700 items-center justify-center active:bg-gray-700"
         >
           <MaterialIcons name="close" size={24} color="#9ca3af" />
         </Pressable>

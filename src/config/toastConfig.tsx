@@ -1,3 +1,5 @@
+//CONFIGURACIÓN DE LAS ALARMAS DE LA LIBRERÍA "TOAST"
+
 import { MaterialIcons } from "@expo/vector-icons";
 import { Pressable, Text, View } from "react-native";
 import { ToastConfig } from "react-native-toast-message";
@@ -19,7 +21,7 @@ export const customToastConfig: ToastConfig = {
   error: ({ text1, text2, onPress }) => (
     <Pressable
       onPress={onPress}
-      className="flex-row items-center bg-[#181c22] border border-[#30363d] border-l-4 border-l-[#f85149] rounded-xl shadow-lg w-[90%] p-4 active:opacity-70 transition-opacity"
+      className="flex-row items-center bg-[#181c22] border border-[#30363d] border-l-4 border-l-[#f85149] rounded-xl shadow-lg w-[90%] p-4 active:opacity-70 "
     >
       <MaterialIcons name="error-outline" size={24} color="#f85149" />
       <View className="ml-3 flex-1">

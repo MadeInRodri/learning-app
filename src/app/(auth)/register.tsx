@@ -1,44 +1,4 @@
-// import { api } from "@/config/api";
-// import { MaterialIcons } from "@expo/vector-icons";
-// import { Link, router } from "expo-router";
-// import { useState } from "react";
-// import { Controller, useForm } from "react-hook-form";
-// import { Pressable, Text, TextInput, View } from "react-native";
-
-// //TYPE PARA EL FORM
-// type FormData = {
-//   username: string;
-//   email: string;
-//   password: string;
-// };
-
-// export default function RegisterScreen() {
-//   const {
-//     control,
-//     handleSubmit,
-//     reset,
-//     formState: { errors },
-//   } = useForm<FormData>({
-//     defaultValues: { username: "", email: "", password: "" },
-//   });
-//   const [focusedInput, setFocusedInput] = useState<string | null>(null);
-
-//   const onSubmit = async (data: FormData) => {
-//     //DATA ES UN OBJETO CON TODOS TUS DATOS DEL FORMULARIO
-//     console.log("Datos de registro validados:", data);
-//     reset();
-
-//     try {
-//       const response = await api.post("/registro", data);
-//     } catch (error) {
-//       // errores.
-//     }
-
-//     //AQUÍ VA LA LÓGICA DE BACKEND, PETICIÓN Y SI TODO BN MANDAS A LOGIN PARA QUE SE REGISTRE CON LA CUENTA CREADA
-
-//     router.replace("/login" as any);
-//   };
-
+//CLEAN
 import { MaterialIcons } from "@expo/vector-icons";
 import axios from "axios";
 import { Link, router } from "expo-router";
@@ -47,7 +7,7 @@ import { Controller, useForm } from "react-hook-form";
 import { Pressable, Text, TextInput, View } from "react-native";
 import Toast from "react-native-toast-message";
 
-// Instancia de tu API configurada con los interceptores
+// Instancia de la API configurada con los interceptores
 import { api } from "../../config/api";
 
 type FormData = {
@@ -70,17 +30,17 @@ export default function RegisterScreen() {
 
   const onSubmit = async (data: FormData) => {
     try {
-      // 1. Mapeamos 'username' al campo 'name' que exige tu backend
+      // Data que se va a enviar
       const payload = {
         name: data.username,
         email: data.email,
         password: data.password,
       };
 
-      // 2. Ejecutamos la petición POST
+      // Hacemos el post
       const response = await api.post("/registro", payload);
 
-      // 3. Notificamos el éxito y limpiamos el formulario
+      // Notificamos el éxito y limpiamos el formulario
       Toast.show({
         type: "success",
         text1: "¡Cuenta creada con éxito!",
@@ -92,7 +52,7 @@ export default function RegisterScreen() {
       // 4. Redirigimos al login
       router.replace("/(auth)/login" as any);
     } catch (error) {
-      // Manejo de errores devueltos por el backend (ej. correo duplicado)
+      // Manejo de errores devueltos por el backend
       if (axios.isAxiosError(error)) {
         Toast.show({
           type: "error",

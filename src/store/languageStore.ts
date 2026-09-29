@@ -1,3 +1,4 @@
+//CLEAN
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { collection, getDocs } from "firebase/firestore";
 import { create } from "zustand";

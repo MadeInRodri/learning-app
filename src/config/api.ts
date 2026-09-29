@@ -1,4 +1,4 @@
-// src/config/api.ts
+// CONEXIÓN A LA API
 import axios from "axios";
 
 export const api = axios.create({

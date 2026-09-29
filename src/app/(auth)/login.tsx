@@ -1,3 +1,4 @@
+//CLEAN
 import { api } from "@/config/api";
 import { useAuthStore } from "@/store/authStore";
 import { TokenStorage } from "@/store/tokenStore";
@@ -9,6 +10,7 @@ import { Controller, useForm } from "react-hook-form";
 import { Pressable, Text, TextInput, View } from "react-native";
 import Toast from "react-native-toast-message";
 
+//Data que se envía
 type FormData = {
   email: string;
   password: string;
@@ -26,21 +28,20 @@ export default function LoginScreen() {
 
   // Ahora login espera recibir el payload del usuario
   const login = useAuthStore((state) => state.login);
-
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
 
   const mySubmit = async (data: FormData) => {
     try {
-      // 1. Petición POST al backend
+      // Petición POST al backend
       const response = await api.post("/login", data);
 
-      // 2. Extraer todo del JSON que te devuelve la API
+      // Extraer todo del JSON que devuelve la API
       const { jwt, refresh_token, payload } = response.data;
 
-      // 3. Guardar los tokens de forma encriptada en el teléfono
+      // Guardar los tokens de forma encriptada en el teléfono
       await TokenStorage.saveTokens(jwt, refresh_token);
 
-      // 4. Inyectar la información gamificada al estado global
+      // Inyectar la información gamificada al estado global
       login(payload);
 
       reset();

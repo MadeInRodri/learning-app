@@ -6,43 +6,42 @@ import { COURSE_DB_MAP } from "../config/courseMapping";
 import { useAuthStore } from "./authStore";
 
 interface UserProgress {
-  registeredCourses: string[]; // IDs de Firebase ("js", "python")
-  unlockedPaths: string[]; // Ej: "js-path-1"
-  unlockedModules: string[]; // Ej: "js-path-1-module-1"
-  completedModules: string[]; // Para calcular el porcentaje de avance
+  registeredCourses: string[];
+  unlockedPaths: string[];
+  unlockedModules: string[];
+  completedModules: string[];
+  completedPaths: string[];
 }
 
 interface ProgressState {
-  progressCache: Record<number, UserProgress>; // El ID del usuario es la llave
+  progressCache: Record<number, UserProgress>;
 
-  // Acciones
   registerCourse: (courseId: string) => Promise<void>;
+
+  // 1. NUEVA FUNCIÓN: Para lecciones de Markdown (avanza internamente)
+  completeNormalLesson: (
+    courseId: string,
+    pathId: string,
+    moduleId: string,
+  ) => void;
+
+  // 2. FUNCIÓN DE QUIZ: Termina la ruta y avanza a la siguiente
   passModule: (
     courseId: string,
     pathId: string,
     moduleId: string,
     moduleTitle: string,
-    totalCourseModules: number,
+    totalCoursePaths: number,
     courseTitle: string,
   ) => Promise<void>;
+
   completeExam: (
     courseId: string,
     pathId: string,
     moduleId: string,
     totalCourseModules: number,
-    examData: {
-      totalErrors: number;
-      topicsHasError: string;
-      hasErrors: boolean;
-      titleExam: string;
-      percentage: number;
-    },
-  ) => Promise<void>;
-  unlockNextModule: (
-    courseId: string,
-    pathId: string,
-    currentModuleId: string,
-  ) => void;
+    examData: any,
+  ) => Promise<any>;
 }
 
 export const useProgressStore = create<ProgressState>()(
@@ -59,9 +58,9 @@ export const useProgressStore = create<ProgressState>()(
           unlockedPaths: [],
           unlockedModules: [],
           completedModules: [],
+          completedPaths: [],
         };
 
-        // Si ya está registrado localmente, no hacemos petición
         if (currentCache.registeredCourses.includes(courseId)) return;
 
         try {
@@ -70,7 +69,6 @@ export const useProgressStore = create<ProgressState>()(
             params: { id: user.id },
           });
 
-          // Desbloqueamos el curso, su primera ruta (id "1") y su primer módulo (id "1") por defecto
           set((state) => ({
             progressCache: {
               ...state.progressCache,
@@ -93,27 +91,100 @@ export const useProgressStore = create<ProgressState>()(
         }
       },
 
+      // LÓGICA DE MARKDOWN: Desbloquea solo la siguiente lección
+      completeNormalLesson: (courseId, pathId, moduleId) => {
+        const user = useAuthStore.getState().activeUser;
+        if (!user) return;
+
+        const cache = get().progressCache[user.id] || {
+          registeredCourses: [],
+          unlockedPaths: [],
+          unlockedModules: [],
+          completedModules: [],
+          completedPaths: [],
+        };
+
+        const moduleKey = `${courseId}-${pathId}-${moduleId}`;
+        const nextModuleNum = parseInt(moduleId) + 1;
+        const nextModuleKey = `${courseId}-${pathId}-${nextModuleNum}`;
+
+        const newCompletedModules = cache.completedModules?.includes(moduleKey)
+          ? cache.completedModules
+          : [...(cache.completedModules || []), moduleKey];
+
+        const newUnlockedModules = cache.unlockedModules?.includes(
+          nextModuleKey,
+        )
+          ? cache.unlockedModules
+          : [...(cache.unlockedModules || []), nextModuleKey];
+
+        set((state) => ({
+          progressCache: {
+            ...state.progressCache,
+            [user.id]: {
+              ...cache,
+              completedModules: newCompletedModules,
+              unlockedModules: newUnlockedModules,
+            },
+          },
+        }));
+      },
+
+      // LÓGICA DE QUIZ: Termina la ruta, llama a la API y abre la sig. ruta
       passModule: async (
         courseId,
         pathId,
         moduleId,
         moduleTitle,
-        totalCourseModules,
+        totalCoursePaths,
         courseTitle,
       ) => {
         const user = useAuthStore.getState().activeUser;
         if (!user) return;
 
-        const cache = get().progressCache[user.id];
+        const cache = get().progressCache[user.id] || {
+          registeredCourses: [],
+          unlockedPaths: [],
+          unlockedModules: [],
+          completedModules: [],
+          completedPaths: [],
+        };
+
+        const pathKey = `${courseId}-${pathId}`;
         const moduleKey = `${courseId}-${pathId}-${moduleId}`;
 
-        // Evitamos peticiones dobles si ya lo completó antes
-        if (cache.completedModules.includes(moduleKey)) return;
+        if (cache.completedPaths?.includes(pathKey)) return;
 
-        const newCompleted = [...cache.completedModules, moduleKey];
-        const percentage = Number(
-          (newCompleted.length / totalCourseModules).toFixed(2),
+        const newCompletedPaths = [...(cache.completedPaths || []), pathKey];
+        const newCompletedModules = cache.completedModules?.includes(moduleKey)
+          ? cache.completedModules
+          : [...(cache.completedModules || []), moduleKey];
+
+        const rawPercentage = Math.round(
+          (newCompletedPaths.length / totalCoursePaths) * 100,
         );
+        const percentage = rawPercentage > 100 ? 100 : rawPercentage;
+
+        // Calculamos la siguiente RUTA y su primer módulo
+        const nextPathNum = parseInt(pathId) + 1;
+        const nextPathKey = `${courseId}-${nextPathNum}`;
+        const firstModuleOfNextPath = `${courseId}-${nextPathNum}-1`;
+
+        set((state) => ({
+          progressCache: {
+            ...state.progressCache,
+            [user.id]: {
+              ...cache,
+              completedModules: newCompletedModules,
+              completedPaths: newCompletedPaths,
+              unlockedPaths: [...(cache.unlockedPaths || []), nextPathKey],
+              unlockedModules: [
+                ...(cache.unlockedModules || []),
+                firstModuleOfNextPath,
+              ],
+            },
+          },
+        }));
 
         try {
           const mysqlCourseId = COURSE_DB_MAP[courseId];
@@ -121,21 +192,10 @@ export const useProgressStore = create<ProgressState>()(
             percentage,
             userId: user.id,
             passedModule: moduleTitle,
-            courseTitle,
+            courseTitle: courseTitle || courseId,
           });
-
-          // Actualizamos caché de completados
-          set((state) => ({
-            progressCache: {
-              ...state.progressCache,
-              [user.id]: { ...cache, completedModules: newCompleted },
-            },
-          }));
-
-          // Desbloquear el siguiente
-          get().unlockNextModule(courseId, pathId, moduleId);
         } catch (error) {
-          console.error("Error pasando módulo:", error);
+          console.error("Error en la API al pasar ruta:", error);
         }
       },
 
@@ -147,52 +207,19 @@ export const useProgressStore = create<ProgressState>()(
         examData,
       ) => {
         const user = useAuthStore.getState().activeUser;
-        if (!user) return;
-
-        const cache = get().progressCache[user.id];
-        const moduleKey = `${courseId}-${pathId}-${moduleId}`;
-
-        if (cache.completedModules.includes(moduleKey)) return;
-
-        const newCompleted = [...cache.completedModules, moduleKey];
-        // Aquí puedes usar el porcentaje del examData o calcularlo
+        if (!user) return null;
 
         try {
           const mysqlCourseId = COURSE_DB_MAP[courseId];
-          await api.post(`/course/${mysqlCourseId}/exam_complete`, examData, {
-            params: { id: user.id },
-          });
-
-          set((state) => ({
-            progressCache: {
-              ...state.progressCache,
-              [user.id]: { ...cache, completedModules: newCompleted },
-            },
-          }));
-
-          get().unlockNextModule(courseId, pathId, moduleId);
+          const response = await api.post(
+            `/course/${mysqlCourseId}/exam_complete`,
+            examData,
+            { params: { id: user.id } },
+          );
+          return response.data.payload;
         } catch (error) {
-          console.error("Error completando examen:", error);
+          return null; // Bypass temporal anti-crasheo
         }
-      },
-
-      unlockNextModule: (courseId, pathId, currentModuleId) => {
-        const user = useAuthStore.getState().activeUser;
-        if (!user) return;
-
-        const cache = get().progressCache[user.id];
-        const nextModuleNum = parseInt(currentModuleId) + 1;
-        const nextModuleKey = `${courseId}-${pathId}-${nextModuleNum}`;
-
-        set((state) => ({
-          progressCache: {
-            ...state.progressCache,
-            [user.id]: {
-              ...cache,
-              unlockedModules: [...cache.unlockedModules, nextModuleKey],
-            },
-          },
-        }));
       },
     }),
     {

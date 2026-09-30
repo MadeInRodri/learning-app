@@ -71,23 +71,23 @@ export default function LoginScreen() {
     }
   };
   return (
-    <View className="flex-1 items-center justify-center bg-[#0d1117] p-4">
-      <View className="w-full max-w-sm rounded-2xl p-2 ">
-        <View className="items-center mb-8">
-          <View className="w-16 h-16 bg-blue-500 rounded-2xl items-center justify-center mb-4 border border-blue-500">
+    <View style={{"flex":1,"alignItems":"center","justifyContent":"center","backgroundColor":"#0d1117","padding":16}}>
+      <View style={{"width":"100%","maxWidth":384,"borderRadius":16,"padding":8}}>
+        <View style={{"alignItems":"center","marginBottom":32}}>
+          <View style={{"width":64,"height":64,"backgroundColor":"#3b82f6","borderRadius":16,"alignItems":"center","justifyContent":"center","marginBottom":16,"borderWidth":1,"borderColor":"#3b82f6"}}>
             <MaterialIcons name="code" size={32} color="#3b82f6" />
           </View>
-          <Text className="text-2xl font-bold text-white text-center mb-2">
+          <Text style={{"fontSize":24,"fontWeight":"700","color":"#ffffff","textAlign":"center","marginBottom":8}}>
             ¡Qué bueno verte de nuevo!
           </Text>
-          <Text className="text-gray-400 text-center font-medium">
+          <Text style={{"color":"#9ca3af","textAlign":"center","fontWeight":"500"}}>
             Tu racha te está esperando.
           </Text>
         </View>
 
-        <View className="gap-4">
+        <View style={{"gap":16}}>
           <View>
-            <Text className="text-xs font-semibold text-gray-400 mb-1 ml-1 uppercase">
+            <Text style={{"fontSize":12,"fontWeight":"600","color":"#9ca3af","marginBottom":4,"marginLeft":4,"textTransform":"uppercase"}}>
               Correo electrónico
             </Text>
             <Controller
@@ -102,22 +102,16 @@ export default function LoginScreen() {
               }}
               render={({ field: { onChange, value } }) => (
                 <View
-                  className={`flex-row items-center bg-[#0d1117] border rounded-lg px-3 py-3 ${
-                    errors.email
-                      ? "border-red-500"
-                      : focusedInput === "email"
-                        ? "border-blue-500"
-                        : "border-gray-700"
-                  }`}
+                  style={{ flexDirection: "row", alignItems: "center", backgroundColor: "#0d1117", borderWidth: 1, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 12, borderColor: errors.email ? "#ef4444" : focusedInput === "email" ? "#3b82f6" : "#374151" }}
                 >
                   <MaterialIcons
                     name="mail-outline"
                     size={20}
                     color={errors.email ? "#ef4444" : "#9ca3af"}
-                    className="mr-2"
+                    style={{"marginRight":8}}
                   />
                   <TextInput
-                    className="flex-1 text-white ml-2 outline-none"
+                    style={{"flex":1,"color":"#ffffff","marginLeft":8}}
                     placeholder="correo@ejemplo.com"
                     placeholderTextColor="#6b7280"
                     keyboardType="email-address"
@@ -132,14 +126,14 @@ export default function LoginScreen() {
             />
             {/* Renderizado dinámico del error */}
             {errors.email && (
-              <Text className="text-red-500 text-xs mt-1 ml-1">
+              <Text style={{"color":"#ef4444","fontSize":12,"marginTop":4,"marginLeft":4}}>
                 {errors.email.message}
               </Text>
             )}
           </View>
 
           <View>
-            <Text className="text-xs font-semibold text-gray-400 mb-1 ml-1 uppercase">
+            <Text style={{"fontSize":12,"fontWeight":"600","color":"#9ca3af","marginBottom":4,"marginLeft":4,"textTransform":"uppercase"}}>
               Contraseña
             </Text>
             <Controller
@@ -154,22 +148,16 @@ export default function LoginScreen() {
               }}
               render={({ field: { onChange, value } }) => (
                 <View
-                  className={`flex-row items-center bg-[#0d1117] border rounded-lg px-3 py-3 ${
-                    errors.password
-                      ? "border-red-500"
-                      : focusedInput === "password"
-                        ? "border-blue-500"
-                        : "border-gray-700"
-                  }`}
+                  style={{ flexDirection: "row", alignItems: "center", backgroundColor: "#0d1117", borderWidth: 1, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 12, borderColor: errors.password ? "#ef4444" : focusedInput === "password" ? "#3b82f6" : "#374151" }}
                 >
                   <MaterialIcons
                     name="lock-outline"
                     size={20}
                     color={errors.password ? "#ef4444" : "#9ca3af"}
-                    className="mr-2"
+                    style={{"marginRight":8}}
                   />
                   <TextInput
-                    className="flex-1 text-white ml-2 outline-none"
+                    style={{"flex":1,"color":"#ffffff","marginLeft":8}}
                     placeholder="••••••••"
                     placeholderTextColor="#6b7280"
                     secureTextEntry
@@ -183,29 +171,29 @@ export default function LoginScreen() {
             />
             {/* Renderizado dinámico del error */}
             {errors.password && (
-              <Text className="text-red-500 text-xs mt-1 ml-1">
+              <Text style={{"color":"#ef4444","fontSize":12,"marginTop":4,"marginLeft":4}}>
                 {errors.password.message}
               </Text>
             )}
           </View>
 
-          <Pressable className="self-end mt-1">
-            <Text className="text-gray-500 text-xs font-medium">
+          <Pressable style={{"alignSelf":"flex-end","marginTop":4}}>
+            <Text style={{"color":"#6b7280","fontSize":12,"fontWeight":"500"}}>
               ¿Olvidaste tu contraseña?
             </Text>
           </Pressable>
 
           <Pressable
             onPress={handleSubmit(mySubmit)}
-            className="w-full mt-2 bg-blue-600 active:bg-blue-700 rounded-lg py-3 items-center justify-center"
+            style={{"width":"100%","marginTop":8,"backgroundColor":"#2563eb","borderRadius":8,"paddingVertical":12,"alignItems":"center","justifyContent":"center"}}
           >
-            <Text className="text-white font-bold text-base">Entrar</Text>
+            <Text style={{"color":"#ffffff","fontWeight":"700","fontSize":16}}>Entrar</Text>
           </Pressable>
         </View>
 
-        <View className="mt-6 items-center">
+        <View style={{"marginTop":24,"alignItems":"center"}}>
           <Link href="/register" asChild>
-            <Text className="text-green-400 hover:text-green-300 font-medium">
+            <Text style={{"color":"#4ade80","fontWeight":"500"}}>
               ¿Nuevo por aquí? Comienza tu aventura.
             </Text>
           </Link>

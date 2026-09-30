@@ -32,7 +32,7 @@ El valor diferenciador de la aplicación radica en la integración de un tutor v
 - **React Native & Expo:** Desarrollo híbrido y empaquetado del proyecto.
 - **Expo Router:** Enrutamiento basado en archivos para la navegación principal, pestañas (Tabs) y modales.
 - **TypeScript:** Tipado estático para mayor escalabilidad.
-- **Tailwind CSS (NativeWind):** Estilización rápida y responsiva para vistas móviles y web.
+- **Estilos de React Native:** Objetos de estilo nativos compartidos entre las vistas móviles y web.
 - **Zustand & MMKV:** Gestión de estado global y almacenamiento local ultrarrápido para caché de cursos y sesión.
 - **React Hook Form:** Manejo y validación de formularios de autenticación.
 

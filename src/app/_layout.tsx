@@ -2,7 +2,6 @@
 import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
-import "../../global.css";
 import "../config/interceptors";
 import { useAuthStore } from "../store/authStore";
 //Alertas
@@ -41,7 +40,7 @@ export default function RootLayout() {
   // Pantalla de carga con nuestro tema oscuro
   if (!isHydrated) {
     return (
-      <View className="flex-1 items-center justify-center bg-[#0d1117]">
+      <View style={{"flex":1,"alignItems":"center","justifyContent":"center","backgroundColor":"#0d1117"}}>
         <ActivityIndicator size="large" color="#3b82f6" />
       </View>
     );

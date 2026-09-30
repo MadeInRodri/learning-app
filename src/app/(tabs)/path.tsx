@@ -7,6 +7,8 @@ import {
   ScrollView,
   Text,
   View,
+  type TextStyle,
+  type ViewStyle,
 } from "react-native";
 import { useCourseStore } from "../../store/courseStore";
 
@@ -14,41 +16,33 @@ export default function PathScreen() {
   const { activeCourseId, activeCourseName, lessons, isFetching, fetchPath } =
     useCourseStore();
 
-  // useFocusEffect para que se refresque al volver de una lección
-  //Creo que esto da problemas
+  // 1. Hook optimizado: evitamos que se dispare sin control
   useFocusEffect(
     useCallback(() => {
       if (activeCourseId) {
         fetchPath();
       }
-    }, [activeCourseId]),
+    }, [activeCourseId]) // <-- Asegúrate de que fetchPath esté memoizado en tu store de Zustand
   );
 
-  // Pantalla de Restricción
   if (!activeCourseId) {
     return (
-      <View className="flex-1 bg-[#0d1117] items-center justify-center px-4">
-        <MaterialIcons
-          name="alt-route"
-          size={64}
-          color="#374151"
-          className="mb-4"
-        />
-        <Text className="text-xl font-bold text-white text-center mb-2">
+      <View style={{"flex":1,"backgroundColor":"#0d1117","alignItems":"center","justifyContent":"center","paddingHorizontal":16}}>
+        <MaterialIcons name="alt-route" size={64} color="#374151" style={{"marginBottom":16}} />
+        <Text style={{"fontSize":20,"fontWeight":"700","color":"#ffffff","textAlign":"center","marginBottom":8}}>
           Aún no tienes una ruta
         </Text>
-        <Text className="text-gray-400 text-center mb-6">
+        <Text style={{"color":"#9ca3af","textAlign":"center","marginBottom":24}}>
           Ve a la pestaña Aprender y selecciona un lenguaje.
         </Text>
         <Pressable
-          onPress={() => {
-            setTimeout(() => {
-              router.replace("/(tabs)" as any);
-            }, 50);
-          }}
-          className="bg-blue-600 active:bg-blue-700 px-6 py-3 rounded-lg"
+          onPress={() => router.replace("/(tabs)" as any)}
+          style={({ pressed }) => [
+            { backgroundColor: pressed ? "#1d4ed8" : "#2563eb", paddingHorizontal: 24, paddingVertical: 12, borderRadius: 8 },
+            { opacity: pressed ? 0.8 : 1 },
+          ]}
         >
-          <Text className="text-white font-bold">Explorar lenguajes</Text>
+          <Text style={{"color":"#ffffff","fontWeight":"700"}}>Explorar lenguajes</Text>
         </Pressable>
       </View>
     );
@@ -56,74 +50,70 @@ export default function PathScreen() {
 
   return (
     <ScrollView
-      className="flex-1 bg-[#0d1117]"
+      style={{"flex":1,"backgroundColor":"#0d1117"}}
       contentContainerStyle={{ alignItems: "center", paddingBottom: 40 }}
+      // 2. FUNDAMENTAL: Evita que el ScrollView cancele los toques simples
+      keyboardShouldPersistTaps="handled" 
     >
-      <View className="w-full max-w-sm px-4 pt-10">
-        <Text className="text-2xl font-bold text-white text-center mb-8 tracking-tight">
+      <View style={{"width":"100%","maxWidth":384,"paddingHorizontal":16,"paddingTop":40}}>
+        <Text style={{"fontSize":24,"fontWeight":"700","color":"#ffffff","textAlign":"center","marginBottom":32,"letterSpacing":-0.25}}>
           Aprendiendo {activeCourseName}
         </Text>
 
-        {/* Mientras haya al menos una lección, recorremos el map */}
         {isFetching && lessons.length === 0 ? (
-          <ActivityIndicator size="large" color="#3b82f6" className="mt-10" />
+          <ActivityIndicator size="large" color="#3b82f6" style={{"marginTop":40}} />
         ) : (
-          <View className="items-center w-full">
+          <View style={{"alignItems":"center","width":"100%"}}>
             {lessons.map((lesson, index) => {
-              let borderCard = "border-gray-800";
-              let borderCircle = "border-gray-700";
-              let bgCircle = "bg-gray-800";
-              let textTitle = "text-gray-500";
-              let textNumber = "text-gray-500";
+              let borderCard: ViewStyle = { borderColor: "#1f2937" };
+              let borderCircle: ViewStyle = { borderColor: "#374151" };
+              let bgCircle: ViewStyle = { backgroundColor: "#1f2937" };
+              let textTitle: TextStyle = { color: "#6b7280" };
+              let textNumber: TextStyle = { color: "#6b7280" };
               let iconName: any = "lock";
               let iconColor = "#ef4444";
 
               if (lesson.state === "completed") {
-                borderCard = "border-gray-700";
-                borderCircle = "border-gray-600";
-                bgCircle = "bg-gray-800";
-                textTitle = "text-white";
-                textNumber = "text-gray-400";
+                borderCard = { borderColor: "#374151" };
+                borderCircle = { borderColor: "#4b5563" };
+                bgCircle = { backgroundColor: "#1f2937" };
+                textTitle = { color: "#ffffff" };
+                textNumber = { color: "#9ca3af" };
                 iconName = "check-circle";
                 iconColor = "#9ca3af";
               } else if (lesson.state === "in-progress") {
-                borderCard = "border-blue-500";
-                borderCircle = "border-blue-500";
-                bgCircle = "bg-blue-500";
-                textTitle = "text-blue-400";
-                textNumber = "text-blue-500";
+                borderCard = { borderColor: "#3b82f6" };
+                borderCircle = { borderColor: "#3b82f6" };
+                bgCircle = { backgroundColor: "#3b82f6" };
+                textTitle = { color: "#60a5fa" };
+                textNumber = { color: "#3b82f6" };
                 iconName = "play-circle-filled";
                 iconColor = "#3b82f6";
               }
 
               return (
-                //La vista con la key
-                <View key={lesson.id} className="w-full items-center">
+                <View key={lesson.id} style={{"width":"100%","alignItems":"center"}}>
                   <Pressable
                     onPress={() => {
+                      
                       if (lesson.state !== "locked") {
-                        // Liberamos el hilo para que NativeWind quite el 'active:scale-95'
-                        setTimeout(() => {
-                          router.push(`/course/${lesson.id}` as any);
-                        }, 50);
+                        // 3. Ya no necesitas el setTimeout molesto
+                        router.push(`/course/${lesson.id}` as any);
                       }
                     }}
-                    className={`w-full flex-row items-center justify-between p-4 rounded-xl bg-[#181c22] border-2 ${borderCard} ${lesson.state === "locked"
-                      ? ""
-                      : "active:scale-95"
-                      }`}
+                    style={({ pressed }) => [
+                      { width: "100%", flexDirection: "row", alignItems: "center", justifyContent: "space-between", padding: 16, borderRadius: 12, backgroundColor: "#181c22", borderWidth: 2 },
+                      borderCard,
+                      pressed && lesson.state !== "locked" ? { transform: [{ scale: 0.95 }] } : undefined,
+                    ]}
                   >
-                    <View className="flex-row items-center">
-                      <View
-                        className={`w-10 h-10 rounded-full border-2 ${borderCircle} ${bgCircle} items-center justify-center mr-4`}
-                      >
-                        <Text
-                          className={`font-mono text-xs font-bold ${textNumber}`}
-                        >
+                    <View style={{"flexDirection":"row","alignItems":"center"}}>
+                      <View style={[{ width: 40, height: 40, borderRadius: 9999, borderWidth: 2, alignItems: "center", justifyContent: "center", marginRight: 16 }, borderCircle, bgCircle]}>
+                        <Text style={[{ fontFamily: "monospace", fontSize: 12, fontWeight: "700" }, textNumber]}>
                           {lesson.number}
                         </Text>
                       </View>
-                      <Text className={`text-base font-bold ${textTitle}`}>
+                      <Text style={[{ fontSize: 16, fontWeight: "700" }, textTitle]}>
                         {lesson.title}
                       </Text>
                     </View>
@@ -135,7 +125,7 @@ export default function PathScreen() {
                   </Pressable>
 
                   {index < lessons.length - 1 && (
-                    <View className="w-[2px] h-8 bg-gray-700" />
+                    <View style={{ width: 2, height: 32, backgroundColor: "#374151" }} />
                   )}
                 </View>
               );

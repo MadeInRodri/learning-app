@@ -51,12 +51,12 @@ export default function AchievementsScreen() {
   const progressPercentage = Math.round((unlockedCount / totalCount) * 100);
 
   return (
-    <View className="flex-1 bg-[#0d1117]">
+    <View style={{"flex":1,"backgroundColor":"#0d1117"}}>
       {/* Header Modal (Botón Cerrar) */}
-      <View className="flex-row items-center justify-end px-4 pt-10 pb-2">
+      <View style={{"flexDirection":"row","alignItems":"center","justifyContent":"flex-end","paddingHorizontal":16,"paddingTop":40,"paddingBottom":8}}>
         <Pressable
           onPress={() => router.back()}
-          className="w-10 h-10 rounded-full bg-[#181c22] border border-gray-700 items-center justify-center active:bg-gray-700"
+          style={{"width":40,"height":40,"borderRadius":9999,"backgroundColor":"#181c22","borderWidth":1,"borderColor":"#374151","alignItems":"center","justifyContent":"center"}}
         >
           <MaterialIcons name="close" size={24} color="#9ca3af" />
         </Pressable>
@@ -66,35 +66,35 @@ export default function AchievementsScreen() {
         contentContainerStyle={{ alignItems: "center", paddingBottom: 40 }}
         showsVerticalScrollIndicator={false}
       >
-        <View className="w-full max-w-sm px-4">
+        <View style={{"width":"100%","maxWidth":384,"paddingHorizontal":16}}>
           {/* Título de la sección */}
-          <View className="items-center mb-10">
-            <Text className="text-3xl font-bold text-white mb-2 tracking-tight">
+          <View style={{"alignItems":"center","marginBottom":40}}>
+            <Text style={{"fontSize":30,"fontWeight":"700","color":"#ffffff","marginBottom":8,"letterSpacing":-0.25}}>
               Tus Logros
             </Text>
-            <Text className="text-gray-400 text-sm text-center">
+            <Text style={{"color":"#9ca3af","fontSize":14,"textAlign":"center"}}>
               Celebra tu progreso y habilidades técnicas.
             </Text>
           </View>
 
           {/* Cuadrícula de Insignias (Grid de 3 columnas) */}
-          <View className="flex-row flex-wrap justify-center gap-x-6 gap-y-8 mb-12">
+          <View style={{"flexDirection":"row","flexWrap":"wrap","justifyContent":"center","marginBottom":48}}>
             {achievements.map((ach) => {
               // Lógica dinámica de estilos según el color/estado
-              let borderClass = "border-gray-800";
+              let borderColor = "#1f2937";
               let iconColor = "#6b7280"; // gray-500
               if (ach.isUnlocked) {
                 switch (ach.color) {
                   case "green":
-                    borderClass = "border-emerald-500";
+                    borderColor = "#10b981";
                     iconColor = "#10b981";
                     break;
                   case "purple":
-                    borderClass = "border-purple-500";
+                    borderColor = "#a855f7";
                     iconColor = "#a855f7";
                     break;
                   case "gold":
-                    borderClass = "border-yellow-500";
+                    borderColor = "#eab308";
                     iconColor = "#eab308";
                     break;
                 }
@@ -103,11 +103,11 @@ export default function AchievementsScreen() {
               return (
                 <View
                   key={ach.id}
-                  className="items-center w-[25%]"
+                  style={{"alignItems":"center","width":"25%"}}
                 >
                   {/* Círculo de la Medalla */}
                   <View
-                    className={`w-[72px] h-[72px] rounded-2xl border-2 bg-[#161b22] items-center justify-center mb-2 ${borderClass}`}
+                    style={[{ width: 72, height: 72, borderRadius: 16, borderWidth: 2, backgroundColor: "#161b22", alignItems: "center", justifyContent: "center", marginBottom: 8 }, { borderColor }]}
                   >
                     <MaterialIcons
                       name={ach.icon as any}
@@ -117,7 +117,7 @@ export default function AchievementsScreen() {
                   </View>
                   {/* Título de la Medalla */}
                   <Text
-                    className="font-mono text-[10px] text-center text-gray-300 leading-tight"
+                    style={{"fontFamily":"monospace","fontSize":10,"textAlign":"center","color":"#d1d5db","lineHeight":16}}
                   >
                     {ach.title}
                   </Text>
@@ -127,24 +127,24 @@ export default function AchievementsScreen() {
           </View>
 
           {/* Resumen de Actividad */}
-          <View className="bg-[#161b22] border border-gray-800 rounded-xl p-5">
-            <Text className="text-white font-bold mb-4 text-base">
+          <View style={{"backgroundColor":"#161b22","borderWidth":1,"borderColor":"#1f2937","borderRadius":12,"padding":20}}>
+            <Text style={{"color":"#ffffff","fontWeight":"700","marginBottom":16,"fontSize":16}}>
               Resumen de Actividad
             </Text>
 
-            <View className="flex-row justify-between items-end border-b border-gray-800 pb-2 mb-3">
-              <Text className="text-gray-400 text-sm">
+            <View style={{"flexDirection":"row","justifyContent":"space-between","alignItems":"flex-end","borderBottomWidth":1,"borderColor":"#1f2937","paddingBottom":8,"marginBottom":12}}>
+              <Text style={{"color":"#9ca3af","fontSize":14}}>
                 Logros Desbloqueados
               </Text>
-              <Text className="text-blue-400 font-bold text-lg">
+              <Text style={{"color":"#60a5fa","fontWeight":"700","fontSize":18}}>
                 {unlockedCount}/{totalCount}
               </Text>
             </View>
 
             {/* Barra de progreso de logros */}
-            <View className="w-full h-1.5 bg-[#0d1117] rounded-full overflow-hidden mt-1">
+            <View style={{"width":"100%","height":6,"backgroundColor":"#0d1117","borderRadius":9999,"overflow":"hidden","marginTop":4}}>
               <View
-                className="h-full bg-orange-400 rounded-full"
+                style={{"height":"100%","backgroundColor":"#fb923c","borderRadius":9999}}
                 style={{ width: `${progressPercentage}%` }}
               />
             </View>

@@ -38,39 +38,39 @@ export default function ProfileScreen() {
   if (!activeUser) return null;
 
   return (
-    <ScrollView className="flex-1 bg-[#0d1117] px-4 pt-10">
-      <View className="w-full max-w-sm mx-auto pb-24">
-        <Text className="text-2xl font-bold text-white text-center mb-10">
+    <ScrollView style={{"flex":1,"backgroundColor":"#0d1117","paddingHorizontal":16,"paddingTop":40}}>
+      <View style={{"width":"100%","maxWidth":384,"marginHorizontal":"auto","paddingBottom":96}}>
+        <Text style={{"fontSize":24,"fontWeight":"700","color":"#ffffff","textAlign":"center","marginBottom":40}}>
           Tu perfil
         </Text>
 
         {/* Cabecera del Perfil */}
-        <View className="flex-row items-center mb-10">
-          <View className="w-20 h-20 rounded-full border-2 border-gray-700 bg-[#161b22] items-center justify-center mr-5 ">
-            <Text className="text-gray-400 font-mono text-xl font-bold uppercase tracking-widest">
+        <View style={{"flexDirection":"row","alignItems":"center","marginBottom":40}}>
+          <View style={{"width":80,"height":80,"borderRadius":9999,"borderWidth":2,"borderColor":"#374151","backgroundColor":"#161b22","alignItems":"center","justifyContent":"center","marginRight":20}}>
+            <Text style={{"color":"#9ca3af","fontFamily":"monospace","fontSize":20,"fontWeight":"700","textTransform":"uppercase","letterSpacing":1.5}}>
               {activeUser.nombre.substring(0, 2)}
             </Text>
           </View>
 
-          <View className="flex-1">
-            <Text className="text-xl font-bold text-white mb-1">
+          <View style={{"flex":1}}>
+            <Text style={{"fontSize":20,"fontWeight":"700","color":"#ffffff","marginBottom":4}}>
               {activeUser.nombre}
             </Text>
-            <Text className="text-sm text-gray-400 mb-3">
+            <Text style={{"fontSize":14,"color":"#9ca3af","marginBottom":12}}>
               {activeUser.email}
             </Text>
 
             {/* Barra de Nivel Algorítmica */}
-            <View className="w-full">
-              <Text className="text-xs font-mono text-gray-400 mb-1">
+            <View style={{"width":"100%"}}>
+              <Text style={{"fontSize":12,"fontFamily":"monospace","color":"#9ca3af","marginBottom":4}}>
                 Lvl {level}{" "}
-                <Text className="text-gray-600">
+                <Text style={{"color":"#4b5563"}}>
                   ({currentXP}/{maxXP} XP)
                 </Text>
               </Text>
-              <View className="w-40 h-1.5 bg-gray-800 rounded-full overflow-hidden">
+              <View style={{"width":160,"height":6,"backgroundColor":"#1f2937","borderRadius":9999,"overflow":"hidden"}}>
                 <View
-                  className="h-full bg-orange-400 rounded-full"
+                  style={{"height":"100%","backgroundColor":"#fb923c","borderRadius":9999}}
                   style={{ width: `${progress}%` }}
                 />
               </View>
@@ -79,40 +79,40 @@ export default function ProfileScreen() {
         </View>
 
         {/* Tarjeta de Estadísticas (Valores devueltos por la API) */}
-        <View className="bg-[#181c22] border border-gray-800 rounded-xl p-5 mb-8 ">
-          <View className="flex-row justify-between items-center border-b border-gray-800 pb-3 mb-3">
-            <Text className="text-gray-400">Energía Máxima</Text>
-            <Text className="text-emerald-400 font-bold">
+        <View style={{"backgroundColor":"#181c22","borderWidth":1,"borderColor":"#1f2937","borderRadius":12,"padding":20,"marginBottom":32}}>
+          <View style={{"flexDirection":"row","justifyContent":"space-between","alignItems":"center","borderBottomWidth":1,"borderColor":"#1f2937","paddingBottom":12,"marginBottom":12}}>
+            <Text style={{"color":"#9ca3af"}}>Energía Máxima</Text>
+            <Text style={{"color":"#34d399","fontWeight":"700"}}>
               {activeUser.energiaBalance} ⚡
             </Text>
           </View>
 
-          <View className="flex-row justify-between items-center border-b border-gray-800 pb-3 mb-3">
-            <Text className="text-gray-400">Estrellas Acumuladas</Text>
-            <Text className="text-yellow-400 font-bold">
+          <View style={{"flexDirection":"row","justifyContent":"space-between","alignItems":"center","borderBottomWidth":1,"borderColor":"#1f2937","paddingBottom":12,"marginBottom":12}}>
+            <Text style={{"color":"#9ca3af"}}>Estrellas Acumuladas</Text>
+            <Text style={{"color":"#facc15","fontWeight":"700"}}>
               {activeUser.estrellasBalance} ⭐
             </Text>
           </View>
 
           {/* Oculto por si las móscas */}
 
-          {/* <View className="flex-row justify-between items-center border-b border-gray-800 pb-3 mb-3">
-            <Text className="text-gray-400">Ayudas de IA Restantes</Text>
-            <Text className="text-purple-400 font-bold">
+          {/* <View style={{"flexDirection":"row","justifyContent":"space-between","alignItems":"center","borderBottomWidth":1,"borderColor":"#1f2937","paddingBottom":12,"marginBottom":12}}>
+            <Text style={{"color":"#9ca3af"}}>Ayudas de IA Restantes</Text>
+            <Text style={{"color":"#c084fc","fontWeight":"700"}}>
               {activeUser.aiPistaBalance} 🤖
             </Text>
           </View>
 
-          <View className="flex-row justify-between items-center mb-5">
-            <Text className="text-gray-400">Protectores de Racha</Text>
-            <Text className="text-blue-400 font-bold">
+          <View style={{"flexDirection":"row","justifyContent":"space-between","alignItems":"center","marginBottom":20}}>
+            <Text style={{"color":"#9ca3af"}}>Protectores de Racha</Text>
+            <Text style={{"color":"#60a5fa","fontWeight":"700"}}>
               {activeUser.protectorRachaBalance} 🛡️
             </Text>
           </View> */}
 
-          <View className="items-end">
-            <View className="border border-orange-500 bg-orange-500 px-3 py-1.5 rounded">
-              <Text className="text-orange-400 font-mono text-xs font-semibold tracking-wide">
+          <View style={{"alignItems":"flex-end"}}>
+            <View style={{ borderWidth: 1, borderColor: "#f97316", backgroundColor: "#f97316", paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6 }}>
+              <Text style={{"color":"#fb923c","fontFamily":"monospace","fontSize":12,"fontWeight":"600","letterSpacing":0.5}}>
                 EXPERIENCIA TOTAL: {activeUser.xpTotales} XP
               </Text>
             </View>
@@ -120,29 +120,29 @@ export default function ProfileScreen() {
         </View>
 
         {/* Botones de Acción */}
-        <View className="gap-4">
+        <View style={{"gap":16}}>
           {/* <Pressable
             onPress={() => router.push("/testing-gamification" as any)}
-            className="w-full py-4 border border-orange-400 rounded-lg items-center justify-center"
+            style={{"width":"100%","paddingVertical":16,"borderWidth":1,"borderColor":"#fb923c","borderRadius":8,"alignItems":"center","justifyContent":"center"}}
           >
-            <Text className="text-orange-400 font-bold">Testing API</Text>
+            <Text style={{"color":"#fb923c","fontWeight":"700"}}>Testing API</Text>
           </Pressable> */}
           <EnergyTimerButton></EnergyTimerButton>
 
           <Pressable
             onPress={() => router.push("/achievements" as any)}
-            className="w-full py-4 border border-purple-500 rounded-lg items-center justify-center "
+            style={{"width":"100%","paddingVertical":16,"borderWidth":1,"borderColor":"#a855f7","borderRadius":8,"alignItems":"center","justifyContent":"center"}}
           >
-            <Text className="text-purple-400 font-bold">
+            <Text style={{"color":"#c084fc","fontWeight":"700"}}>
               Catálogo de recompensas
             </Text>
           </Pressable>
 
           <Pressable
             onPress={handleLogout}
-            className="w-full py-4 border border-red-500 rounded-lg items-center justify-center "
+            style={{"width":"100%","paddingVertical":16,"borderWidth":1,"borderColor":"#ef4444","borderRadius":8,"alignItems":"center","justifyContent":"center"}}
           >
-            <Text className="text-red-500 font-bold">Cerrar Sesión</Text>
+            <Text style={{"color":"#ef4444","fontWeight":"700"}}>Cerrar Sesión</Text>
           </Pressable>
         </View>
       </View>

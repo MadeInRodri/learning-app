@@ -9,6 +9,8 @@ import {
   ScrollView,
   Text,
   View,
+  type TextStyle,
+  type ViewStyle,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
@@ -57,7 +59,9 @@ export default function CourseScreen() {
 
   const handleModulePress = async (mod: any) => {
     //Acciones dependiendo de si ta bloqueado o no
+    console.log("hola")
     if (mod.state === "locked") {
+      
       Toast.show({
         type: "error",
         text1: "Módulo bloqueado 🔒",
@@ -65,7 +69,7 @@ export default function CourseScreen() {
       });
       return;
     }
-
+   
     Toast.hide();
     setActiveModule(mod.id);
 
@@ -130,41 +134,43 @@ export default function CourseScreen() {
   return (
     // Asignamos un Key estático para evitar que el router pierda el contexto
     // No sé si hará algo
-    <View key="course-view" className="flex-1 bg-[#0d1117]">
-      <View className="flex-row items-center justify-between px-4 pt-12 pb-4 border-b border-gray-800 bg-[#0d1117]">
+    <View key="course-view" style={{"flex":1,"backgroundColor":"#0d1117"}}>
+      <View style={{"flexDirection":"row","alignItems":"center","justifyContent":"space-between","paddingHorizontal":16,"paddingTop":48,"paddingBottom":16,"borderBottomWidth":1,"borderColor":"#1f2937","backgroundColor":"#0d1117"}}>
         <Pressable
           onPress={() => router.back()}
-          className="w-10 h-10 rounded-full bg-[#181c22] border border-gray-700 items-center justify-center active:bg-gray-700 "
+          style={{"width":40,"height":40,"borderRadius":9999,"backgroundColor":"#181c22","borderWidth":1,"borderColor":"#374151","alignItems":"center","justifyContent":"center"}}
         >
           <MaterialIcons name="arrow-back" size={24} color="#9ca3af" />
         </Pressable>
 
-        <Text className="text-white font-bold text-lg">
+        <Text style={{"color":"#ffffff","fontWeight":"700","fontSize":18}}>
           Ruta de Aprendizaje
         </Text>
-        <View className="w-10 h-10" />
+        <View style={{"width":40,"height":40}} />
       </View>
 
       <ScrollView
-        className="flex-1"
+        style={{"flex":1}}
         contentContainerStyle={{ alignItems: "center", paddingBottom: 32 }}
       >
-        <View className="w-full max-w-md px-4 pt-8">
-          <View className="items-center mb-10">
-            <Text className="text-2xl font-bold text-white mb-2 text-center tracking-tight">
+        <View style={{"width":"100%","maxWidth":448,"paddingHorizontal":16,"paddingTop":32}}>
+          <View style={{"alignItems":"center","marginBottom":40}}>
+            <Text style={{"fontSize":24,"fontWeight":"700","color":"#ffffff","marginBottom":8,"textAlign":"center","letterSpacing":-0.25}}>
               {activeCourseName} - Nivel {pathId}
             </Text>
-            <Text className="text-gray-400 text-sm text-center">
+            <Text style={{"color":"#9ca3af","fontSize":14,"textAlign":"center"}}>
               Continúa tu ruta de aprendizaje
             </Text>
           </View>
 
           {isFetching && modules.length === 0 ? (
-            <ActivityIndicator size="large" color="#3b82f6" className="mt-10" />
+            <ActivityIndicator size="large" color="#3b82f6" style={{"marginTop":40}} />
           ) : (
-            <View className="relative w-full py-4">
+            <View style={{"position":"relative","width":"100%","paddingVertical":16}}>
               {/* 1. Línea Central Vertical con z-0 */}
-              <View className="absolute top-0 bottom-0 left-1/2 w-[2px] bg-gray-700 -translate-x-[1px] z-0" />
+              <View 
+                pointerEvents="none"
+              style={{ position: "absolute", top: 0, bottom: 0, left: "50%", width: 2, backgroundColor: "#374151", transform: [{ translateX: -1 }], zIndex: 0 }} />
 
               {modules.map((mod, index) => {
                 const isLeft = index % 2 === 0;
@@ -174,50 +180,40 @@ export default function CourseScreen() {
                   activeQuiz?.languageId === activeCourseId &&
                   activeQuiz?.pathId === pathId;
 
-                let cardStyle = "border-gray-800";
-                let dotStyle = "border-gray-700 bg-[#161b22]";
-                let titleStyle = "text-gray-500";
-                let subtitleStyle = "text-gray-600";
+                let cardStyle: ViewStyle = { borderColor: "#1f2937" };
+                let dotStyle: ViewStyle = { borderColor: "#374151", backgroundColor: "#161b22" };
+                let titleStyle: TextStyle = { color: "#6b7280" };
+                let subtitleStyle: TextStyle = { color: "#4b5563" };
                 let iconColor = "#6b7280";
                 let iconName: any = "lock";
 
                 if (mod.state === "completed") {
-                  cardStyle = isLeft
-                    ? "border-emerald-500 border-r-4"
-                    : "border-emerald-500 border-l-4";
-                  dotStyle = "border-emerald-500 bg-[#161b22]";
-                  titleStyle = "text-white";
-                  subtitleStyle = "text-gray-400";
+                  cardStyle = { borderColor: "#10b981", borderRightWidth: isLeft ? 4 : undefined, borderLeftWidth: isLeft ? undefined : 4 };
+                  dotStyle = { borderColor: "#10b981", backgroundColor: "#161b22" };
+                  titleStyle = { color: "#ffffff" };
+                  subtitleStyle = { color: "#9ca3af" };
                   iconColor = "#10b981";
                   iconName = "check";
                 } else if (mod.state === "in-progress") {
-                  cardStyle = isLeft
-                    ? "border-blue-400 border-r-4"
-                    : "border-blue-400 border-l-4";
-                  dotStyle =
-                    "border-blue-400 bg-blue-900";
-                  titleStyle = "text-blue-400";
-                  subtitleStyle = "text-gray-400";
+                  cardStyle = { borderColor: "#60a5fa", borderRightWidth: isLeft ? 4 : undefined, borderLeftWidth: isLeft ? undefined : 4 };
+                  dotStyle = { borderColor: "#60a5fa", backgroundColor: "#1e3a8a" };
+                  titleStyle = { color: "#60a5fa" };
+                  subtitleStyle = { color: "#9ca3af" };
                   iconColor = "#60a5fa";
                   iconName = "play-arrow";
                 } else if (isQuiz) {
-                  cardStyle =
-                    "border-gray-700 border-dashed bg-[#1c2026]";
-                  dotStyle = "border-gray-700 border-dashed bg-[#1c2026]";
+                  cardStyle = { borderColor: "#374151", borderStyle: "dashed", backgroundColor: "#1c2026" };
+                  dotStyle = { borderColor: "#374151", borderStyle: "dashed", backgroundColor: "#1c2026" };
                   iconName = "emoji-events";
                 }
-
-                const baseCardClasses = `p-4 bg-[#161b22] rounded-xl border ${mod.state !== "locked" ? "active:scale-95" : ""
-                  }`;
 
                 return (
                   <View
                     key={mod.id}
-                    className="flex-row w-full mb-8 relative items-center z-10"
+                    style={{"flexDirection":"row","width":"100%","marginBottom":32,"position":"relative","alignItems":"center","zIndex":10}}
+                    
                   >
-                    <View
-                      className={`absolute left-1/2 w-8 h-8 rounded-full border-2 items-center justify-center z-20 -translate-x-4 ${dotStyle}`}
-                    >
+                    <View style={[{ position: "absolute", left: "50%", width: 32, height: 32, borderRadius: 9999, borderWidth: 2, alignItems: "center", justifyContent: "center", zIndex: 20, transform: [{ translateX: -16 }] }, dotStyle]}>
                       <MaterialIcons
                         name={iconName}
                         size={16}
@@ -226,13 +222,16 @@ export default function CourseScreen() {
                     </View>
 
                     <Pressable
-                      className={`w-1/2 ${isLeft ? "mr-auto pr-8" : "ml-auto pl-8"}`}
+                      style={({ pressed }) => [
+                        { width: "50%", zIndex: 100, marginRight: isLeft ? "auto" : undefined, marginLeft: isLeft ? undefined : "auto", paddingRight: isLeft ? 32 : undefined, paddingLeft: isLeft ? undefined : 32 },
+                        pressed && mod.state !== "locked" ? { transform: [{ scale: 0.95 }] } : undefined,
+                      ]}
                       onPress={() => handleModulePress(mod)}
                     >
-                      <View className={`${baseCardClasses} ${cardStyle}`}>
-                        <View className="flex-row items-center justify-between">
+                      <View style={[{ padding: 16, backgroundColor: "#161b22", borderRadius: 12, borderWidth: 1 }, cardStyle]}>
+                        <View style={{"flexDirection":"row","alignItems":"center","justifyContent":"space-between"}}>
                           <Text
-                            className={`flex-1 text-base font-bold mb-1 ${titleStyle}`}
+                            style={[{ flex: 1, fontSize: 16, fontWeight: "700", marginBottom: 4 }, titleStyle]}
                           >
                             {mod.title}
                           </Text>
@@ -244,34 +243,32 @@ export default function CourseScreen() {
                             />
                           )}
                         </View>
-                        <Text className={`text-xs ${subtitleStyle}`}>
+                        <Text style={[{ fontSize: 12 }, subtitleStyle]}>
                           {mod.subtitle}
                         </Text>
                         {isActiveQuiz && (
-                          <Text className="mt-1 text-[9px] font-bold tracking-wider text-amber-400">
+                            <Text style={{ marginTop: 4, fontSize: 9, fontWeight: "700", letterSpacing: 1, color: isQuiz ? "#fcd34d" : "#93c5fd" }}>
                             EXAMEN EN CURSO
                           </Text>
                         )}
-                        <View className="mt-3 flex-row flex-wrap items-center gap-x-3 gap-y-1 border-t border-gray-700 pt-2">
-                          <View className="flex-row items-center">
+                        <View style={{ marginTop: 12, flexDirection: "row", flexWrap: "wrap", alignItems: "center", borderTopWidth: 1, borderColor: "#374151", paddingTop: 8 }}>
+                          <View style={{"flexDirection":"row","alignItems":"center"}}>
                             <MaterialIcons
                               name="bolt"
                               size={14}
                               color="#fbbf24"
                             />
-                            <Text className="ml-1 text-[10px] font-semibold text-amber-300">
+                            <Text style={{ marginLeft: 4, fontSize: 10, fontWeight: "600", color: "#fcd34d" }}>
                               -20 energía
                             </Text>
                           </View>
-                          <View className="flex-row items-center">
+                          <View style={{"flexDirection":"row","alignItems":"center"}}>
                             <MaterialIcons
                               name={isQuiz ? "star" : "auto-awesome"}
                               size={14}
                               color={isQuiz ? "#facc15" : "#60a5fa"}
                             />
-                            <Text
-                              className={`ml-1 text-[10px] font-semibold ${isQuiz ? "text-yellow-300" : "text-blue-300"}`}
-                            >
+                            <Text style={{ marginLeft: 4, fontSize: 10, fontWeight: "600", color: isQuiz ? "#fcd34d" : "#93c5fd" }}>
                               {isQuiz ? "+5 estrellas" : "+100 XP"}
                             </Text>
                           </View>
@@ -286,69 +283,65 @@ export default function CourseScreen() {
         </View>
       </ScrollView>
 
-      <View
-        className="border-t border-gray-800 bg-[#0d1117] px-4 pt-3"
-        style={{ paddingBottom: Math.max(insets.bottom + 50, 12), }}
-      >
-        <View className="w-full max-w-md self-center rounded-2xl border border-blue-400 bg-[#161b22] px-4 py-3">
-          <View className="flex-row items-center justify-between">
-            <View className="mr-3 flex-1">
-              <Text numberOfLines={1} className="text-sm font-bold text-white">
+      <View style={{ borderTopWidth: 1, borderColor: "#1f2937", backgroundColor: "#0d1117", paddingHorizontal: 16, paddingTop: 12, paddingBottom: Math.max(insets.bottom + 50, 12) }}>
+        <View style={{"width":"100%","maxWidth":448,"alignSelf":"center","borderRadius":16,"borderWidth":1,"borderColor":"#60a5fa","backgroundColor":"#161b22","paddingHorizontal":16,"paddingVertical":12}}>
+          <View style={{"flexDirection":"row","alignItems":"center","justifyContent":"space-between"}}>
+            <View style={{"marginRight":12,"flex":1}}>
+              <Text numberOfLines={1} style={{"fontSize":14,"fontWeight":"700","color":"#ffffff"}}>
                 {activeCourseName}
               </Text>
-              <Text className="text-xs text-gray-400">Nivel {pathId}</Text>
+              <Text style={{"fontSize":12,"color":"#9ca3af"}}>Nivel {pathId}</Text>
             </View>
-            <Text className="text-xs font-semibold text-blue-300">
+            <Text style={{ fontSize: 12, fontWeight: "800", color: "#93c5fd" }}>
               {summary.completed}/{modules.length} módulos
             </Text>
           </View>
 
-          <View className="mt-2 flex-row items-center justify-between">
-            <Text className="text-base font-bold text-white">Progreso</Text>
-            <Text className="text-xl font-extrabold text-blue-300">
+          <View style={{"marginTop":8,"flexDirection":"row","alignItems":"center","justifyContent":"space-between"}}>
+            <Text style={{"fontSize":16,"fontWeight":"700","color":"#ffffff"}}>Progreso</Text>
+            <Text style={{ fontSize: 20, color: "#a5b4fc" }}>
               {progressPercent}%
             </Text>
           </View>
-          <View className="mt-1 h-2 overflow-hidden rounded-full bg-gray-700">
+          <View style={{ marginTop: 4, height: 8, overflow: "hidden", borderRadius: 9999, backgroundColor: "#374151" }}>
             <View
-              className="h-full rounded-full bg-blue-400"
-              style={{ width: `${progressPercent}%` }}
+              style={{ height: "100%", borderRadius: 9999, backgroundColor: "#60a5fa", width: `${progressPercent}%` }}
             />
           </View>
 
-          <View className="mt-3 flex-row border-t border-gray-700 pt-2" >
-            <View className="flex-1 ">
-              <Text className="ml-1 text-sm font-bold text-indigo-300 mb-2">Recursos por Obtener:</Text>
-              <View className="w-[90%]  flex flex-row justify-around">
-                <View className="flex-1 items-center">
-                  <View className="flex-row items-center">
+          <View style={{ marginTop: 12, flexDirection: "row", borderTopWidth: 1, borderColor: "#374151", paddingTop: 8 }} >
+            <View style={{"flex":1}}>
+              <Text style={{ marginLeft: 4, fontSize: 14, fontWeight: "800", marginBottom: 8, color: "#93c5fd" }}>Recursos por Obtener:</Text>
+              <View style={{ width: "90%", flexDirection: "row", justifyContent: "space-around" }}>
+                <View style={{"flex":1,"alignItems":"center"}}>
+                  <View style={{"flexDirection":"row","alignItems":"center"}}>
                     <MaterialIcons name="auto-awesome" size={15} color="#60a5fa" />
-                    <Text className="ml-1 text-sm font-bold text-blue-300">
+                    <Text style={{ marginLeft: 4, fontSize: 14, fontWeight: "700", color: "#d8b4fe" }}>
                       {summary.xp} XP
                     </Text>
                   </View>
-                  <Text className="text-[10px] text-gray-400">XP</Text>
+                  <Text style={{"fontSize":10,"color":"#9ca3af"}}>XP</Text>
                 </View>
-                <View className="flex-1 items-center">
-                  <View className="flex-row items-center">
+                <View style={{"flex":1,"alignItems":"center"}}>
+                  <View style={{"flexDirection":"row","alignItems":"center"}}>
                     <MaterialIcons name="star" size={15} color="#facc15" />
-                    <Text className="ml-1 text-sm font-bold text-yellow-300">
+                    <Text style={{ marginLeft: 4, fontSize: 14, fontWeight: "700", color: "#fde047" }}>
                       {summary.stars}
                     </Text>
                   </View>
-                  <Text className="text-[10px] text-gray-400">estrellas</Text>
+                  <Text style={{"fontSize":10,"color":"#9ca3af"}}>estrellas</Text>
                 </View>
               </View>
 
             </View>
-            <View className="flex-1 items-center justify-center border-l-2 border-indigo-300">
-              <View className="flex-row items-center">
+            <View style={{ flex: 1, alignItems: "center", justifyContent: "center", borderLeftWidth: 2, borderColor: "#a5b4fc" }}>
+              <View style={{"flexDirection":"row","alignItems":"center"}}>
                 <MaterialIcons name="quiz" size={15} color="#a78bfa" />
-                <Text className="ml-1 text-sm font-bold text-purple-300">
+                <Text style={{ marginLeft: 4, fontSize: 14, fontWeight: "700", color: "#d8b4fe" }}>
                   {summary.quizzes}
                 </Text>
               </View>
-              <Text className="text-[10px] text-gray-400">exámenes pendientes</Text>
+              <Text style={{"fontSize":10,"color":"#9ca3af"}}>exámenes pendientes</Text>
             </View>
           </View>
         </View>

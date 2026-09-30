@@ -72,24 +72,24 @@ export default function RegisterScreen() {
   };
 
   return (
-    <View className="flex-1 items-center justify-center bg-[#0d1117] p-4">
-      <View className="w-full max-w-sm rounded-xl  p-2">
-        <View className="items-center mb-6">
-          <View className="w-16 h-16 bg-blue-500 rounded-2xl items-center justify-center mb-4 border border-blue-500">
+    <View style={{"flex":1,"alignItems":"center","justifyContent":"center","backgroundColor":"#0d1117","padding":16}}>
+      <View style={{"width":"100%","maxWidth":384,"borderRadius":12,"padding":8}}>
+        <View style={{"alignItems":"center","marginBottom":24}}>
+          <View style={{"width":64,"height":64,"backgroundColor":"#3b82f6","borderRadius":16,"alignItems":"center","justifyContent":"center","marginBottom":16,"borderWidth":1,"borderColor":"#3b82f6"}}>
             <MaterialIcons name="code" size={32} color="#3b82f6" />
           </View>
 
-          <Text className="text-2xl font-bold text-white text-center mb-2">
+          <Text style={{"fontSize":24,"fontWeight":"700","color":"#ffffff","textAlign":"center","marginBottom":8}}>
             ¡Crea tu perfil de desarrollador!
           </Text>
-          <Text className="text-gray-400 text-center">
+          <Text style={{"color":"#9ca3af","textAlign":"center"}}>
             Únete a miles de estudiantes.
           </Text>
         </View>
 
-        <View className="gap-4">
+        <View style={{"gap":16}}>
           <View>
-            <Text className="text-xs font-semibold text-gray-400 mb-1 ml-1 uppercase">
+            <Text style={{"fontSize":12,"fontWeight":"600","color":"#9ca3af","marginBottom":4,"marginLeft":4,"textTransform":"uppercase"}}>
               Nombre de usuario
             </Text>
             <Controller
@@ -101,22 +101,16 @@ export default function RegisterScreen() {
               }}
               render={({ field: { onChange, value } }) => (
                 <View
-                  className={`flex-row items-center bg-[#0d1117] border rounded-lg px-3 py-3 ${
-                    errors.username
-                      ? "border-red-500"
-                      : focusedInput === "username"
-                        ? "border-blue-500"
-                        : "border-gray-700"
-                  }`}
+                  style={{ flexDirection: "row", alignItems: "center", backgroundColor: "#0d1117", borderWidth: 1, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 12, borderColor: errors.username ? "#ef4444" : focusedInput === "username" ? "#3b82f6" : "#374151" }}
                 >
                   <MaterialIcons
                     name="alternate-email"
                     size={20}
                     color={errors.username ? "#ef4444" : "#9ca3af"}
-                    className="mr-2"
+                    style={{"marginRight":8}}
                   />
                   <TextInput
-                    className="flex-1 text-white ml-2 outline-none"
+                    style={{"flex":1,"color":"#ffffff","marginLeft":8}}
                     placeholder="usuario"
                     placeholderTextColor="#6b7280"
                     autoCapitalize="none"
@@ -129,14 +123,14 @@ export default function RegisterScreen() {
               )}
             />
             {errors.username && (
-              <Text className="text-red-500 text-xs mt-1 ml-1">
+              <Text style={{"color":"#ef4444","fontSize":12,"marginTop":4,"marginLeft":4}}>
                 {errors.username.message}
               </Text>
             )}
           </View>
 
           <View>
-            <Text className="text-xs font-semibold text-gray-400 mb-1 ml-1 uppercase">
+            <Text style={{"fontSize":12,"fontWeight":"600","color":"#9ca3af","marginBottom":4,"marginLeft":4,"textTransform":"uppercase"}}>
               Correo electrónico
             </Text>
             <Controller
@@ -151,22 +145,16 @@ export default function RegisterScreen() {
               }}
               render={({ field: { onChange, value } }) => (
                 <View
-                  className={`flex-row items-center bg-[#0d1117] border rounded-lg px-3 py-3 ${
-                    errors.email
-                      ? "border-red-500"
-                      : focusedInput === "email"
-                        ? "border-blue-500"
-                        : "border-gray-700"
-                  }`}
+                  style={{ flexDirection: "row", alignItems: "center", backgroundColor: "#0d1117", borderWidth: 1, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 12, borderColor: errors.email ? "#ef4444" : focusedInput === "email" ? "#3b82f6" : "#374151" }}
                 >
                   <MaterialIcons
                     name="mail-outline"
                     size={20}
                     color={errors.email ? "#ef4444" : "#9ca3af"}
-                    className="mr-2"
+                    style={{"marginRight":8}}
                   />
                   <TextInput
-                    className="flex-1 text-white ml-2 outline-none"
+                    style={{"flex":1,"color":"#ffffff","marginLeft":8}}
                     placeholder="correo@ejemplo.com"
                     placeholderTextColor="#6b7280"
                     keyboardType="email-address"
@@ -180,14 +168,14 @@ export default function RegisterScreen() {
               )}
             />
             {errors.email && (
-              <Text className="text-red-500 text-xs mt-1 ml-1">
+              <Text style={{"color":"#ef4444","fontSize":12,"marginTop":4,"marginLeft":4}}>
                 {errors.email.message}
               </Text>
             )}
           </View>
 
           <View>
-            <Text className="text-xs font-semibold text-gray-400 mb-1 ml-1 uppercase">
+            <Text style={{"fontSize":12,"fontWeight":"600","color":"#9ca3af","marginBottom":4,"marginLeft":4,"textTransform":"uppercase"}}>
               Contraseña
             </Text>
             <Controller
@@ -202,22 +190,16 @@ export default function RegisterScreen() {
               }}
               render={({ field: { onChange, value } }) => (
                 <View
-                  className={`flex-row items-center bg-[#0d1117] border rounded-lg px-3 py-3 ${
-                    errors.password
-                      ? "border-red-500"
-                      : focusedInput === "password"
-                        ? "border-blue-500"
-                        : "border-gray-700"
-                  }`}
+                  style={{ flexDirection: "row", alignItems: "center", backgroundColor: "#0d1117", borderWidth: 1, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 12, borderColor: errors.password ? "#ef4444" : focusedInput === "password" ? "#3b82f6" : "#374151" }}
                 >
                   <MaterialIcons
                     name="lock-outline"
                     size={20}
                     color={errors.password ? "#ef4444" : "#9ca3af"}
-                    className="mr-2"
+                    style={{"marginRight":8}}
                   />
                   <TextInput
-                    className="flex-1 text-white ml-2 outline-none"
+                    style={{"flex":1,"color":"#ffffff","marginLeft":8}}
                     placeholder="••••••••"
                     placeholderTextColor="#6b7280"
                     secureTextEntry
@@ -230,7 +212,7 @@ export default function RegisterScreen() {
               )}
             />
             {errors.password && (
-              <Text className="text-red-500 text-xs mt-1 ml-1">
+              <Text style={{"color":"#ef4444","fontSize":12,"marginTop":4,"marginLeft":4}}>
                 {errors.password.message}
               </Text>
             )}
@@ -238,19 +220,19 @@ export default function RegisterScreen() {
 
           <Pressable
             onPress={handleSubmit(onSubmit)}
-            className="w-full mt-4 bg-green-500 active:bg-green-600 rounded-lg py-3 flex-row items-center justify-center"
+            style={{"width":"100%","marginTop":16,"backgroundColor":"#22c55e","borderRadius":8,"paddingVertical":12,"flexDirection":"row","alignItems":"center","justifyContent":"center"}}
           >
-            <Text className="text-white font-bold mr-2 text-base">
+            <Text style={{"color":"#ffffff","fontWeight":"700","marginRight":8,"fontSize":16}}>
               Crear cuenta y ganar +50 XP
             </Text>
             <MaterialIcons name="rocket-launch" size={18} color="white" />
           </Pressable>
         </View>
 
-        <View className="mt-6 items-center">
+        <View style={{"marginTop":24,"alignItems":"center"}}>
           <Link href="/(auth)/login" asChild>
             <Pressable>
-              <Text className="text-blue-400 font-medium">
+              <Text style={{"color":"#60a5fa","fontWeight":"500"}}>
                 ¿Ya tienes cuenta? Inicia sesión.
               </Text>
             </Pressable>

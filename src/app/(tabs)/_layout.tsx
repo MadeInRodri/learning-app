@@ -24,13 +24,13 @@ export default function TabsLayout() {
         headerTitleAlign: "center",
         headerTitle: () => (
           // 3. Mostramos el username real o un fallback
-          <Text className="text-white font-bold text-lg">
+          <Text style={{"color":"#ffffff","fontWeight":"700","fontSize":18}}>
             {activeUser?.nombre || "Desarrollador"}
           </Text>
         ),
         headerLeft: () => (
-          <View className="w-8 h-8 rounded-full bg-gray-800 border border-gray-700 items-center justify-center ml-4">
-            <Text className="text-gray-400 text-xs font-mono font-bold">
+          <View style={{"width":32,"height":32,"borderRadius":9999,"backgroundColor":"#1f2937","borderWidth":1,"borderColor":"#374151","alignItems":"center","justifyContent":"center","marginLeft":16}}>
+            <Text style={{"color":"#9ca3af","fontSize":12,"fontFamily":"monospace","fontWeight":"700"}}>
               {initials}
             </Text>
           </View>

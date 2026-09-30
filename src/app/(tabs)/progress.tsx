@@ -37,49 +37,49 @@ export default function ProgressScreen() {
 
   return (
     <ScrollView
-      className="flex-1 bg-[#0d1117] px-4 pt-10"
+      style={{"flex":1,"backgroundColor":"#0d1117","paddingHorizontal":16,"paddingTop":40}}
       contentContainerStyle={{ paddingBottom: 100 }}
     >
-      <View className="w-full max-w-sm mx-auto">
+      <View style={{"width":"100%","maxWidth":384,"marginHorizontal":"auto"}}>
         {/* Título de la pantalla */}
-        <Text className="text-2xl font-bold text-white text-center mb-8 tracking-tight">
+        <Text style={{"fontSize":24,"fontWeight":"700","color":"#ffffff","textAlign":"center","marginBottom":32,"letterSpacing":-0.25}}>
           Misiones Diarias
         </Text>
 
         {/* Lista de Misiones */}
-        <View className="gap-5">
+        <View style={{"gap":20}}>
           {missions.map((mission) => {
             // Variables de estilo por defecto (Estado: locked)
-            let borderLeftColor = "border-l-gray-700";
+            let borderLeftColor = "#374151";
             let iconColor = "#6b7280"; // text-gray-500
-            let progressBg = "bg-gray-800";
-            let progressFill = "bg-gray-600";
-            let xpColor = "text-yellow-600";
-            let countBg = "bg-[#21262d]";
-            let countColor = "text-gray-500";
-            let titleColor = "text-white";
-            let titleStyle = ""; // Para el tachado
+            let progressBg = "#1f2937";
+            let progressFill = "#4b5563";
+            let xpColor = "#ca8a04";
+            let countBg = "#21262d";
+            let countColor = "#6b7280";
+            let titleColor = "#ffffff";
+            let titleStrike = false;
 
             // Estilos dinámicos para completado
             if (mission.state === "completed") {
-              borderLeftColor = "border-l-emerald-500";
+              borderLeftColor = "#10b981";
               iconColor = "#10b981"; // emerald-500
-              progressBg = "bg-emerald-900";
-              progressFill = "bg-emerald-500";
+              progressBg = "#064e3b";
+              progressFill = "#10b981";
               countColor = "text-emerald-400";
-              xpColor = "text-gray-500"; // Se apaga la recompensa si ya se cobró
-              titleColor = "text-gray-500";
-              titleStyle = "line-through";
+              xpColor = "#6b7280";
+              titleColor = "#6b7280";
+              titleStrike = true;
             }
             // Estilos dinámicos para en progreso
             else if (mission.state === "in-progress") {
-              borderLeftColor = "border-l-blue-500";
+              borderLeftColor = "#3b82f6";
               iconColor = "#3b82f6"; // blue-500
-              progressBg = "bg-gray-800";
-              progressFill = "bg-blue-500";
-              countBg = "bg-blue-900";
-              countColor = "text-blue-400";
-              xpColor = "text-blue-400";
+              progressBg = "#1f2937";
+              progressFill = "#3b82f6";
+              countBg = "#1e3a8a";
+              countColor = "#60a5fa";
+              xpColor = "#60a5fa";
             }
 
             // Cálculo del porcentaje para la barra
@@ -90,18 +90,18 @@ export default function ProgressScreen() {
             return (
               <View
                 key={mission.id}
-                className={`bg-[#161b22] border border-gray-800 border-l-4 ${borderLeftColor} rounded p-4`}
+                style={{ backgroundColor: "#161b22", borderWidth: 1, borderColor: "#1f2937", borderLeftWidth: 4, borderLeftColor, borderRadius: 4, padding: 16 }}
               >
                 {/* Cabecera de la Misión */}
-                <View className="flex-row items-center justify-between mb-3">
-                  <View className="flex-row items-center flex-1 pr-2">
+                <View style={{"flexDirection":"row","alignItems":"center","justifyContent":"space-between","marginBottom":12}}>
+                  <View style={{"flexDirection":"row","alignItems":"center","flex":1,"paddingRight":8}}>
                     <MaterialIcons
                       name={mission.icon as any}
                       size={22}
                       color={iconColor}
                     />
                     <Text
-                      className={`font-medium ml-3 text-base ${titleColor} ${titleStyle}`}
+                      style={{ fontWeight: "500", marginLeft: 12, fontSize: 16, color: titleColor, textDecorationLine: titleStrike ? "line-through" : "none" }}
                     >
                       {mission.title}
                     </Text>
@@ -115,10 +115,8 @@ export default function ProgressScreen() {
                       color="#10b981"
                     />
                   ) : (
-                    <View className={`px-2 py-1 rounded ${countBg}`}>
-                      <Text
-                        className={`font-mono text-xs font-bold ${countColor}`}
-                      >
+                    <View style={{ paddingHorizontal: 8, paddingVertical: 4, borderRadius: 4, backgroundColor: countBg }}>
+                      <Text style={{ fontFamily: "monospace", fontSize: 12, fontWeight: "700", color: countColor }}>
                         {mission.current}/{mission.total}
                       </Text>
                     </View>
@@ -127,17 +125,17 @@ export default function ProgressScreen() {
 
                 {/* Barra de Progreso Interna */}
                 <View
-                  className={`w-full h-1 rounded-full mb-3 overflow-hidden ${progressBg}`}
+                  style={{ width: "100%", height: 4, borderRadius: 9999, marginBottom: 12, overflow: "hidden", backgroundColor: progressBg }}
                 >
                   <View
-                    className={`h-full rounded-full ${progressFill}`}
+                    style={{ height: "100%", borderRadius: 9999, backgroundColor: progressFill }}
                     style={{ width: `${progressPercentage}%` }}
                   />
                 </View>
 
                 {/* Recompensa XP */}
-                <View className="items-end">
-                  <Text className={`font-mono text-xs font-bold ${xpColor}`}>
+                <View style={{"alignItems":"flex-end"}}>
+                  <Text style={{ fontFamily: "monospace", fontSize: 12, fontWeight: "700", color: xpColor }}>
                     +{mission.xp} XP
                   </Text>
                 </View>

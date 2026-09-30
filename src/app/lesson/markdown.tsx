@@ -12,12 +12,12 @@ import {
 import Markdown from "react-native-markdown-display";
 import Toast from "react-native-toast-message";
 
+import { useAiQuizStore } from "../../store/aiQuizStore";
 import { useAuthStore } from "../../store/authStore";
 import { useCourseStore } from "../../store/courseStore";
 import { useGamificationStore } from "../../store/gamificationStore";
 import { useModuleStore } from "../../store/moduleStore";
 import { useProgressStore } from "../../store/progressStore";
-import { useAiQuizStore } from "../../store/aiQuizStore";
 
 export default function MarkdownLessonScreen() {
   const { pathId } = useLocalSearchParams<{ pathId: string }>();
@@ -166,36 +166,39 @@ export default function MarkdownLessonScreen() {
   };
 
   return (
-    <View className="flex-1 bg-[#0d1117]">
-      <View className="flex-row items-center justify-between px-4 pt-12 pb-4 border-b border-gray-800 bg-[#0d1117]">
+    <View style={{"flex":1,"backgroundColor":"#0d1117"}}>
+      <View style={{"flexDirection":"row","alignItems":"center","justifyContent":"space-between","paddingHorizontal":16,"paddingTop":48,"paddingBottom":16,"borderBottomWidth":1,"borderColor":"#1f2937","backgroundColor":"#0d1117"}}>
         <Pressable
           onPress={() => setTimeout(() => {
             router.back();
           }, 50)}
           disabled={isProcessing}
-          // 1. Dejamos className 100% estático
-          className="w-10 h-10 rounded-full bg-[#181c22] border border-gray-700 items-center justify-center active:bg-gray-700"
+          style={{"width":40,"height":40,"borderRadius":9999,"backgroundColor":"#181c22","borderWidth":1,"borderColor":"#374151","alignItems":"center","justifyContent":"center"}}
         >
           <MaterialIcons name="arrow-back" size={24} color="#9ca3af" />
         </Pressable>
 
-        <Text className="text-white font-bold text-lg">
+        <Text style={{"color":"#ffffff","fontWeight":"700","fontSize":18}}>
           {activeCourseName} - Teoría
         </Text>
-        <View className="w-10 h-10" />
+        <View style={{"width":40,"height":40}} />
       </View>
 
-      <ScrollView className="flex-1 px-4">
-        <View className="w-full max-w-md mx-auto pt-6 pb-24">
+      <ScrollView style={{"flex":1,"paddingHorizontal":16}}>
+        <View style={{"width":"100%","maxWidth":448,"marginHorizontal":"auto","paddingTop":24,"paddingBottom":96}}>
           <Markdown style={markdownStyles}>{lessonContent}</Markdown>
 
           <Pressable
             onPress={handleCompleteLesson}
             disabled={isProcessing}
-            // 1. Solo clases que nunca van a cambiar durante la vida del componente
-            className="w-full mt-8 rounded-lg py-4 flex-row items-center justify-center"
-            // 2. Lógica dinámica inyectada directamente a React Native
             style={{
+              width: "100%",
+              marginTop: 32,
+              borderRadius: 8,
+              paddingVertical: 16,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
               backgroundColor: activeModule?.state === "completed" ? "#374151" : "#2563eb",
             }}
           >
@@ -203,7 +206,7 @@ export default function MarkdownLessonScreen() {
               <ActivityIndicator color="white" />
             ) : (
               <>
-                <Text className="text-white font-bold mr-2 text-base">
+                <Text style={{"color":"#ffffff","fontWeight":"700","marginRight":8,"fontSize":16}}>
                   {activeModule?.state === "completed"
                     ? "Volver a la ruta"
                     : "¡Entendido! Completar lección"}

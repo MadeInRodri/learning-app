@@ -39,12 +39,12 @@ export default function TestGamificationScreen() {
 
   return (
     <ScrollView
-      className="flex-1 bg-[#0d1117]"
+      style={{"flex":1,"backgroundColor":"#0d1117"}}
       contentContainerStyle={{ paddingBottom: 40 }}
     >
       {/* Panel de Control */}
-      <View className="px-4 mt-6">
-        <Text className="text-gray-400 font-mono text-xs uppercase mb-4 tracking-widest border-b border-[#30363d] pb-2">
+      <View style={{"paddingHorizontal":16,"marginTop":24}}>
+        <Text style={{"color":"#9ca3af","fontFamily":"monospace","fontSize":12,"textTransform":"uppercase","marginBottom":16,"letterSpacing":1.5,"borderBottomWidth":1,"borderColor":"#30363d","paddingBottom":8}}>
           Panel de Transacciones
         </Text>
       </View>

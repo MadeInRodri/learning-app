@@ -1,8 +1,17 @@
-import { Tabs } from "expo-router";
-import { View, Text } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
+import { Tabs } from "expo-router";
+import { Text, View } from "react-native";
+import { useAuthStore } from "../../store/authStore"; // Ajusta la ruta si es necesario
 
 export default function TabsLayout() {
+  // 1. Extraemos el usuario activo de Zustand
+  const activeUser = useAuthStore((state) => state.activeUser);
+
+  // 2. Generamos las iniciales dinámicas (las primeras 2 letras en mayúscula)
+  const initials = activeUser?.nombre
+    ? activeUser.nombre.substring(0, 2).toUpperCase()
+    : "US";
+
   return (
     <Tabs
       screenOptions={{
@@ -14,29 +23,43 @@ export default function TabsLayout() {
         },
         headerTitleAlign: "center",
         headerTitle: () => (
-          <Text className="text-white font-bold text-lg">MadeInRodri</Text>
+          // 3. Mostramos el username real o un fallback
+          <Text style={{ color: "#ffffff", fontWeight: "700", fontSize: 18 }}>
+            {activeUser?.nombre || "Desarrollador"}
+          </Text>
         ),
         headerLeft: () => (
-          <View className="w-8 h-8 rounded-full bg-gray-800 border border-gray-700 items-center justify-center ml-4">
-            <Text className="text-gray-400 text-xs font-mono font-bold">
-              MR
+          <View
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: 9999,
+              backgroundColor: "#1f2937",
+              borderWidth: 1,
+              borderColor: "#374151",
+              alignItems: "center",
+              justifyContent: "center",
+              marginLeft: 16,
+            }}
+          >
+            <Text
+              style={{
+                color: "#9ca3af",
+                fontSize: 12,
+                fontFamily: "monospace",
+                fontWeight: "700",
+              }}
+            >
+              {initials}
             </Text>
           </View>
-        ),
-        headerRight: () => (
-          <MaterialIcons
-            name="settings"
-            size={24}
-            color="#9ca3af"
-            style={{ marginRight: 16 }}
-          />
         ),
 
         // EL FOOTER, LOS TABS
         tabBarStyle: {
           backgroundColor: "#181c22",
           borderTopColor: "#424754",
-          height: 65,
+          height: 80,
           paddingBottom: 10,
           paddingTop: 5,
         },

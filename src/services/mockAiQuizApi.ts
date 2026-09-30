@@ -1,3 +1,5 @@
+//EJEMPLO RANCIO PARA EL QUIZ IA
+
 import { AIQuizData } from "../store/aiQuizStore";
 
 export interface ApiResponse<T> {

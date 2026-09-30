@@ -1,75 +1,103 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
+// 1 -> Aún no uso la parte del quiz IA con checkWeekQuiz
+
+import { api } from "@/config/api";
 import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
+import { useAuthStore } from "./authStore";
+
+// Función utilitaria para calcular el Nivel dinámicamente según la XP total
+export const calculateLevelInfo = (totalXP: number = 0) => {
+  let level = 1;
+  let currentXP = totalXP;
+  let maxXP = 200; // XP base requerida para pasar del Nivel 1 al 2
+
+  // Escala de dificultad
+  while (currentXP >= maxXP) {
+    currentXP -= maxXP;
+    level += 1;
+    maxXP = Math.floor(maxXP * 1.5);
+  }
+
+  const progress = Math.min(100, Math.round((currentXP / maxXP) * 100));
+
+  return { level, currentXP, maxXP, progress };
+};
 
 interface GamificationState {
-  energy: { current: number; max: number };
-  streak: { days: number; isActive: boolean };
-  experience: { level: number; currentXP: number; maxXP: number };
-
-  // Acciones
-  useEnergy: (amount: number) => boolean;
-  addXP: (amount: number) => void;
-  breakStreak: () => void;
-  incrementStreak: () => void;
-  addEnergy: (amount: number) => void;
+  // Peticiones al backend basadas en la API
+  fetchRewardsCatalog: () => Promise<any>;
+  registerStreak: (dateISO: string) => Promise<void>;
+  claimReward: (
+    type: string,
+    source: string,
+    nameReward: string,
+  ) => Promise<boolean>;
+  checkWeekQuiz: () => Promise<any>;
 }
 
-export const useGamificationStore = create<GamificationState>()(
-  persist(
-    (set, get) => ({
-      energy: { current: 12, max: 20 },
-      streak: { days: 7, isActive: true },
-      experience: { level: 3, currentXP: 120, maxXP: 200 },
+export const useGamificationStore = create<GamificationState>()((set, get) => ({
+  //Me traigo las recompensas
+  fetchRewardsCatalog: async () => {
+    try {
+      const response = await api.get("/game/rewards_catalogo");
+      return response.data;
+    } catch (error) {
+      console.error("Error obteniendo catálogo:", error);
+      return null;
+    }
+  },
 
-      useEnergy: (amount) => {
-        const { energy } = get();
-        if (energy.current >= amount) {
-          set({ energy: { ...energy, current: energy.current - amount } });
-          return true;
-        }
-        return false;
-      },
+  //La racha
+  registerStreak: async (dateISO) => {
+    const user = useAuthStore.getState().activeUser;
+    if (!user) return;
 
-      addEnergy: (amount) =>
-        set((state) => {
-          const newEnergy = Math.min(
-            state.energy.current + amount,
-            state.energy.max,
-          );
-          return { energy: { ...state.energy, current: newEnergy } };
-        }),
+    try {
+      await api.get("/game/strike", {
+        params: { id: user.id, date: dateISO },
+      });
+    } catch (error) {
+      console.error("Error registrando racha:", error);
+    }
+  },
 
-      addXP: (amount) =>
-        set((state) => {
-          let newXP = state.experience.currentXP + amount;
-          let newLevel = state.experience.level;
-          let newMaxXP = state.experience.maxXP;
+  //Reclamar recompensa, en cada vista solo le paso el name y el tipo
+  claimReward: async (type, source, nameReward) => {
+    const user = useAuthStore.getState().activeUser;
+    if (!user) return false;
 
-          while (newXP >= newMaxXP) {
-            newXP -= newMaxXP;
-            newLevel += 1;
-            newMaxXP = Math.floor(newMaxXP * 1.5);
-          }
+    try {
+      await api.post(
+        "/game/reward",
+        { source, nameReward },
+        { params: { id: user.id, type } },
+      );
 
-          return {
-            experience: { level: newLevel, currentXP: newXP, maxXP: newMaxXP },
-          };
-        }),
+      return true;
+    } catch (error) {
+      console.error("Error reclamando recompensa:", error);
+      return false;
+    }
+  },
 
-      breakStreak: () => set({ streak: { days: 0, isActive: false } }),
+  //Esto para el quiz IA, todavía no lo uso
+  checkWeekQuiz: async () => {
+    const user = useAuthStore.getState().activeUser;
+    if (!user) return null;
 
-      incrementStreak: () =>
-        set((state) => ({
-          streak: {
-            days: state.streak.isActive ? state.streak.days + 1 : 1,
-            isActive: true,
-          },
-        })),
-    }),
-    {
-      name: "learning-gamification-storage",
-      storage: createJSONStorage(() => AsyncStorage), // Adaptado para React Native
-    },
-  ),
-);
+    try {
+      const response = await api.get("/game/week_quiz", {
+        params: { id: user.id },
+      });
+      const AiWeekQuizz = response.data.payload;
+      //Aqui validar...
+      if(AiWeekQuizz){
+        return AiWeekQuizz
+      }
+
+      return null;
+    } catch (error) {
+      console.error("Error verificando quiz semanal:", error);
+      return null;
+    }
+  },
+}));

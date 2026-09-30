@@ -1,3 +1,4 @@
+//CLEAN
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { collection, getDocs } from "firebase/firestore";
 import { create } from "zustand";
@@ -9,6 +10,8 @@ export interface Language {
   id: string;
   language: string;
   description?: string;
+  //Nuevo, el total de módulos del curso
+  totalModules: number;
 }
 
 interface LanguageState {
@@ -40,6 +43,8 @@ export const useLanguageStore = create<LanguageState>()(
               id: doc.id,
               language: data.language || doc.id,
               description: data.description || "",
+              //Acá los traigo
+              totalModules: data.totalModules,
             });
           });
 

@@ -1,3 +1,5 @@
+//CONFIGURACIÓN DE LAS ALARMAS DE LA LIBRERÍA "TOAST"
+
 import { MaterialIcons } from "@expo/vector-icons";
 import { Pressable, Text, View } from "react-native";
 import { ToastConfig } from "react-native-toast-message";
@@ -6,12 +8,12 @@ export const customToastConfig: ToastConfig = {
   success: ({ text1, text2, onPress }) => (
     <Pressable
       onPress={onPress}
-      className="flex-row items-center bg-[#181c22] border border-[#30363d] border-l-4 border-l-emerald-500 rounded-xl shadow-lg w-[90%] p-4"
+      style={{"flexDirection":"row","alignItems":"center","backgroundColor":"#181c22","borderWidth":1,"borderColor":"#10b981","borderLeftWidth":4,"borderRadius":12,"width":"90%","padding":16}}
     >
       <MaterialIcons name="check-circle" size={24} color="#10b981" />
-      <View className="ml-3 flex-1">
-        <Text className="text-white font-bold text-sm font-mono">{text1}</Text>
-        {text2 && <Text className="text-gray-400 text-xs mt-0.5">{text2}</Text>}
+      <View style={{"marginLeft":12,"flex":1}}>
+        <Text style={{"color":"#ffffff","fontWeight":"700","fontSize":14,"fontFamily":"monospace"}}>{text1}</Text>
+        {text2 && <Text style={{"color":"#9ca3af","fontSize":12,"marginTop":2}}>{text2}</Text>}
       </View>
     </Pressable>
   ),
@@ -19,12 +21,12 @@ export const customToastConfig: ToastConfig = {
   error: ({ text1, text2, onPress }) => (
     <Pressable
       onPress={onPress}
-      className="flex-row items-center bg-[#181c22] border border-[#30363d] border-l-4 border-l-[#f85149] rounded-xl shadow-lg w-[90%] p-4 active:opacity-70 transition-opacity"
+      style={{"flexDirection":"row","alignItems":"center","backgroundColor":"#181c22","borderWidth":1,"borderColor":"#f85149","borderLeftWidth":4,"borderRadius":12,"width":"90%","padding":16}}
     >
       <MaterialIcons name="error-outline" size={24} color="#f85149" />
-      <View className="ml-3 flex-1">
-        <Text className="text-white font-bold text-sm font-mono">{text1}</Text>
-        {text2 && <Text className="text-gray-400 text-xs mt-0.5">{text2}</Text>}
+      <View style={{"marginLeft":12,"flex":1}}>
+        <Text style={{"color":"#ffffff","fontWeight":"700","fontSize":14,"fontFamily":"monospace"}}>{text1}</Text>
+        {text2 && <Text style={{"color":"#9ca3af","fontSize":12,"marginTop":2}}>{text2}</Text>}
       </View>
     </Pressable>
   ),
@@ -32,12 +34,12 @@ export const customToastConfig: ToastConfig = {
   info: ({ text1, text2, onPress }) => (
     <Pressable
       onPress={onPress}
-      className="flex-row items-center bg-[#181c22] border border-[#30363d] border-l-4 border-l-[#3b82f6] rounded-xl shadow-lg w-[90%] p-4"
+      style={{"flexDirection":"row","alignItems":"center","backgroundColor":"#181c22","borderWidth":1,"borderColor":"#3b82f6","borderLeftWidth":4,"borderRadius":12,"width":"90%","padding":16}}
     >
       <MaterialIcons name="info-outline" size={24} color="#3b82f6" />
-      <View className="ml-3 flex-1">
-        <Text className="text-white font-bold text-sm font-mono">{text1}</Text>
-        {text2 && <Text className="text-gray-400 text-xs mt-0.5">{text2}</Text>}
+      <View style={{"marginLeft":12,"flex":1}}>
+        <Text style={{"color":"#ffffff","fontWeight":"700","fontSize":14,"fontFamily":"monospace"}}>{text1}</Text>
+        {text2 && <Text style={{"color":"#9ca3af","fontSize":12,"marginTop":2}}>{text2}</Text>}
       </View>
     </Pressable>
   ),

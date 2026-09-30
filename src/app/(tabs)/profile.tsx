@@ -1,120 +1,287 @@
+import EnergyTimerButton from "@/components/EnergyTimerButton";
+import { api } from "@/config/api";
 import { useAuthStore } from "@/store/authStore";
+import { calculateLevelInfo } from "@/store/gamificationStore";
+import { TokenStorage } from "@/store/tokenStore";
 import { router } from "expo-router";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
 export default function ProfileScreen() {
-  // PA SIMUALAR
-  const logout = useAuthStore((state) => state.logout);
-  const userStats = {
-    name: "MadeInRodri",
-    email: "rodrigo@gmail.com",
-    level: 1,
-    progress: "25%", // Porcentaje para la barra de nivel
-    streak: 1,
-    lastCourse: "Python",
-    testsPassed: 3,
-    coursesFinished: 0,
-    score: 320,
+  const { activeUser, logout } = useAuthStore();
+
+  // Desestructuramos el nivel y el progreso en tiempo real usando la XP del backend
+  const { level, currentXP, maxXP, progress } = calculateLevelInfo(
+    activeUser?.xpTotales,
+  );
+
+  const handleLogout = async () => {
+    try {
+      if (activeUser?.id) {
+        const refreshToken = await TokenStorage.getRefreshToken();
+
+        await api.get("/logout", {
+          params: { id: activeUser.id },
+          headers: { "x-refresh-token": refreshToken },
+        });
+      }
+    } catch (error) {
+      console.error("Error cerrando sesión en backend", error);
+    } finally {
+      // Independientemente de si el backend falla, matamos la sesión local
+      await TokenStorage.clearTokens();
+      logout();
+      router.replace("/(auth)/login" as any);
+    }
   };
 
+  // Previene crasheos si la vista se renderiza un microsegundo antes de redirigir al login
+  if (!activeUser) return null;
+
   return (
-    <ScrollView className="flex-1 bg-[#0d1117] px-4 pt-10">
-      <View className="w-full max-w-sm mx-auto pb-24">
-        {/* Título */}
-        <Text className="text-2xl font-bold text-white text-center mb-10">
+    <ScrollView
+      style={{
+        flex: 1,
+        backgroundColor: "#0d1117",
+        paddingHorizontal: 16,
+        paddingTop: 40,
+      }}
+    >
+      <View
+        style={{
+          width: "100%",
+          maxWidth: 384,
+          marginHorizontal: "auto",
+          paddingBottom: 96,
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 24,
+            fontWeight: "700",
+            color: "#ffffff",
+            textAlign: "center",
+            marginBottom: 40,
+          }}
+        >
           Tu perfil
         </Text>
 
-        {/* Cabecera del Perfil (Avatar + Info) */}
-        <View className="flex-row items-center mb-10">
-          {/* Avatar Placeholder */}
-          <View className="w-20 h-20 rounded-full border-2 border-gray-700 bg-[#161b22] items-center justify-center mr-5 shadow-lg">
-            <Text className="text-gray-400 font-mono text-xl font-bold tracking-widest">
-              MR
+        {/* Cabecera del Perfil */}
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginBottom: 40,
+          }}
+        >
+          <View
+            style={{
+              width: 80,
+              height: 80,
+              borderRadius: 9999,
+              borderWidth: 2,
+              borderColor: "#374151",
+              backgroundColor: "#161b22",
+              alignItems: "center",
+              justifyContent: "center",
+              marginRight: 20,
+            }}
+          >
+            <Text
+              style={{
+                color: "#9ca3af",
+                fontFamily: "monospace",
+                fontSize: 20,
+                fontWeight: "700",
+                textTransform: "uppercase",
+                letterSpacing: 1.5,
+              }}
+            >
+              {activeUser.nombre.substring(0, 2)}
             </Text>
           </View>
 
-          {/* Info de Usuario */}
-          <View className="flex-1">
-            <Text className="text-xl font-bold text-white mb-1">
-              {userStats.name}
+          <View style={{ flex: 1 }}>
+            <Text
+              style={{
+                fontSize: 20,
+                fontWeight: "700",
+                color: "#ffffff",
+                marginBottom: 4,
+              }}
+            >
+              {activeUser.nombre}
             </Text>
-            <Text className="text-sm text-gray-400 mb-3">
-              {userStats.email}
+            <Text style={{ fontSize: 14, color: "#9ca3af", marginBottom: 12 }}>
+              {activeUser.email}
             </Text>
 
-            {/* Barra de Nivel */}
-            <View className="w-32">
-              <Text className="text-xs font-mono text-gray-400 mb-1">
-                Lvl {userStats.level}
+            {/* Barra de Nivel Algorítmica */}
+            <View style={{ width: "100%" }}>
+              <Text
+                style={{
+                  fontSize: 12,
+                  fontFamily: "monospace",
+                  color: "#9ca3af",
+                  marginBottom: 4,
+                }}
+              >
+                Lvl {level}{" "}
+                <Text style={{ color: "#4b5563" }}>
+                  ({currentXP}/{maxXP} XP)
+                </Text>
               </Text>
-              <View className="w-full h-1 bg-gray-800 rounded-full overflow-hidden">
+              <View
+                style={{
+                  width: 160,
+                  height: 6,
+                  backgroundColor: "#1f2937",
+                  borderRadius: 9999,
+                  overflow: "hidden",
+                }}
+              >
                 <View
-                  className="h-full bg-orange-400 rounded-full"
-                  style={{ width: userStats.progress as any }}
+                  style={{
+                    height: "100%",
+                    backgroundColor: "#fb923c",
+                    borderRadius: 9999,
+                  }}
+                  style={{ width: `${progress}%` }}
                 />
               </View>
             </View>
           </View>
         </View>
 
-        {/* Tarjeta de Estadísticas Detalladas */}
-        <View className="bg-[#181c22] border border-gray-800 rounded-xl p-5 mb-8 shadow-md">
-          <View className="flex-row justify-between items-center border-b border-gray-800 pb-3 mb-3">
-            <Text className="text-gray-400">Racha actual</Text>
-            <Text className="text-white font-bold">{userStats.streak} día</Text>
-          </View>
-
-          <View className="flex-row justify-between items-center border-b border-gray-800 pb-3 mb-3">
-            <Text className="text-gray-400">Último curso visitado</Text>
-            <Text className="text-white font-bold">{userStats.lastCourse}</Text>
-          </View>
-
-          <View className="flex-row justify-between items-center border-b border-gray-800 pb-3 mb-3">
-            <Text className="text-gray-400">Test aprobados</Text>
-            <Text className="text-white font-bold">
-              {userStats.testsPassed}
+        {/* Tarjeta de Estadísticas (Valores devueltos por la API) */}
+        <View
+          style={{
+            backgroundColor: "#181c22",
+            borderWidth: 1,
+            borderColor: "#1f2937",
+            borderRadius: 12,
+            padding: 20,
+            marginBottom: 32,
+          }}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              borderBottomWidth: 1,
+              borderColor: "#1f2937",
+              paddingBottom: 12,
+              marginBottom: 12,
+            }}
+          >
+            <Text style={{ color: "#9ca3af" }}>Energía Máxima</Text>
+            <Text style={{ color: "#34d399", fontWeight: "700" }}>
+              {activeUser.energiaBalance} ⚡
             </Text>
           </View>
 
-          <View className="flex-row justify-between items-center mb-5">
-            <Text className="text-gray-400">Cursos finalizados</Text>
-            <Text className="text-white font-bold">
-              {userStats.coursesFinished}
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              borderBottomWidth: 1,
+              borderColor: "#1f2937",
+              paddingBottom: 12,
+              marginBottom: 12,
+            }}
+          >
+            <Text style={{ color: "#9ca3af" }}>Estrellas Acumuladas</Text>
+            <Text style={{ color: "#facc15", fontWeight: "700" }}>
+              {activeUser.estrellasBalance} ⭐
             </Text>
           </View>
 
-          {/* Badge de Puntaje Actual */}
-          <View className="items-end">
-            <View className="border border-blue-500/40 bg-blue-500/10 px-3 py-1.5 rounded">
-              <Text className="text-blue-400 font-mono text-xs font-semibold tracking-wide">
-                Puntaje actual: {userStats.score}
+          {/* Oculto por si las móscas */}
+
+          {/* <View style={{"flexDirection":"row","justifyContent":"space-between","alignItems":"center","borderBottomWidth":1,"borderColor":"#1f2937","paddingBottom":12,"marginBottom":12}}>
+            <Text style={{"color":"#9ca3af"}}>Ayudas de IA Restantes</Text>
+            <Text style={{"color":"#c084fc","fontWeight":"700"}}>
+              {activeUser.aiPistaBalance} 🤖
+            </Text>
+          </View>
+
+          <View style={{"flexDirection":"row","justifyContent":"space-between","alignItems":"center","marginBottom":20}}>
+            <Text style={{"color":"#9ca3af"}}>Protectores de Racha</Text>
+            <Text style={{"color":"#60a5fa","fontWeight":"700"}}>
+              {activeUser.protectorRachaBalance} 🛡️
+            </Text>
+          </View> */}
+
+          <View style={{ alignItems: "flex-end" }}>
+            <View
+              style={{
+                borderWidth: 1,
+                borderColor: "#f97316",
+                backgroundColor: "#f97316",
+                paddingHorizontal: 12,
+                paddingVertical: 6,
+                borderRadius: 6,
+              }}
+            >
+              <Text
+                style={{
+                  color: "#fff",
+                  fontFamily: "monospace",
+                  fontSize: 12,
+                  fontWeight: "600",
+                  letterSpacing: 0.5,
+                }}
+              >
+                EXPERIENCIA TOTAL: {activeUser.xpTotales} XP
               </Text>
             </View>
           </View>
         </View>
 
         {/* Botones de Acción */}
-        <View className="gap-4">
-          <Pressable
+        <View style={{ gap: 16 }}>
+          {/* <Pressable
             onPress={() => router.push("/testing-gamification" as any)}
-            className="w-full py-4 border border-orange-400/80 rounded-lg items-center justify-center active:bg-orange-400/10 transition-colors"
+            style={{"width":"100%","paddingVertical":16,"borderWidth":1,"borderColor":"#fb923c","borderRadius":8,"alignItems":"center","justifyContent":"center"}}
           >
-            <Text className="text-orange-400 font-bold">Testing</Text>
-          </Pressable>
+            <Text style={{"color":"#fb923c","fontWeight":"700"}}>Testing API</Text>
+          </Pressable> */}
+          <EnergyTimerButton></EnergyTimerButton>
 
           <Pressable
             onPress={() => router.push("/achievements" as any)}
-            className="w-full py-4 border border-purple-500/80 rounded-lg items-center justify-center active:bg-purple-500/10 transition-colors"
+            style={{
+              width: "100%",
+              paddingVertical: 16,
+              borderWidth: 1,
+              borderColor: "#a855f7",
+              borderRadius: 8,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
           >
-            <Text className="text-purple-400 font-bold">Ver logros</Text>
+            <Text style={{ color: "#c084fc", fontWeight: "700" }}>
+              Catálogo de recompensas
+            </Text>
           </Pressable>
 
           <Pressable
-            onPress={() => logout()}
-            className="w-full py-4 border border-red-500 rounded-lg items-center justify-center active:bg-purple-500/10 transition-colors"
+            onPress={handleLogout}
+            style={{
+              width: "100%",
+              paddingVertical: 16,
+              borderWidth: 1,
+              borderColor: "#ef4444",
+              borderRadius: 8,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
           >
-            <Text className="text-red-500 font-bold">Cerrar Sesión</Text>
+            <Text style={{ color: "#ef4444", fontWeight: "700" }}>
+              Cerrar Sesión
+            </Text>
           </Pressable>
         </View>
       </View>

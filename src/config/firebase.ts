@@ -1,4 +1,4 @@
-// src/config/firebase.ts
+//CONEXIÓN A FIRESTORE
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 

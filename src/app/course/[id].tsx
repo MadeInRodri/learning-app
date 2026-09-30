@@ -1,199 +1,5 @@
-// import React from "react";
-// import { View, Text, Pressable, ScrollView } from "react-native";
-// import { MaterialIcons } from "@expo/vector-icons";
-// import { router } from "expo-router";
-
-// export default function CourseScreen() {
-//   const modules = [
-//     {
-//       id: "1",
-//       title: "Variables",
-//       subtitle: "let, const, var",
-//       state: "completed",
-//       type: "lesson",
-//     },
-//     {
-//       id: "2",
-//       title: "Tipos de Datos",
-//       subtitle: "Strings, Numbers, Booleans",
-//       state: "completed",
-//       type: "lesson",
-//     },
-//     {
-//       id: "3",
-//       title: "Funciones",
-//       subtitle: "Declaración y Flecha",
-//       state: "completed",
-//       type: "lesson",
-//     },
-//     {
-//       id: "4",
-//       title: "Quiz final",
-//       subtitle: "Prueba tus conocimientos",
-//       state: "in-progress",
-//       type: "quiz",
-//     },
-//   ];
-
-//   return (
-//     <View className="flex-1 bg-[#0d1117]">
-//       <View className="flex-row items-center justify-between px-4 pt-12 pb-4 border-b border-gray-800 bg-[#0d1117]">
-//         {/* Botón Atrás */}
-//         <Pressable
-//           onPress={() => router.back()}
-//           className="w-10 h-10 rounded-full bg-[#181c22] border border-gray-700 items-center justify-center active:bg-gray-700 transition-colors"
-//         >
-//           <MaterialIcons name="arrow-back" size={24} color="#9ca3af" />
-//         </Pressable>
-
-//         {/* Título */}
-//         <Text className="text-white font-bold text-lg">
-//           Ruta de Aprendizaje
-//         </Text>
-//         <View className="w-10 h-10" />
-//       </View>
-
-//       <ScrollView
-//         contentContainerStyle={{ alignItems: "center", paddingBottom: 40 }}
-//       >
-//         <View className="w-full max-w-md px-4 pt-8">
-//           {/* Título de la sección */}
-//           <View className="items-center mb-10">
-//             <Text className="text-2xl font-bold text-white mb-2 text-center tracking-tight">
-//               JS - Aprendiendo lo básico
-//             </Text>
-//             <Text className="text-gray-400 text-sm text-center">
-//               Continúa tu ruta de aprendizaje
-//             </Text>
-//           </View>
-
-//           {/* Contenedor del Árbol */}
-//           <View className="relative w-full py-4">
-//             <View className="absolute top-0 bottom-0 left-1/2 w-[2px] bg-gray-700 -translate-x-[1px] z-0" />
-
-//             {/* Renderizado dinámico de los módulos */}
-//             {modules.map((mod, index) => {
-//               const isLeft = index % 2 === 0;
-
-//               // Variables de estilo por defecto (Locked)
-//               let cardStyle = "border-gray-800 opacity-60";
-//               let dotStyle = "border-gray-700 bg-[#161b22]";
-//               let titleStyle = "text-gray-500";
-//               let subtitleStyle = "text-gray-600";
-//               let iconColor = "#6b7280";
-//               let iconName: any = "lock";
-
-//               // Modificadores según estado
-//               if (mod.state === "completed") {
-//                 cardStyle = isLeft
-//                   ? "border-emerald-500 border-r-4"
-//                   : "border-emerald-500 border-l-4";
-//                 dotStyle = "border-emerald-500 bg-[#161b22]";
-//                 titleStyle = "text-white";
-//                 subtitleStyle = "text-gray-400";
-//                 iconColor = "#10b981";
-//                 iconName = "check";
-//               } else if (mod.state === "in-progress") {
-//                 cardStyle = isLeft
-//                   ? "border-blue-400 border-r-4"
-//                   : "border-blue-400 border-l-4";
-//                 dotStyle =
-//                   "border-blue-400 bg-blue-900/20 shadow-lg shadow-blue-500/50";
-//                 titleStyle = "text-blue-400";
-//                 subtitleStyle = "text-gray-400";
-//                 iconColor = "#60a5fa";
-//                 iconName = "play-arrow";
-//               } else if (mod.type === "quiz") {
-//                 cardStyle =
-//                   "border-gray-700 border-dashed bg-[#1c2026] opacity-60";
-//                 dotStyle = "border-gray-700 border-dashed bg-[#1c2026]";
-//                 iconName = "emoji-events";
-//               }
-
-//               const baseCardClasses = `p-4 bg-[#161b22] rounded-xl border transition-transform ${
-//                 mod.state !== "locked" ? "active:scale-95" : ""
-//               }`;
-
-//               return (
-//                 <View
-//                   key={mod.id}
-//                   className="flex-row w-full mb-8 relative items-center z-10"
-//                 >
-//                   <View
-//                     className={`absolute left-1/2 w-8 h-8 rounded-full border-2 items-center justify-center z-20 -translate-x-4 ${dotStyle}`}
-//                   >
-//                     <MaterialIcons
-//                       name={iconName}
-//                       size={16}
-//                       color={iconColor}
-//                     />
-//                   </View>
-
-//                   {isLeft ? (
-//                     <>
-//                       <Pressable
-//                         className="w-1/2 pr-8 z-20"
-//                         onPress={() => {
-//                           if (mod.state !== "locked") {
-//                             const route =
-//                               mod.type === "quiz"
-//                                 ? "/lesson/quiz"
-//                                 : "/lesson/markdown";
-//                             router.push(route as any);
-//                           }
-//                         }}
-//                       >
-//                         <View className={`${baseCardClasses} ${cardStyle}`}>
-//                           <Text
-//                             className={`text-base font-bold mb-1 ${titleStyle}`}
-//                           >
-//                             {mod.title}
-//                           </Text>
-//                           <Text className={`text-xs ${subtitleStyle}`}>
-//                             {mod.subtitle}
-//                           </Text>
-//                         </View>
-//                       </Pressable>
-//                       <View className="w-1/2" />
-//                     </>
-//                   ) : (
-//                     <>
-//                       <View className="w-1/2" />
-//                       <Pressable
-//                         className="w-1/2 pl-8 z-20"
-//                         onPress={() => {
-//                           if (mod.state !== "locked") {
-//                             const route =
-//                               mod.type === "quiz"
-//                                 ? "/lesson/quiz"
-//                                 : "/lesson/markdown";
-//                             router.push(route as any);
-//                           }
-//                         }}
-//                       >
-//                         <View className={`${baseCardClasses} ${cardStyle}`}>
-//                           <Text
-//                             className={`text-base font-bold mb-1 ${titleStyle}`}
-//                           >
-//                             {mod.title}
-//                           </Text>
-//                           <Text className={`text-xs ${subtitleStyle}`}>
-//                             {mod.subtitle}
-//                           </Text>
-//                         </View>
-//                       </Pressable>
-//                     </>
-//                   )}
-//                 </View>
-//               );
-//             })}
-//           </View>
-//         </View>
-//       </ScrollView>
-//     </View>
-//   );
-// }
-
+import { useAuthStore } from "@/store/authStore";
+import { useGamificationStore } from "@/store/gamificationStore";
 import { MaterialIcons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect } from "react";
@@ -203,28 +9,59 @@ import {
   ScrollView,
   Text,
   View,
+  type TextStyle,
+  type ViewStyle,
 } from "react-native";
-import Toast from "react-native-toast-message"; // <-- Importamos Toast
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
 import { useCourseStore } from "../../store/courseStore";
 import { useModuleStore } from "../../store/moduleStore";
 import { useQuizStore } from "../../store/quizStore";
 
 export default function CourseScreen() {
   const { id: pathId } = useLocalSearchParams<{ id: string }>();
-  const { activeCourseId, activeCourseName } = useCourseStore();
-  const { modules, isFetching, fetchModules, setActiveModule } =
-    useModuleStore();
-  const { activeQuiz, forceStartQuiz } = useQuizStore();
+  const insets = useSafeAreaInsets();
+  const activeCourseId = useCourseStore((state) => state.activeCourseId);
+  const activeCourseName = useCourseStore((state) => state.activeCourseName);
+  const modules = useModuleStore((state) => state.modules);
+  const isFetching = useModuleStore((state) => state.isFetching);
+  const fetchModules = useModuleStore((state) => state.fetchModules);
+  const cancelFetchModules = useModuleStore(
+    (state) => state.cancelFetchModules,
+  );
+  const setActiveModule = useModuleStore((state) => state.setActiveModule);
+  const activeQuiz = useQuizStore((state) => state.activeQuiz);
+  const forceStartQuiz = useQuizStore((state) => state.forceStartQuiz);
+  const updateGamificationStats = useAuthStore(
+    (state) => state.updateGamificationStats,
+  );
+  const claimReward = useGamificationStore((state) => state.claimReward);
 
   useEffect(() => {
-    if (pathId) {
-      fetchModules(pathId);
-    }
-  }, [pathId]);
+    if (pathId) fetchModules(pathId);
+    return cancelFetchModules;
+  }, [pathId, fetchModules, cancelFetchModules]);
 
-  // Centralizamos la lógica del click para mantener el código limpio
-  const handleModulePress = (mod: any) => {
+  const summary = modules.reduce(
+    (totals, mod) => {
+      if (mod.state === "completed") totals.completed += 1;
+      else if (mod.type === "quiz") {
+        totals.quizzes += 1;
+        totals.stars += 5;
+      } else totals.xp += 100;
+      return totals;
+    },
+    { completed: 0, xp: 0, stars: 0, quizzes: 0 },
+  );
+  const progressPercent = modules.length
+    ? Math.round((summary.completed / modules.length) * 100)
+    : 0;
+
+  const handleModulePress = async (mod: any) => {
+    //Acciones dependiendo de si ta bloqueado o no
+    console.log("hola")
     if (mod.state === "locked") {
+      
       Toast.show({
         type: "error",
         text1: "Módulo bloqueado 🔒",
@@ -232,16 +69,42 @@ export default function CourseScreen() {
       });
       return;
     }
-
+   
+    Toast.hide();
     setActiveModule(mod.id);
 
     if (mod.type === "quiz") {
+      // Creamos una sub-función para manejar la entrada y el cobro de energía
+      // Solo para el quiz, cobra antes de entrar para evitar trampa
+      const enterQuiz = async () => {
+        const activeUser = useAuthStore.getState().activeUser;
+        if ((activeUser?.energiaBalance || 0) < 20) {
+          Toast.show({
+            type: "error",
+            text1: "Energía Insuficiente ⚡",
+            text2: "Necesitas al menos 20 de energía para el examen final.",
+          });
+          return;
+        }
+
+        // Cobramos la energía antes de entrar
+        await claimReward("ENERGY", "quiz_attempt", "LESS_ENERGY");
+        updateGamificationStats(0, -20);
+
+        // Forzamos el inicio limpio para evitar cruces
+        forceStartQuiz(activeCourseId!, pathId);
+        setTimeout(() => {
+          router.push({ pathname: "/lesson/quiz", params: { pathId } } as any);
+        }, 50);
+      };
+
+      // Verificamos si hay un quiz abandonado
       if (
         activeQuiz &&
         (activeQuiz.languageId !== activeCourseId ||
           activeQuiz.pathId !== pathId)
       ) {
-        // Alerta interactiva con Toast
+        // Por si ya han empezado uno
         Toast.show({
           type: "error",
           text1: "Quiz en progreso ⚠️",
@@ -249,101 +112,108 @@ export default function CourseScreen() {
           visibilityTime: 5000,
           onPress: () => {
             forceStartQuiz(activeCourseId!, pathId);
-            Toast.hide(); // Ocultamos el toast manualmente
-            router.push("/lesson/quiz" as any);
+            Toast.hide();
+            // Navegación directa
+            router.push({
+              pathname: "/lesson/quiz",
+              params: { pathId },
+            } as any);
           },
         });
         return;
       }
-      router.push("/lesson/quiz" as any);
+
+      // Si no hay conflictos, intentamos entrar directamente
+      await enterQuiz();
     } else {
-      router.push("/lesson/markdown" as any);
+      setTimeout(() => {
+        router.push({ pathname: "/lesson/markdown", params: { pathId } } as any);
+      }, 50);
     }
   };
-
   return (
-    <View className="flex-1 bg-[#0d1117]">
-      <View className="flex-row items-center justify-between px-4 pt-12 pb-4 border-b border-gray-800 bg-[#0d1117]">
+    // Asignamos un Key estático para evitar que el router pierda el contexto
+    // No sé si hará algo
+    <View key="course-view" style={{"flex":1,"backgroundColor":"#0d1117"}}>
+      <View style={{"flexDirection":"row","alignItems":"center","justifyContent":"space-between","paddingHorizontal":16,"paddingTop":48,"paddingBottom":16,"borderBottomWidth":1,"borderColor":"#1f2937","backgroundColor":"#0d1117"}}>
         <Pressable
           onPress={() => router.back()}
-          className="w-10 h-10 rounded-full bg-[#181c22] border border-gray-700 items-center justify-center active:bg-gray-700 transition-colors"
+          style={{"width":40,"height":40,"borderRadius":9999,"backgroundColor":"#181c22","borderWidth":1,"borderColor":"#374151","alignItems":"center","justifyContent":"center"}}
         >
           <MaterialIcons name="arrow-back" size={24} color="#9ca3af" />
         </Pressable>
 
-        <Text className="text-white font-bold text-lg">
+        <Text style={{"color":"#ffffff","fontWeight":"700","fontSize":18}}>
           Ruta de Aprendizaje
         </Text>
-        <View className="w-10 h-10" />
+        <View style={{"width":40,"height":40}} />
       </View>
 
       <ScrollView
-        contentContainerStyle={{ alignItems: "center", paddingBottom: 40 }}
+        style={{"flex":1}}
+        contentContainerStyle={{ alignItems: "center", paddingBottom: 32 }}
       >
-        <View className="w-full max-w-md px-4 pt-8">
-          <View className="items-center mb-10">
-            <Text className="text-2xl font-bold text-white mb-2 text-center tracking-tight">
+        <View style={{"width":"100%","maxWidth":448,"paddingHorizontal":16,"paddingTop":32}}>
+          <View style={{"alignItems":"center","marginBottom":40}}>
+            <Text style={{"fontSize":24,"fontWeight":"700","color":"#ffffff","marginBottom":8,"textAlign":"center","letterSpacing":-0.25}}>
               {activeCourseName} - Nivel {pathId}
             </Text>
-            <Text className="text-gray-400 text-sm text-center">
+            <Text style={{"color":"#9ca3af","fontSize":14,"textAlign":"center"}}>
               Continúa tu ruta de aprendizaje
             </Text>
           </View>
 
-          {isFetching ? (
-            <ActivityIndicator size="large" color="#3b82f6" className="mt-10" />
+          {isFetching && modules.length === 0 ? (
+            <ActivityIndicator size="large" color="#3b82f6" style={{"marginTop":40}} />
           ) : (
-            <View className="relative w-full py-4">
-              <View className="absolute top-0 bottom-0 left-1/2 w-[2px] bg-gray-700 -translate-x-[1px] z-0" />
+            <View style={{"position":"relative","width":"100%","paddingVertical":16}}>
+              {/* 1. Línea Central Vertical con z-0 */}
+              <View 
+                pointerEvents="none"
+              style={{ position: "absolute", top: 0, bottom: 0, left: "50%", width: 2, backgroundColor: "#374151", transform: [{ translateX: -1 }], zIndex: 0 }} />
 
               {modules.map((mod, index) => {
                 const isLeft = index % 2 === 0;
+                const isQuiz = mod.type === "quiz";
+                const isActiveQuiz =
+                  isQuiz &&
+                  activeQuiz?.languageId === activeCourseId &&
+                  activeQuiz?.pathId === pathId;
 
-                let cardStyle = "border-gray-800 opacity-60";
-                let dotStyle = "border-gray-700 bg-[#161b22]";
-                let titleStyle = "text-gray-500";
-                let subtitleStyle = "text-gray-600";
+                let cardStyle: ViewStyle = { borderColor: "#1f2937" };
+                let dotStyle: ViewStyle = { borderColor: "#374151", backgroundColor: "#161b22" };
+                let titleStyle: TextStyle = { color: "#6b7280" };
+                let subtitleStyle: TextStyle = { color: "#4b5563" };
                 let iconColor = "#6b7280";
                 let iconName: any = "lock";
 
                 if (mod.state === "completed") {
-                  cardStyle = isLeft
-                    ? "border-emerald-500 border-r-4"
-                    : "border-emerald-500 border-l-4";
-                  dotStyle = "border-emerald-500 bg-[#161b22]";
-                  titleStyle = "text-white";
-                  subtitleStyle = "text-gray-400";
+                  cardStyle = { borderColor: "#10b981", borderRightWidth: isLeft ? 4 : undefined, borderLeftWidth: isLeft ? undefined : 4 };
+                  dotStyle = { borderColor: "#10b981", backgroundColor: "#161b22" };
+                  titleStyle = { color: "#ffffff" };
+                  subtitleStyle = { color: "#9ca3af" };
                   iconColor = "#10b981";
                   iconName = "check";
                 } else if (mod.state === "in-progress") {
-                  cardStyle = isLeft
-                    ? "border-blue-400 border-r-4"
-                    : "border-blue-400 border-l-4";
-                  dotStyle =
-                    "border-blue-400 bg-blue-900/20 shadow-lg shadow-blue-500/50";
-                  titleStyle = "text-blue-400";
-                  subtitleStyle = "text-gray-400";
+                  cardStyle = { borderColor: "#60a5fa", borderRightWidth: isLeft ? 4 : undefined, borderLeftWidth: isLeft ? undefined : 4 };
+                  dotStyle = { borderColor: "#60a5fa", backgroundColor: "#1e3a8a" };
+                  titleStyle = { color: "#60a5fa" };
+                  subtitleStyle = { color: "#9ca3af" };
                   iconColor = "#60a5fa";
                   iconName = "play-arrow";
-                } else if (mod.type === "quiz") {
-                  cardStyle =
-                    "border-gray-700 border-dashed bg-[#1c2026] opacity-60";
-                  dotStyle = "border-gray-700 border-dashed bg-[#1c2026]";
+                } else if (isQuiz) {
+                  cardStyle = { borderColor: "#374151", borderStyle: "dashed", backgroundColor: "#1c2026" };
+                  dotStyle = { borderColor: "#374151", borderStyle: "dashed", backgroundColor: "#1c2026" };
                   iconName = "emoji-events";
                 }
-
-                const baseCardClasses = `p-4 bg-[#161b22] rounded-xl border transition-transform ${
-                  mod.state !== "locked" ? "active:scale-95" : ""
-                }`;
 
                 return (
                   <View
                     key={mod.id}
-                    className="flex-row w-full mb-8 relative items-center z-10"
+                    style={{"flexDirection":"row","width":"100%","marginBottom":32,"position":"relative","alignItems":"center","zIndex":10}}
+                    
                   >
-                    <View
-                      className={`absolute left-1/2 w-8 h-8 rounded-full border-2 items-center justify-center z-20 -translate-x-4 ${dotStyle}`}
-                    >
+                    <View style={[{ position: "absolute", left: "50%", width: 32, height: 32, borderRadius: 9999, borderWidth: 2, alignItems: "center", justifyContent: "center", zIndex: 20, transform: [{ translateX: -16 }] }, dotStyle]}>
                       <MaterialIcons
                         name={iconName}
                         size={16}
@@ -351,45 +221,60 @@ export default function CourseScreen() {
                       />
                     </View>
 
-                    {isLeft ? (
-                      <>
-                        <Pressable
-                          className="w-1/2 pr-8"
-                          onPress={() => handleModulePress(mod)} // <-- Uso de la función centralizada
-                        >
-                          <View className={`${baseCardClasses} ${cardStyle}`}>
-                            <Text
-                              className={`text-base font-bold mb-1 ${titleStyle}`}
-                            >
-                              {mod.title}
-                            </Text>
-                            <Text className={`text-xs ${subtitleStyle}`}>
-                              {mod.subtitle}
+                    <Pressable
+                      style={({ pressed }) => [
+                        { width: "50%", zIndex: 100, marginRight: isLeft ? "auto" : undefined, marginLeft: isLeft ? undefined : "auto", paddingRight: isLeft ? 32 : undefined, paddingLeft: isLeft ? undefined : 32 },
+                        pressed && mod.state !== "locked" ? { transform: [{ scale: 0.95 }] } : undefined,
+                      ]}
+                      onPress={() => handleModulePress(mod)}
+                    >
+                      <View style={[{ padding: 16, backgroundColor: "#161b22", borderRadius: 12, borderWidth: 1 }, cardStyle]}>
+                        <View style={{"flexDirection":"row","alignItems":"center","justifyContent":"space-between"}}>
+                          <Text
+                            style={[{ flex: 1, fontSize: 16, fontWeight: "700", marginBottom: 4 }, titleStyle]}
+                          >
+                            {mod.title}
+                          </Text>
+                          {isActiveQuiz && (
+                            <MaterialIcons
+                              name="play-circle-filled"
+                              size={16}
+                              color="#fbbf24"
+                            />
+                          )}
+                        </View>
+                        <Text style={[{ fontSize: 12 }, subtitleStyle]}>
+                          {mod.subtitle}
+                        </Text>
+                        {isActiveQuiz && (
+                            <Text style={{ marginTop: 4, fontSize: 9, fontWeight: "700", letterSpacing: 1, color: isQuiz ? "#fcd34d" : "#93c5fd" }}>
+                            EXAMEN EN CURSO
+                          </Text>
+                        )}
+                        <View style={{ marginTop: 12, flexDirection: "row", flexWrap: "wrap", alignItems: "center", borderTopWidth: 1, borderColor: "#374151", paddingTop: 8 }}>
+                          <View style={{"flexDirection":"row","alignItems":"center"}}>
+                            <MaterialIcons
+                              name="bolt"
+                              size={14}
+                              color="#fbbf24"
+                            />
+                            <Text style={{ marginLeft: 4, fontSize: 10, fontWeight: "600", color: "#fcd34d" }}>
+                              -20 energía
                             </Text>
                           </View>
-                        </Pressable>
-                        <View className="w-1/2" />
-                      </>
-                    ) : (
-                      <>
-                        <View className="w-1/2" />
-                        <Pressable
-                          className="w-1/2 pl-8"
-                          onPress={() => handleModulePress(mod)} // <-- Uso de la función centralizada
-                        >
-                          <View className={`${baseCardClasses} ${cardStyle}`}>
-                            <Text
-                              className={`text-base font-bold mb-1 ${titleStyle}`}
-                            >
-                              {mod.title}
-                            </Text>
-                            <Text className={`text-xs ${subtitleStyle}`}>
-                              {mod.subtitle}
+                          <View style={{"flexDirection":"row","alignItems":"center"}}>
+                            <MaterialIcons
+                              name={isQuiz ? "star" : "auto-awesome"}
+                              size={14}
+                              color={isQuiz ? "#facc15" : "#60a5fa"}
+                            />
+                            <Text style={{ marginLeft: 4, fontSize: 10, fontWeight: "600", color: isQuiz ? "#fcd34d" : "#93c5fd" }}>
+                              {isQuiz ? "+5 estrellas" : "+100 XP"}
                             </Text>
                           </View>
-                        </Pressable>
-                      </>
-                    )}
+                        </View>
+                      </View>
+                    </Pressable>
                   </View>
                 );
               })}
@@ -397,6 +282,70 @@ export default function CourseScreen() {
           )}
         </View>
       </ScrollView>
+
+      <View style={{ borderTopWidth: 1, borderColor: "#1f2937", backgroundColor: "#0d1117", paddingHorizontal: 16, paddingTop: 12, paddingBottom: Math.max(insets.bottom + 50, 12) }}>
+        <View style={{"width":"100%","maxWidth":448,"alignSelf":"center","borderRadius":16,"borderWidth":1,"borderColor":"#60a5fa","backgroundColor":"#161b22","paddingHorizontal":16,"paddingVertical":12}}>
+          <View style={{"flexDirection":"row","alignItems":"center","justifyContent":"space-between"}}>
+            <View style={{"marginRight":12,"flex":1}}>
+              <Text numberOfLines={1} style={{"fontSize":14,"fontWeight":"700","color":"#ffffff"}}>
+                {activeCourseName}
+              </Text>
+              <Text style={{"fontSize":12,"color":"#9ca3af"}}>Nivel {pathId}</Text>
+            </View>
+            <Text style={{ fontSize: 12, fontWeight: "800", color: "#93c5fd" }}>
+              {summary.completed}/{modules.length} módulos
+            </Text>
+          </View>
+
+          <View style={{"marginTop":8,"flexDirection":"row","alignItems":"center","justifyContent":"space-between"}}>
+            <Text style={{"fontSize":16,"fontWeight":"700","color":"#ffffff"}}>Progreso</Text>
+            <Text style={{ fontSize: 20, color: "#a5b4fc" }}>
+              {progressPercent}%
+            </Text>
+          </View>
+          <View style={{ marginTop: 4, height: 8, overflow: "hidden", borderRadius: 9999, backgroundColor: "#374151" }}>
+            <View
+              style={{ height: "100%", borderRadius: 9999, backgroundColor: "#60a5fa", width: `${progressPercent}%` }}
+            />
+          </View>
+
+          <View style={{ marginTop: 12, flexDirection: "row", borderTopWidth: 1, borderColor: "#374151", paddingTop: 8 }} >
+            <View style={{"flex":1}}>
+              <Text style={{ marginLeft: 4, fontSize: 14, fontWeight: "800", marginBottom: 8, color: "#93c5fd" }}>Recursos por Obtener:</Text>
+              <View style={{ width: "90%", flexDirection: "row", justifyContent: "space-around" }}>
+                <View style={{"flex":1,"alignItems":"center"}}>
+                  <View style={{"flexDirection":"row","alignItems":"center"}}>
+                    <MaterialIcons name="auto-awesome" size={15} color="#60a5fa" />
+                    <Text style={{ marginLeft: 4, fontSize: 14, fontWeight: "700", color: "#d8b4fe" }}>
+                      {summary.xp} XP
+                    </Text>
+                  </View>
+                  <Text style={{"fontSize":10,"color":"#9ca3af"}}>XP</Text>
+                </View>
+                <View style={{"flex":1,"alignItems":"center"}}>
+                  <View style={{"flexDirection":"row","alignItems":"center"}}>
+                    <MaterialIcons name="star" size={15} color="#facc15" />
+                    <Text style={{ marginLeft: 4, fontSize: 14, fontWeight: "700", color: "#fde047" }}>
+                      {summary.stars}
+                    </Text>
+                  </View>
+                  <Text style={{"fontSize":10,"color":"#9ca3af"}}>estrellas</Text>
+                </View>
+              </View>
+
+            </View>
+            <View style={{ flex: 1, alignItems: "center", justifyContent: "center", borderLeftWidth: 2, borderColor: "#a5b4fc" }}>
+              <View style={{"flexDirection":"row","alignItems":"center"}}>
+                <MaterialIcons name="quiz" size={15} color="#a78bfa" />
+                <Text style={{ marginLeft: 4, fontSize: 14, fontWeight: "700", color: "#d8b4fe" }}>
+                  {summary.quizzes}
+                </Text>
+              </View>
+              <Text style={{"fontSize":10,"color":"#9ca3af"}}>exámenes pendientes</Text>
+            </View>
+          </View>
+        </View>
+      </View>
     </View>
   );
 }

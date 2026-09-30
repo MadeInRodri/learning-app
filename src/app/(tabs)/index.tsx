@@ -1,101 +1,256 @@
-// import { View, Text, Pressable } from "react-native";
-// import { router } from "expo-router";
-
-// export default function LearnScreen() {
-//   // ARREGLO DE PRUEBA
-//   const languages = [
-//     { id: "python", name: "Python" },
-//     { id: "js", name: "JS" },
-//     { id: "react", name: "React" },
-//     { id: "php", name: "PHP" },
-//   ];
-
-//   return (
-//     <View className="flex-1 bg-[#0d1117] items-center">
-//       <View className="w-full max-w-md px-4 pt-10">
-//         {/* Títulos */}
-//         <View className="items-center mb-10">
-//           <Text className="text-2xl font-bold text-white mb-2 tracking-tight">
-//             Lenguajes disponibles
-//           </Text>
-//           <Text className="text-gray-400 text-sm">
-//             Selecciona tu ruta de aprendizaje
-//           </Text>
-//         </View>
-
-//         {/* Grid */}
-//         <View className="flex-row flex-wrap justify-between">
-//           {languages.map((lang) => (
-//             <Pressable
-//               key={lang.id}
-//               // Navegación a la pantalla de ruta (NO LISTO)
-//               onPress={() => router.push("/(tabs)/path" as any)}
-//               className="w-[47%] aspect-square bg-[#181c22] border border-gray-800 rounded-xl items-center justify-center mb-4 active:bg-gray-800 active:scale-95 transition-transform"
-//             >
-//               <Text className="text-white text-xl font-bold mb-3">
-//                 {lang.name}
-//               </Text>
-//               <View className="w-8 h-1 rounded-full bg-gray-600" />
-//             </Pressable>
-//           ))}
-//         </View>
-//       </View>
-//     </View>
-//   );
-// }
-
 import GamifiedHeader from "@/components/GamifiedHeader";
+import { db } from "@/config/firebase";
+import { useAuthStore } from "@/store/authStore";
 import { useCourseStore } from "@/store/courseStore";
+import { useProgressStore } from "@/store/progressStore";
+import { MaterialIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { useEffect } from "react";
-import { ActivityIndicator, Pressable, Text, View } from "react-native";
+import { collection, getDocs } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View
+} from "react-native";
 import { useLanguageStore } from "../../store/languageStore";
 
 export default function LearnScreen() {
   const { languages, isFetching, fetchLanguages } = useLanguageStore();
+  const activeUser = useAuthStore((state) => state.activeUser);
+  const progress = useProgressStore(
+    (state) => state.progressCache[activeUser?.id ?? -1],
+  );
+  const [pathTotals, setPathTotals] = useState<Record<string, number>>({});
 
   useEffect(() => {
     fetchLanguages();
-  }, []);
+  }, [fetchLanguages]);
+
+  useEffect(() => {
+    if (!languages.length) return;
+    let cancelled = false;
+
+    Promise.all(
+      languages.map(async ({ id }) => [
+        id,
+        (await getDocs(collection(db, "languages", id, "paths"))).size,
+      ] as const),
+    )
+      .then((totals) => {
+        if (!cancelled) setPathTotals(Object.fromEntries(totals));
+      })
+      .catch((error) => console.error("Error cargando rutas:", error));
+
+    return () => {
+      cancelled = true;
+    };
+  }, [languages]);
+
+  const handleSelectLanguage = (id: string, language: string) => {
+    useCourseStore.getState().setActiveCourse(id, language);
+    router.push("/(tabs)/path" as any);
+  };
 
   return (
-    <View className="flex-1 bg-[#0d1117] items-center">
-      <View className="w-full max-w-md px-4 pt-10">
-        <GamifiedHeader></GamifiedHeader>
-        <View className="items-center mb-10">
-          <Text className="text-2xl font-bold text-white mb-2 tracking-tight">
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView 
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.headerWrapper}>
+          <GamifiedHeader />
+        </View>
+
+        <View style={styles.titleSection}>
+          <Text style={styles.title}>
             Lenguajes disponibles
           </Text>
-          <Text className="text-gray-400 text-sm">
+          <Text style={styles.subtitle}>
             Selecciona tu ruta de aprendizaje
           </Text>
         </View>
 
-        {/* Si no hay caché y está cargando, mostramos un spinner */}
         {isFetching && languages.length === 0 ? (
-          <ActivityIndicator size="large" color="#3b82f6" className="mt-10" />
+          <View style={styles.loaderContainer}>
+            <ActivityIndicator size="large" color="#3b82f6" />
+          </View>
         ) : (
-          <View className="flex-row flex-wrap justify-between">
-            {languages.map((lang) => (
-              <Pressable
-                key={lang.id}
-                onPress={() => {
-                  useCourseStore
-                    .getState()
-                    .setActiveCourse(lang.id, lang.language);
-                  router.push("/(tabs)/path" as any);
-                }}
-                className="w-[47%] aspect-square bg-[#181c22] border border-gray-800 rounded-xl items-center justify-center mb-4 active:bg-gray-800 active:scale-95 transition-transform"
-              >
-                <Text className="text-white text-xl font-bold mb-3">
-                  {lang.language}
-                </Text>
-                <View className="w-8 h-1 rounded-full bg-gray-600" />
-              </Pressable>
-            ))}
+          <View style={styles.gridContainer}>
+            {languages.map((lang) => {
+              const completedPaths = progress?.completedPaths.filter((path) =>
+                path.startsWith(`${lang.id}-`),
+              ).length ?? 0;
+              const courseProgress = pathTotals[lang.id]
+                ? Math.min(100, Math.round((completedPaths / pathTotals[lang.id]) * 100))
+                : 0;
+
+              return (
+                <Pressable
+                  key={lang.id}
+                  onPress={() => handleSelectLanguage(lang.id, lang.language)}
+                  style={styles.card}
+                >
+                <View style={styles.cardHeader}>
+                  <View style={styles.avatar}>
+                    <Text style={styles.avatarText}>
+                      {lang.language.charAt(0).toUpperCase()}
+                    </Text>
+                  </View>
+                  <View style={styles.actionIcon}>
+                    <MaterialIcons name="arrow-forward" size={16} color="#6B7280" />
+                  </View>
+                </View>
+
+                <View style={styles.cardBody}>
+                  <Text style={styles.cardTitle} numberOfLines={1}>
+                    {lang.language}
+                  </Text>
+                  <Text style={styles.cardSubtitle}>
+                    {courseProgress}% de modulos completados
+                  </Text>
+                </View>
+
+                <View style={styles.cardFooter}>
+                  <View style={styles.progressBackground}>
+                    <View style={[styles.progressFill, { width: `${courseProgress}%` }]} />
+                  </View>
+                </View>
+                </Pressable>
+              );
+            })}
           </View>
         )}
-      </View>
-    </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#0F1115',
+  },
+  scrollContent: {
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 40,
+    alignItems: 'center',
+  },
+  headerWrapper: {
+    width: '100%',
+    maxWidth: 500,
+    marginBottom: 24,
+  },
+  titleSection: {
+    width: '100%',
+    maxWidth: 500,
+    marginBottom: 24,
+    paddingHorizontal: 4,
+  },
+  title: {
+    fontSize: 26,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    letterSpacing: -0.5,
+    marginBottom: 6,
+  },
+  subtitle: {
+    fontSize: 15,
+    color: '#9CA3AF',
+    fontWeight: '500',
+  },
+  loaderContainer: {
+    marginTop: 60,
+    alignItems: 'center',
+  },
+  gridContainer: {
+    width: '100%',
+    maxWidth: 500,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    
+  },
+  
+  card: {
+    width: '40%',
+    aspectRatio: 0.95,
+    backgroundColor: '#1E222B',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#2D323F',
+    padding: 16,
+    marginBottom: 16,
+    justifyContent: 'space-between',
+  },
+  cardPressed: {
+    backgroundColor: '#262B36',
+    borderColor: '#3b82f6',
+    transform: [{ scale: 0.96 }],
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    
+  },
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: '#1B2A42',
+    borderWidth: 1,
+    borderColor: '#3B82F6',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  avatarText: {
+    color: '#3b82f6',
+    fontSize: 18,
+    fontWeight: 'bold',
+    fontFamily: 'monospace',
+  },
+  actionIcon: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#161920',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cardBody: {
+    marginTop: 12,
+  },
+  cardTitle: {
+    color: '#F9FAFB',
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: 4,
+  },
+  cardSubtitle: {
+    color: '#6B7280',
+    fontSize: 9,
+    textTransform: 'uppercase',
+    fontWeight: '600',
+    letterSpacing: 0.5,
+  },
+  cardFooter: {
+    marginTop: 12,
+  },
+  progressBackground: {
+    width: '100%',
+    height: 6,
+    backgroundColor: '#2D323F',
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    backgroundColor: '#3b82f6',
+    borderRadius: 3,
+  },
+});

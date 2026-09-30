@@ -12,23 +12,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 // Que se inició un curso
 // Cuando pase un módulo
 
-// interface QuizzAI {
-//   contentType: "quizz" | "code";
-//   weekConcept: string;
-//   message: string;
-//   rewardType: "XP";
-//   topics: {
-//     id: number;
-//     question: string;
-//     code: string | null;
-//     options: string[];
-//     correctAnswer: "A" | "B" | "C" | "D";
-//     explanation: string;
-//   }[];
-// }
-
-// Última fecha que inició
-
+//Data de cuando falle una pregunta
 export interface FailedQuestion {
   language: string;
   path: string | number;

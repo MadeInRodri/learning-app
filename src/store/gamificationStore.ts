@@ -88,7 +88,13 @@ export const useGamificationStore = create<GamificationState>()((set, get) => ({
       const response = await api.get("/game/week_quiz", {
         params: { id: user.id },
       });
-      return response.data;
+      const AiWeekQuizz = response.data.payload;
+      //Aqui validar...
+      if(AiWeekQuizz){
+        return AiWeekQuizz
+      }
+
+      return null;
     } catch (error) {
       console.error("Error verificando quiz semanal:", error);
       return null;

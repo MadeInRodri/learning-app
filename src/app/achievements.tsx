@@ -82,26 +82,19 @@ export default function AchievementsScreen() {
             {achievements.map((ach) => {
               // Lógica dinámica de estilos según el color/estado
               let borderClass = "border-gray-800";
-              let shadowClass = "";
               let iconColor = "#6b7280"; // gray-500
-              let textOpacity = "opacity-50";
-
               if (ach.isUnlocked) {
-                textOpacity = "opacity-100";
                 switch (ach.color) {
                   case "green":
                     borderClass = "border-emerald-500";
-                    shadowClass = "shadow-lg shadow-emerald-500/40";
                     iconColor = "#10b981";
                     break;
                   case "purple":
                     borderClass = "border-purple-500";
-                    shadowClass = "shadow-lg shadow-purple-500/40";
                     iconColor = "#a855f7";
                     break;
                   case "gold":
                     borderClass = "border-yellow-500";
-                    shadowClass = "shadow-lg shadow-yellow-500/40";
                     iconColor = "#eab308";
                     break;
                 }
@@ -110,11 +103,11 @@ export default function AchievementsScreen() {
               return (
                 <View
                   key={ach.id}
-                  className={`items-center w-[25%] ${!ach.isUnlocked ? "opacity-50" : ""}`}
+                  className="items-center w-[25%]"
                 >
                   {/* Círculo de la Medalla */}
                   <View
-                    className={`w-[72px] h-[72px] rounded-2xl border-2 bg-[#161b22] items-center justify-center mb-2 ${borderClass} ${shadowClass}`}
+                    className={`w-[72px] h-[72px] rounded-2xl border-2 bg-[#161b22] items-center justify-center mb-2 ${borderClass}`}
                   >
                     <MaterialIcons
                       name={ach.icon as any}
@@ -124,7 +117,7 @@ export default function AchievementsScreen() {
                   </View>
                   {/* Título de la Medalla */}
                   <Text
-                    className={`font-mono text-[10px] text-center text-gray-300 leading-tight ${textOpacity}`}
+                    className="font-mono text-[10px] text-center text-gray-300 leading-tight"
                   >
                     {ach.title}
                   </Text>
@@ -134,7 +127,7 @@ export default function AchievementsScreen() {
           </View>
 
           {/* Resumen de Actividad */}
-          <View className="bg-[#161b22] border border-gray-800 rounded-xl p-5 shadow-md">
+          <View className="bg-[#161b22] border border-gray-800 rounded-xl p-5">
             <Text className="text-white font-bold mb-4 text-base">
               Resumen de Actividad
             </Text>

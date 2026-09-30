@@ -64,7 +64,7 @@ export default function ProgressScreen() {
             if (mission.state === "completed") {
               borderLeftColor = "border-l-emerald-500";
               iconColor = "#10b981"; // emerald-500
-              progressBg = "bg-emerald-900/30";
+              progressBg = "bg-emerald-900";
               progressFill = "bg-emerald-500";
               countColor = "text-emerald-400";
               xpColor = "text-gray-500"; // Se apaga la recompensa si ya se cobró
@@ -77,7 +77,7 @@ export default function ProgressScreen() {
               iconColor = "#3b82f6"; // blue-500
               progressBg = "bg-gray-800";
               progressFill = "bg-blue-500";
-              countBg = "bg-blue-900/20";
+              countBg = "bg-blue-900";
               countColor = "text-blue-400";
               xpColor = "text-blue-400";
             }

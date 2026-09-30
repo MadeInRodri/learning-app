@@ -75,7 +75,7 @@ export default function RegisterScreen() {
     <View className="flex-1 items-center justify-center bg-[#0d1117] p-4">
       <View className="w-full max-w-sm rounded-xl  p-2">
         <View className="items-center mb-6">
-          <View className="w-16 h-16 bg-blue-500/20 rounded-2xl items-center justify-center mb-4 border border-blue-500/50">
+          <View className="w-16 h-16 bg-blue-500 rounded-2xl items-center justify-center mb-4 border border-blue-500">
             <MaterialIcons name="code" size={32} color="#3b82f6" />
           </View>
 

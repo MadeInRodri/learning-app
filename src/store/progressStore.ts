@@ -5,6 +5,7 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { api } from "../config/api";
 import { COURSE_DB_MAP } from "../config/courseMapping";
+import type { AIQuizData } from "./aiQuizStore";
 import { useAuthStore } from "./authStore";
 
 interface UserProgress {
@@ -25,7 +26,10 @@ interface ProgressState {
     courseId: string,
     pathId: string,
     moduleId: string,
-  ) => void;
+    moduleTitle: string,
+    totalCourseModules: number,
+    courseTitle: string,
+  ) => Promise<AIQuizData | null>;
 
   // Este es para cuando pasamos un quiz, desbloqueamos la ruta siguiente
   passModule: (
@@ -104,10 +108,18 @@ export const useProgressStore = create<ProgressState>()(
       },
 
       // Clases normales, desbloquea solo la siguiente lección
-      completeNormalLesson: (courseId, pathId, moduleId) => {
+      completeNormalLesson: async (
+        courseId,
+        pathId,
+        moduleId,
+        moduleTitle,
+        totalCourseModules,
+        courseTitle,
+      ) => {
         //Traigo usuario
         const user = useAuthStore.getState().activeUser;
-        if (!user) return;
+
+        if (!user) return null;
 
         const cache = get().progressCache[user.id] || {
           registeredCourses: [],
@@ -127,6 +139,11 @@ export const useProgressStore = create<ProgressState>()(
           ? cache.completedModules
           : [...(cache.completedModules || []), moduleKey];
 
+        const rawPercentage = Math.round(
+          (newCompletedModules.length / totalCourseModules) * 100,
+        );
+        const percentage = rawPercentage > 100 ? 100 : rawPercentage;
+
         // Y el siguiente para ser desbloqueado
         const newUnlockedModules = cache.unlockedModules?.includes(
           nextModuleKey,
@@ -145,6 +162,22 @@ export const useProgressStore = create<ProgressState>()(
             },
           },
         }));
+
+        try {
+          const mysqlCourseId = COURSE_DB_MAP[courseId];
+          const response = await api.post(`/course/${mysqlCourseId}/pass_module`, {
+            percentage,
+            userId: user.id,
+            passedModule: moduleTitle,
+            courseTitle: courseTitle || courseId,
+          });
+
+          const aiQuiz = response.data?.payload as AIQuizData | null;
+          return aiQuiz?.topics?.length ? aiQuiz : null;
+        } catch (error) {
+          console.error("Error en la API al pasar ruta:", error);
+        }
+        return null;
       },
 
       // Para el quiz, termina la ruta, llama a la API y abre la sig. ruta
@@ -213,12 +246,20 @@ export const useProgressStore = create<ProgressState>()(
         //Además de mandar a la API que ya pasó el módulo
         try {
           const mysqlCourseId = COURSE_DB_MAP[courseId];
-          await api.post(`/course/${mysqlCourseId}/pass_module`, {
+          const response = await api.post(`/course/${mysqlCourseId}/pass_module`, {
             percentage,
             userId: user.id,
             passedModule: moduleTitle,
             courseTitle: courseTitle || courseId,
           });
+
+          const AiQuiz = response.data.payload;
+
+          if (AiQuiz) {
+            console.log(AiQuiz);
+            //Hacer algo
+          }
+
         } catch (error) {
           console.error("Error en la API al pasar ruta:", error);
         }

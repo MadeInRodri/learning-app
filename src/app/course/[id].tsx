@@ -1,8 +1,8 @@
 import { useAuthStore } from "@/store/authStore";
 import { useGamificationStore } from "@/store/gamificationStore";
 import { MaterialIcons } from "@expo/vector-icons";
-import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
-import { useCallback } from "react";
+import { router, useLocalSearchParams } from "expo-router";
+import { useEffect } from "react";
 import {
   ActivityIndicator,
   Pressable,
@@ -10,6 +10,7 @@ import {
   Text,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import { useCourseStore } from "../../store/courseStore";
 import { useModuleStore } from "../../store/moduleStore";
@@ -17,22 +18,42 @@ import { useQuizStore } from "../../store/quizStore";
 
 export default function CourseScreen() {
   const { id: pathId } = useLocalSearchParams<{ id: string }>();
-  const { activeCourseId, activeCourseName } = useCourseStore();
-  const { modules, isFetching, fetchModules, setActiveModule } =
-    useModuleStore();
-  const { activeQuiz, forceStartQuiz } = useQuizStore();
-  const { activeUser, updateGamificationStats } = useAuthStore();
-  const { claimReward } = useGamificationStore();
-
-  // Refrescamos los módulos siempre que la pantalla retome el foco
-  // Quizá el problema
-  useFocusEffect(
-    useCallback(() => {
-      if (pathId) {
-        fetchModules(pathId);
-      }
-    }, [pathId]),
+  const insets = useSafeAreaInsets();
+  const activeCourseId = useCourseStore((state) => state.activeCourseId);
+  const activeCourseName = useCourseStore((state) => state.activeCourseName);
+  const modules = useModuleStore((state) => state.modules);
+  const isFetching = useModuleStore((state) => state.isFetching);
+  const fetchModules = useModuleStore((state) => state.fetchModules);
+  const cancelFetchModules = useModuleStore(
+    (state) => state.cancelFetchModules,
   );
+  const setActiveModule = useModuleStore((state) => state.setActiveModule);
+  const activeQuiz = useQuizStore((state) => state.activeQuiz);
+  const forceStartQuiz = useQuizStore((state) => state.forceStartQuiz);
+  const updateGamificationStats = useAuthStore(
+    (state) => state.updateGamificationStats,
+  );
+  const claimReward = useGamificationStore((state) => state.claimReward);
+
+  useEffect(() => {
+    if (pathId) fetchModules(pathId);
+    return cancelFetchModules;
+  }, [pathId, fetchModules, cancelFetchModules]);
+
+  const summary = modules.reduce(
+    (totals, mod) => {
+      if (mod.state === "completed") totals.completed += 1;
+      else if (mod.type === "quiz") {
+        totals.quizzes += 1;
+        totals.stars += 5;
+      } else totals.xp += 100;
+      return totals;
+    },
+    { completed: 0, xp: 0, stars: 0, quizzes: 0 },
+  );
+  const progressPercent = modules.length
+    ? Math.round((summary.completed / modules.length) * 100)
+    : 0;
 
   const handleModulePress = async (mod: any) => {
     //Acciones dependiendo de si ta bloqueado o no
@@ -45,12 +66,14 @@ export default function CourseScreen() {
       return;
     }
 
+    Toast.hide();
     setActiveModule(mod.id);
 
     if (mod.type === "quiz") {
       // Creamos una sub-función para manejar la entrada y el cobro de energía
       // Solo para el quiz, cobra antes de entrar para evitar trampa
       const enterQuiz = async () => {
+        const activeUser = useAuthStore.getState().activeUser;
         if ((activeUser?.energiaBalance || 0) < 20) {
           Toast.show({
             type: "error",
@@ -66,7 +89,9 @@ export default function CourseScreen() {
 
         // Forzamos el inicio limpio para evitar cruces
         forceStartQuiz(activeCourseId!, pathId);
-        router.push({ pathname: "/lesson/quiz", params: { pathId } } as any);
+        setTimeout(() => {
+          router.push({ pathname: "/lesson/quiz", params: { pathId } } as any);
+        }, 50);
       };
 
       // Verificamos si hay un quiz abandonado
@@ -97,7 +122,9 @@ export default function CourseScreen() {
       // Si no hay conflictos, intentamos entrar directamente
       await enterQuiz();
     } else {
-      router.push({ pathname: "/lesson/markdown", params: { pathId } } as any);
+      setTimeout(() => {
+        router.push({ pathname: "/lesson/markdown", params: { pathId } } as any);
+      }, 50);
     }
   };
   return (
@@ -119,7 +146,8 @@ export default function CourseScreen() {
       </View>
 
       <ScrollView
-        contentContainerStyle={{ alignItems: "center", paddingBottom: 40 }}
+        className="flex-1"
+        contentContainerStyle={{ alignItems: "center", paddingBottom: 32 }}
       >
         <View className="w-full max-w-md px-4 pt-8">
           <View className="items-center mb-10">
@@ -140,8 +168,13 @@ export default function CourseScreen() {
 
               {modules.map((mod, index) => {
                 const isLeft = index % 2 === 0;
+                const isQuiz = mod.type === "quiz";
+                const isActiveQuiz =
+                  isQuiz &&
+                  activeQuiz?.languageId === activeCourseId &&
+                  activeQuiz?.pathId === pathId;
 
-                let cardStyle = "border-gray-800 opacity-60";
+                let cardStyle = "border-gray-800";
                 let dotStyle = "border-gray-700 bg-[#161b22]";
                 let titleStyle = "text-gray-500";
                 let subtitleStyle = "text-gray-600";
@@ -162,21 +195,20 @@ export default function CourseScreen() {
                     ? "border-blue-400 border-r-4"
                     : "border-blue-400 border-l-4";
                   dotStyle =
-                    "border-blue-400 bg-blue-900/20 shadow-lg shadow-blue-500/50";
+                    "border-blue-400 bg-blue-900";
                   titleStyle = "text-blue-400";
                   subtitleStyle = "text-gray-400";
                   iconColor = "#60a5fa";
                   iconName = "play-arrow";
-                } else if (mod.type === "quiz") {
+                } else if (isQuiz) {
                   cardStyle =
-                    "border-gray-700 border-dashed bg-[#1c2026] opacity-60";
+                    "border-gray-700 border-dashed bg-[#1c2026]";
                   dotStyle = "border-gray-700 border-dashed bg-[#1c2026]";
                   iconName = "emoji-events";
                 }
 
-                const baseCardClasses = `p-4 bg-[#161b22] rounded-xl border ${
-                  mod.state !== "locked" ? "active:scale-95" : ""
-                }`;
+                const baseCardClasses = `p-4 bg-[#161b22] rounded-xl border ${mod.state !== "locked" ? "active:scale-95" : ""
+                  }`;
 
                 return (
                   <View
@@ -193,45 +225,59 @@ export default function CourseScreen() {
                       />
                     </View>
 
-                    {isLeft ? (
-                      <>
-                        <Pressable
-                          className="w-1/2 pr-8"
-                          onPress={() => handleModulePress(mod)}
-                        >
-                          <View className={`${baseCardClasses} ${cardStyle}`}>
-                            <Text
-                              className={`text-base font-bold mb-1 ${titleStyle}`}
-                            >
-                              {mod.title}
-                            </Text>
-                            <Text className={`text-xs ${subtitleStyle}`}>
-                              {mod.subtitle}
+                    <Pressable
+                      className={`w-1/2 ${isLeft ? "mr-auto pr-8" : "ml-auto pl-8"}`}
+                      onPress={() => handleModulePress(mod)}
+                    >
+                      <View className={`${baseCardClasses} ${cardStyle}`}>
+                        <View className="flex-row items-center justify-between">
+                          <Text
+                            className={`flex-1 text-base font-bold mb-1 ${titleStyle}`}
+                          >
+                            {mod.title}
+                          </Text>
+                          {isActiveQuiz && (
+                            <MaterialIcons
+                              name="play-circle-filled"
+                              size={16}
+                              color="#fbbf24"
+                            />
+                          )}
+                        </View>
+                        <Text className={`text-xs ${subtitleStyle}`}>
+                          {mod.subtitle}
+                        </Text>
+                        {isActiveQuiz && (
+                          <Text className="mt-1 text-[9px] font-bold tracking-wider text-amber-400">
+                            EXAMEN EN CURSO
+                          </Text>
+                        )}
+                        <View className="mt-3 flex-row flex-wrap items-center gap-x-3 gap-y-1 border-t border-gray-700 pt-2">
+                          <View className="flex-row items-center">
+                            <MaterialIcons
+                              name="bolt"
+                              size={14}
+                              color="#fbbf24"
+                            />
+                            <Text className="ml-1 text-[10px] font-semibold text-amber-300">
+                              -20 energía
                             </Text>
                           </View>
-                        </Pressable>
-                        <View className="w-1/2" />
-                      </>
-                    ) : (
-                      <>
-                        <View className="w-1/2" />
-                        <Pressable
-                          className="w-1/2 pl-8"
-                          onPress={() => handleModulePress(mod)}
-                        >
-                          <View className={`${baseCardClasses} ${cardStyle}`}>
+                          <View className="flex-row items-center">
+                            <MaterialIcons
+                              name={isQuiz ? "star" : "auto-awesome"}
+                              size={14}
+                              color={isQuiz ? "#facc15" : "#60a5fa"}
+                            />
                             <Text
-                              className={`text-base font-bold mb-1 ${titleStyle}`}
+                              className={`ml-1 text-[10px] font-semibold ${isQuiz ? "text-yellow-300" : "text-blue-300"}`}
                             >
-                              {mod.title}
-                            </Text>
-                            <Text className={`text-xs ${subtitleStyle}`}>
-                              {mod.subtitle}
+                              {isQuiz ? "+5 estrellas" : "+100 XP"}
                             </Text>
                           </View>
-                        </Pressable>
-                      </>
-                    )}
+                        </View>
+                      </View>
+                    </Pressable>
                   </View>
                 );
               })}
@@ -239,6 +285,74 @@ export default function CourseScreen() {
           )}
         </View>
       </ScrollView>
+
+      <View
+        className="border-t border-gray-800 bg-[#0d1117] px-4 pt-3"
+        style={{ paddingBottom: Math.max(insets.bottom + 50, 12), }}
+      >
+        <View className="w-full max-w-md self-center rounded-2xl border border-blue-400 bg-[#161b22] px-4 py-3">
+          <View className="flex-row items-center justify-between">
+            <View className="mr-3 flex-1">
+              <Text numberOfLines={1} className="text-sm font-bold text-white">
+                {activeCourseName}
+              </Text>
+              <Text className="text-xs text-gray-400">Nivel {pathId}</Text>
+            </View>
+            <Text className="text-xs font-semibold text-blue-300">
+              {summary.completed}/{modules.length} módulos
+            </Text>
+          </View>
+
+          <View className="mt-2 flex-row items-center justify-between">
+            <Text className="text-base font-bold text-white">Progreso</Text>
+            <Text className="text-xl font-extrabold text-blue-300">
+              {progressPercent}%
+            </Text>
+          </View>
+          <View className="mt-1 h-2 overflow-hidden rounded-full bg-gray-700">
+            <View
+              className="h-full rounded-full bg-blue-400"
+              style={{ width: `${progressPercent}%` }}
+            />
+          </View>
+
+          <View className="mt-3 flex-row border-t border-gray-700 pt-2" >
+            <View className="flex-1 ">
+              <Text className="ml-1 text-sm font-bold text-indigo-300 mb-2">Recursos por Obtener:</Text>
+              <View className="w-[90%]  flex flex-row justify-around">
+                <View className="flex-1 items-center">
+                  <View className="flex-row items-center">
+                    <MaterialIcons name="auto-awesome" size={15} color="#60a5fa" />
+                    <Text className="ml-1 text-sm font-bold text-blue-300">
+                      {summary.xp} XP
+                    </Text>
+                  </View>
+                  <Text className="text-[10px] text-gray-400">XP</Text>
+                </View>
+                <View className="flex-1 items-center">
+                  <View className="flex-row items-center">
+                    <MaterialIcons name="star" size={15} color="#facc15" />
+                    <Text className="ml-1 text-sm font-bold text-yellow-300">
+                      {summary.stars}
+                    </Text>
+                  </View>
+                  <Text className="text-[10px] text-gray-400">estrellas</Text>
+                </View>
+              </View>
+
+            </View>
+            <View className="flex-1 items-center justify-center border-l-2 border-indigo-300">
+              <View className="flex-row items-center">
+                <MaterialIcons name="quiz" size={15} color="#a78bfa" />
+                <Text className="ml-1 text-sm font-bold text-purple-300">
+                  {summary.quizzes}
+                </Text>
+              </View>
+              <Text className="text-[10px] text-gray-400">exámenes pendientes</Text>
+            </View>
+          </View>
+        </View>
+      </View>
     </View>
   );
 }

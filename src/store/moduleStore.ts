@@ -25,8 +25,12 @@ interface ModuleState {
   activeModuleId: string | null;
   isFetching: boolean;
   setActiveModule: (id: string) => void;
+  completeModule: (id: string) => void;
   fetchModules: (pathId: string) => Promise<void>;
+  cancelFetchModules: () => void;
 }
+
+let fetchModulesRequestId = 0;
 
 export const useModuleStore = create<ModuleState>()(
   persist(
@@ -36,6 +40,29 @@ export const useModuleStore = create<ModuleState>()(
       isFetching: false,
 
       setActiveModule: (id) => set({ activeModuleId: id }),
+      completeModule: (id) =>
+        set((state) => {
+          const completedIndex = state.modules.findIndex(
+            (module) => module.id === id,
+          );
+
+          return {
+            modules: state.modules.map((module, index) => {
+              if (module.id === id) return { ...module, state: "completed" };
+              if (
+                index === completedIndex + 1 &&
+                module.state === "locked"
+              ) {
+                return { ...module, state: "in-progress" };
+              }
+              return module;
+            }),
+          };
+        }),
+
+      cancelFetchModules: () => {
+        fetchModulesRequestId += 1;
+      },
 
       //Traerme los módulos de FireStore
       fetchModules: async (pathId) => {
@@ -43,6 +70,7 @@ export const useModuleStore = create<ModuleState>()(
         const user = useAuthStore.getState().activeUser;
         if (!languageId || !pathId || !user) return;
 
+        const requestId = ++fetchModulesRequestId;
         set({ isFetching: true });
         try {
           const modulesRef = collection(
@@ -56,6 +84,8 @@ export const useModuleStore = create<ModuleState>()(
 
           //Acá los traigo
           const snapshot = await getDocs(modulesRef);
+          if (requestId !== fetchModulesRequestId) return;
+
           const progress = useProgressStore.getState().progressCache[user.id];
 
           //Lleno este arreglo
@@ -90,8 +120,10 @@ export const useModuleStore = create<ModuleState>()(
 
           set({ modules: fetchedModules, isFetching: false });
         } catch (error) {
-          console.error("Error trayendo módulos:", error);
-          set({ isFetching: false });
+          if (requestId === fetchModulesRequestId) {
+            console.error("Error trayendo módulos:", error);
+            set({ isFetching: false });
+          }
         }
       },
     }),

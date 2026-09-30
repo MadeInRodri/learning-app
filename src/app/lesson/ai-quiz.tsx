@@ -38,7 +38,7 @@ export default function AiQuizScreen() {
         className="flex-1 bg-[#0d1117] items-center justify-center px-4"
       >
         <View className="items-center mb-10">
-          <View className="w-32 h-32 bg-purple-500/20 rounded-full items-center justify-center mb-6 border-4 border-purple-500 shadow-lg shadow-purple-500/50">
+          <View className="w-32 h-32 bg-purple-500 rounded-full items-center justify-center mb-6 border-4 border-purple-500">
             <MaterialIcons name="auto-awesome" size={64} color="#a855f7" />
           </View>
           <Text className="text-3xl font-bold text-white mb-2 text-center tracking-tight">
@@ -58,7 +58,7 @@ export default function AiQuizScreen() {
 
         <Pressable
           onPress={() => router.back()}
-          className="w-full max-w-sm bg-purple-600 active:bg-purple-700 rounded-xl py-4 flex-row items-center justify-center shadow-lg shadow-purple-500/30"
+          className="w-full max-w-sm bg-purple-600 active:bg-purple-700 rounded-xl py-4 flex-row items-center justify-center"
         >
           <Text className="text-white font-bold text-base mr-2">
             Volver al Dashboard
@@ -131,7 +131,7 @@ export default function AiQuizScreen() {
   return (
     <View key="quiz-view" className="flex-1 bg-[#0d1117]">
       {/* HEADER */}
-      <View className="flex-row items-center justify-between px-4 pt-12 pb-4 border-b border-purple-500/30 bg-[#0a0e14]">
+      <View className="flex-row items-center justify-between px-4 pt-12 pb-4 border-b border-purple-500 bg-[#0a0e14]">
         <View className="flex-row items-center gap-2">
           <MaterialIcons name="auto-awesome" size={20} color="#a855f7" />
           <Text className="text-purple-400 font-bold text-base">
@@ -152,7 +152,7 @@ export default function AiQuizScreen() {
       >
         <View className="w-full h-1 bg-[#262a31]">
           <View
-            className="h-full bg-purple-500 shadow-md shadow-purple-500/50"
+            className="h-full bg-purple-500"
             style={{
               width: `${((currentIndex + 1) / activeAiQuiz.topics.length) * 100}%`,
             }}
@@ -191,15 +191,15 @@ export default function AiQuizScreen() {
 
               if (isAnswered) {
                 if (isCorrect) {
-                  cardBg = "bg-emerald-900/20 border-emerald-500";
+                  cardBg = "bg-emerald-900 border-emerald-500";
                   letterBg = "bg-emerald-500";
                   letterText = "text-emerald-900";
                 } else if (isSelected && !isCorrect) {
-                  cardBg = "bg-red-900/20 border-red-500";
+                  cardBg = "bg-red-900 border-red-500";
                   letterBg = "bg-red-500";
                   letterText = "text-red-900";
                 } else {
-                  cardBg = "bg-[#181c22] border-[#424754] opacity-40";
+                  cardBg = "bg-[#181c22] border-[#424754]";
                 }
               }
 
@@ -211,7 +211,7 @@ export default function AiQuizScreen() {
                   className={`w-full p-4 rounded-xl flex-row items-center border ${cardBg}`}
                 >
                   <View
-                    className={`w-8 h-8 rounded-lg flex items-center justify-center border border-transparent mr-4 ${letterBg}`}
+                    className={`w-8 h-8 rounded-lg flex items-center justify-center mr-4 ${letterBg}`}
                   >
                     <Text
                       className={`font-mono text-xs font-bold ${letterText}`}
@@ -232,7 +232,7 @@ export default function AiQuizScreen() {
           </View>
 
           {isAnswered && (
-            <View className="mt-8 p-4 rounded-lg bg-purple-900/10 border-l-4 border-purple-500">
+            <View className="mt-8 p-4 rounded-lg bg-purple-900 border-l-4 border-purple-500">
               <View className="flex-row items-center mb-2">
                 <MaterialIcons name="psychology" size={20} color="#a855f7" />
                 <Text className="text-purple-400 font-bold ml-2">
@@ -248,7 +248,7 @@ export default function AiQuizScreen() {
       </ScrollView>
 
       {/* BOTONERA ESTÁTICA */}
-      <View className="absolute bottom-0 w-full p-4 bg-[#10141a] border-t border-[#424754]/50 z-50">
+      <View className="absolute bottom-0 w-full p-4 bg-[#10141a] border-t border-[#424754] z-50">
         <Pressable
           onPress={handleMainAction}
           className="w-full py-4 rounded-xl flex-row items-center justify-center bg-purple-600 active:bg-purple-700"

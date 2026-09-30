@@ -46,7 +46,7 @@ export default function ProfileScreen() {
 
         {/* Cabecera del Perfil */}
         <View className="flex-row items-center mb-10">
-          <View className="w-20 h-20 rounded-full border-2 border-gray-700 bg-[#161b22] items-center justify-center mr-5 shadow-lg">
+          <View className="w-20 h-20 rounded-full border-2 border-gray-700 bg-[#161b22] items-center justify-center mr-5 ">
             <Text className="text-gray-400 font-mono text-xl font-bold uppercase tracking-widest">
               {activeUser.nombre.substring(0, 2)}
             </Text>
@@ -79,7 +79,7 @@ export default function ProfileScreen() {
         </View>
 
         {/* Tarjeta de Estadísticas (Valores devueltos por la API) */}
-        <View className="bg-[#181c22] border border-gray-800 rounded-xl p-5 mb-8 shadow-md">
+        <View className="bg-[#181c22] border border-gray-800 rounded-xl p-5 mb-8 ">
           <View className="flex-row justify-between items-center border-b border-gray-800 pb-3 mb-3">
             <Text className="text-gray-400">Energía Máxima</Text>
             <Text className="text-emerald-400 font-bold">
@@ -111,7 +111,7 @@ export default function ProfileScreen() {
           </View> */}
 
           <View className="items-end">
-            <View className="border border-orange-500/40 bg-orange-500/10 px-3 py-1.5 rounded">
+            <View className="border border-orange-500 bg-orange-500 px-3 py-1.5 rounded">
               <Text className="text-orange-400 font-mono text-xs font-semibold tracking-wide">
                 EXPERIENCIA TOTAL: {activeUser.xpTotales} XP
               </Text>
@@ -123,7 +123,7 @@ export default function ProfileScreen() {
         <View className="gap-4">
           {/* <Pressable
             onPress={() => router.push("/testing-gamification" as any)}
-            className="w-full py-4 border border-orange-400/80 rounded-lg items-center justify-center active:bg-orange-400/10 transition-colors"
+            className="w-full py-4 border border-orange-400 rounded-lg items-center justify-center"
           >
             <Text className="text-orange-400 font-bold">Testing API</Text>
           </Pressable> */}
@@ -131,7 +131,7 @@ export default function ProfileScreen() {
 
           <Pressable
             onPress={() => router.push("/achievements" as any)}
-            className="w-full py-4 border border-purple-500/80 rounded-lg items-center justify-center active:bg-purple-500/10 "
+            className="w-full py-4 border border-purple-500 rounded-lg items-center justify-center "
           >
             <Text className="text-purple-400 font-bold">
               Catálogo de recompensas
@@ -140,7 +140,7 @@ export default function ProfileScreen() {
 
           <Pressable
             onPress={handleLogout}
-            className="w-full py-4 border border-red-500 rounded-lg items-center justify-center active:bg-red-500/10 "
+            className="w-full py-4 border border-red-500 rounded-lg items-center justify-center "
           >
             <Text className="text-red-500 font-bold">Cerrar Sesión</Text>
           </Pressable>

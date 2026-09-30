@@ -41,8 +41,12 @@ export default function PathScreen() {
           Ve a la pestaña Aprender y selecciona un lenguaje.
         </Text>
         <Pressable
-          onPress={() => router.replace("/(tabs)" as any)}
-          className="bg-blue-600 active:bg-blue-700 px-6 py-3 rounded-lg "
+          onPress={() => {
+            setTimeout(() => {
+              router.replace("/(tabs)" as any);
+            }, 50);
+          }}
+          className="bg-blue-600 active:bg-blue-700 px-6 py-3 rounded-lg"
         >
           <Text className="text-white font-bold">Explorar lenguajes</Text>
         </Pressable>
@@ -68,7 +72,7 @@ export default function PathScreen() {
             {lessons.map((lesson, index) => {
               let borderCard = "border-gray-800";
               let borderCircle = "border-gray-700";
-              let bgCircle = "bg-gray-800/50";
+              let bgCircle = "bg-gray-800";
               let textTitle = "text-gray-500";
               let textNumber = "text-gray-500";
               let iconName: any = "lock";
@@ -85,7 +89,7 @@ export default function PathScreen() {
               } else if (lesson.state === "in-progress") {
                 borderCard = "border-blue-500";
                 borderCircle = "border-blue-500";
-                bgCircle = "bg-blue-500/20";
+                bgCircle = "bg-blue-500";
                 textTitle = "text-blue-400";
                 textNumber = "text-blue-500";
                 iconName = "play-circle-filled";
@@ -98,15 +102,16 @@ export default function PathScreen() {
                   <Pressable
                     onPress={() => {
                       if (lesson.state !== "locked") {
-                        //Si no está bloqueada, cuando clickee vamos para [id].tsx con el id que cliqueó
-                        router.push(`/course/${lesson.id}` as any);
+                        // Liberamos el hilo para que NativeWind quite el 'active:scale-95'
+                        setTimeout(() => {
+                          router.push(`/course/${lesson.id}` as any);
+                        }, 50);
                       }
                     }}
-                    className={`w-full flex-row items-center justify-between p-4 rounded-xl bg-[#181c22] border-2 ${borderCard} ${
-                      lesson.state === "locked"
-                        ? "opacity-70"
-                        : "active:scale-95 "
-                    }`}
+                    className={`w-full flex-row items-center justify-between p-4 rounded-xl bg-[#181c22] border-2 ${borderCard} ${lesson.state === "locked"
+                      ? ""
+                      : "active:scale-95"
+                      }`}
                   >
                     <View className="flex-row items-center">
                       <View

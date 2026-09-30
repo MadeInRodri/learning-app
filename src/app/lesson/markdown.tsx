@@ -1,6 +1,6 @@
 import { MaterialIcons } from "@expo/vector-icons";
-import { router, useLocalSearchParams } from "expo-router";
-import { useMemo, useState } from "react";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
+import { useCallback, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Pressable,
@@ -17,17 +17,41 @@ import { useCourseStore } from "../../store/courseStore";
 import { useGamificationStore } from "../../store/gamificationStore";
 import { useModuleStore } from "../../store/moduleStore";
 import { useProgressStore } from "../../store/progressStore";
+import { useAiQuizStore } from "../../store/aiQuizStore";
 
 export default function MarkdownLessonScreen() {
   const { pathId } = useLocalSearchParams<{ pathId: string }>();
 
-  const { modules, activeModuleId } = useModuleStore();
-  const { activeCourseId, activeCourseName } = useCourseStore();
-  const { claimReward } = useGamificationStore();
+  // EXTRAER CON SELECTORES (Evita re-renderizados innecesarios)
+  const modules = useModuleStore((state) => state.modules);
+  const activeModuleId = useModuleStore((state) => state.activeModuleId);
+  const completeModule = useModuleStore((state) => state.completeModule);
+
+  const activeCourseId = useCourseStore((state) => state.activeCourseId);
+  const activeCourseName = useCourseStore((state) => state.activeCourseName);
+
+  const claimReward = useGamificationStore((state) => state.claimReward);
   const { completeNormalLesson } = useProgressStore();
-  const { activeUser, updateGamificationStats } = useAuthStore();
+  const startAiQuiz = useAiQuizStore((state) => state.startAiQuiz);
+
+  const activeUser = useAuthStore((state) => state.activeUser);
+  const updateGamificationStats = useAuthStore((state) => state.updateGamificationStats);
 
   const [isProcessing, setIsProcessing] = useState(false);
+  const isScreenFocused = useRef(false);
+  const completionRequestId = useRef(0);
+
+  useFocusEffect(
+    useCallback(() => {
+      isScreenFocused.current = true;
+      setIsProcessing(false);
+
+      return () => {
+        isScreenFocused.current = false;
+        completionRequestId.current += 1;
+      };
+    }, []),
+  );
 
   // Buscamos el módulo específico que el usuario clickeó
   const activeModule = useMemo(() => {
@@ -42,7 +66,9 @@ export default function MarkdownLessonScreen() {
   const handleCompleteLesson = async () => {
     // Si ya completó esta lección previamente, no gasta energía ni da XP
     if (activeModule?.state === "completed") {
-      router.back();
+      setTimeout(() => {
+        router.back();
+      }, 50);
       return;
     }
 
@@ -57,35 +83,85 @@ export default function MarkdownLessonScreen() {
     }
 
     setIsProcessing(true);
+    const requestId = ++completionRequestId.current;
 
     try {
       // 1. Consumimos energía en el backend
-      await claimReward("ENERGY", "lesson_completion", "LESS_ENERGY");
+      const energyClaimed = await claimReward(
+        "ENERGY",
+        "lesson_completion",
+        "LESS_ENERGY",
+      );
+      if (!energyClaimed) throw new Error("No se pudo consumir la energía");
 
       // 2. Reclamamos la XP en el backend
-      await claimReward("XP", "lesson_completion", "XP_REWARD");
+      const xpClaimed = await claimReward(
+        "XP",
+        "lesson_completion",
+        "XP_REWARD",
+      );
+      if (!xpClaimed) throw new Error("No se pudo reclamar la XP");
 
-      // 3. Marcamos el módulo como pasado en la BD de progreso
-      // Nota: Asumimos pathId = "1" temporalmente, igual que en el quiz
-      completeNormalLesson(activeCourseId!, pathId!, activeModuleId!);
+      Toast.show({
+        type: "info",
+        text1: "Analizando progreso...",
+        text2: "La IA está preparando tu reto personalizado.",
+      });
 
-      // 4. Actualizamos el UI localmente de forma instantánea (+100 XP, -20 Energía)
+      const aiQuiz = await completeNormalLesson(
+        activeCourseId!,
+        pathId!,
+        activeModuleId!,
+        activeModule?.title || "Módulo",
+        modules.length,
+        activeCourseName,
+      );
+      completeModule(activeModuleId!);
       updateGamificationStats(100, -20);
+
+      if (aiQuiz) {
+        startAiQuiz(aiQuiz);
+        Toast.hide();
+        Toast.show({
+          type: "info",
+          text1: "¡Reto sorpresa detectado!",
+          text2: "La IA preparó un reto personalizado para ti.",
+        });
+        router.replace("/lesson/ai-quiz" as any);
+        return;
+      }
+
+      Toast.hide();
+
+      if (
+        requestId !== completionRequestId.current ||
+        !isScreenFocused.current
+      ) {
+        return;
+      }
 
       Toast.show({
         type: "success",
         text1: "¡Lección Completada! 🎉",
         text2: "+100 XP | -20 Energía",
       });
+      setTimeout(() => {
+        router.back();
+      }, 50);
 
-      router.back();
     } catch (error) {
-      Toast.show({
-        type: "error",
-        text1: "Error de conexión",
-        text2: "No pudimos registrar tu progreso. Intenta de nuevo.",
-      });
-      setIsProcessing(false);
+      if (
+        requestId === completionRequestId.current &&
+        isScreenFocused.current
+      ) {
+        Toast.hide();
+        Toast.show({
+          type: "error",
+          text1: "Error de conexión",
+          text2: "No pudimos registrar tu progreso. Intenta de nuevo.",
+        });
+        setIsProcessing(false);
+      }
     }
   };
 
@@ -93,9 +169,12 @@ export default function MarkdownLessonScreen() {
     <View className="flex-1 bg-[#0d1117]">
       <View className="flex-row items-center justify-between px-4 pt-12 pb-4 border-b border-gray-800 bg-[#0d1117]">
         <Pressable
-          onPress={() => router.back()}
+          onPress={() => setTimeout(() => {
+            router.back();
+          }, 50)}
           disabled={isProcessing}
-          className={`w-10 h-10 rounded-full bg-[#181c22] border border-gray-700 items-center justify-center  ${isProcessing ? "opacity-50" : "active:bg-gray-700"}`}
+          // 1. Dejamos className 100% estático
+          className="w-10 h-10 rounded-full bg-[#181c22] border border-gray-700 items-center justify-center active:bg-gray-700"
         >
           <MaterialIcons name="arrow-back" size={24} color="#9ca3af" />
         </Pressable>
@@ -113,11 +192,12 @@ export default function MarkdownLessonScreen() {
           <Pressable
             onPress={handleCompleteLesson}
             disabled={isProcessing}
-            className={`w-full mt-8 rounded-lg py-4 flex-row items-center justify-center shadow-lg  ${
-              activeModule?.state === "completed"
-                ? "bg-gray-700"
-                : "bg-blue-600 active:bg-blue-700 shadow-blue-500/30"
-            } ${isProcessing ? "opacity-70" : ""}`}
+            // 1. Solo clases que nunca van a cambiar durante la vida del componente
+            className="w-full mt-8 rounded-lg py-4 flex-row items-center justify-center"
+            // 2. Lógica dinámica inyectada directamente a React Native
+            style={{
+              backgroundColor: activeModule?.state === "completed" ? "#374151" : "#2563eb",
+            }}
           >
             {isProcessing ? (
               <ActivityIndicator color="white" />
@@ -129,9 +209,7 @@ export default function MarkdownLessonScreen() {
                     : "¡Entendido! Completar lección"}
                 </Text>
                 <MaterialIcons
-                  name={
-                    activeModule?.state === "completed" ? "arrow-back" : "check"
-                  }
+                  name={activeModule?.state === "completed" ? "arrow-back" : "check"}
                   size={20}
                   color="white"
                 />

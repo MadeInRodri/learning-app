@@ -149,8 +149,8 @@ export default function EnergyTimerButton() {
       disabled={isLocked || isProcessing}
       className={`w-full rounded-xl py-4 px-6 flex-row items-center justify-between border-2  ${
         isLocked
-          ? "bg-[#181c22] border-gray-800 opacity-80"
-          : "bg-emerald-600/10 border-emerald-500 active:bg-emerald-600/20"
+          ? " bg-[#181c22] border-gray-800"
+          : "bg-emerald-600 border-emerald-500"
       }`}
     >
       <View className="flex-row items-center">
@@ -158,7 +158,7 @@ export default function EnergyTimerButton() {
           className={`w-10 h-10 rounded-full items-center justify-center mr-3 ${
             isLocked
               ? "bg-gray-800"
-              : "bg-emerald-500 shadow-lg shadow-emerald-500/50"
+              : "bg-emerald-500"
           }`}
         >
           {isProcessing ? (
@@ -178,7 +178,7 @@ export default function EnergyTimerButton() {
             Recarga Rápida
           </Text>
           <Text
-            className={`text-xs ${isLocked ? "text-gray-600" : "text-emerald-500/70"}`}
+            className={`text-xs ${isLocked ? "text-gray-600" : "text-emerald-500"}`}
           >
             +10 de Energía
           </Text>

@@ -20,7 +20,7 @@ import { useQuizStore } from "../../store/quizStore";
 export default function QuizScreen() {
   const { pathId } = useLocalSearchParams<{ pathId: string }>();
   const { activeCourseId, activeCourseName } = useCourseStore();
-  const { modules, activeModuleId } = useModuleStore();
+  const { modules, activeModuleId, completeModule } = useModuleStore();
   const { completeExam, passModule } = useProgressStore();
   const { updateGamificationStats, activeUser } = useAuthStore();
   const { startAiQuiz } = useAiQuizStore();
@@ -79,11 +79,10 @@ export default function QuizScreen() {
       <View className="flex-1 bg-[#0d1117] items-center justify-center px-4">
         <View className="items-center mb-10">
           <View
-            className={`w-32 h-32 rounded-full items-center justify-center mb-6 border-4 shadow-lg ${
-              isPassed
-                ? "bg-yellow-500/20 border-yellow-500 shadow-yellow-500/50"
-                : "bg-red-500/20 border-red-500 shadow-red-500/50"
-            }`}
+            className={`w-32 h-32 rounded-full items-center justify-center mb-6 border-4 ${isPassed
+              ? "bg-yellow-500 border-yellow-500"
+              : "bg-red-500 border-red-500"
+              }`}
           >
             <MaterialIcons
               name={isPassed ? "emoji-events" : "sentiment-dissatisfied"}
@@ -111,12 +110,13 @@ export default function QuizScreen() {
         </View>
 
         <Pressable
-          onPress={() => router.back()}
-          className={`w-full max-w-sm rounded-xl py-4 flex-row items-center justify-center shadow-lg ${
-            isPassed
-              ? "bg-blue-600 active:bg-blue-700 shadow-blue-500/30"
-              : "bg-red-600 active:bg-red-700 shadow-red-500/30"
-          }`}
+          onPress={() => setTimeout(() => {
+            router.back();
+          }, 50)}
+          className={`w-full max-w-sm rounded-xl py-4 flex-row items-center justify-center ${isPassed
+            ? "bg-blue-600 active:bg-blue-700"
+            : "bg-red-600 active:bg-red-700"
+            }`}
         >
           <Text className="text-white font-bold text-base mr-2">
             {isPassed ? "Volver a la ruta" : "Regresar y estudiar"}
@@ -127,7 +127,7 @@ export default function QuizScreen() {
             color="white"
           />
         </Pressable>
-      </View>
+      </View >
     );
   }
 
@@ -197,6 +197,7 @@ export default function QuizScreen() {
             modules.length,
             activeCourseName, // <-- Corregido
           );
+          completeModule(activeModuleId!);
           updateGamificationStats(earnedXP, 0);
         }
 
@@ -242,11 +243,10 @@ export default function QuizScreen() {
       >
         <View className="items-center mb-10">
           <View
-            className={`w-32 h-32 rounded-full items-center justify-center mb-6 border-4 shadow-lg ${
-              isPassed
-                ? "bg-yellow-500/20 border-yellow-500 shadow-yellow-500/50"
-                : "bg-red-500/20 border-red-500 shadow-red-500/50"
-            }`}
+            className={`w-32 h-32 rounded-full items-center justify-center mb-6 border-4 ${isPassed
+              ? "bg-yellow-500 border-yellow-500"
+              : "bg-red-500 border-red-500"
+              }`}
           >
             <MaterialIcons
               name={isPassed ? "emoji-events" : "sentiment-dissatisfied"}
@@ -274,12 +274,13 @@ export default function QuizScreen() {
         </View>
 
         <Pressable
-          onPress={() => router.back()}
-          className={`w-full max-w-sm rounded-xl py-4 flex-row items-center justify-center shadow-lg ${
-            isPassed
-              ? "bg-blue-600 active:bg-blue-700 shadow-blue-500/30"
-              : "bg-red-600 active:bg-red-700 shadow-red-500/30"
-          }`}
+          onPress={() => setTimeout(() => {
+            router.back();
+          }, 50)}
+          className={`w-full max-w-sm rounded-xl py-4 flex-row items-center justify-center ${isPassed
+            ? "bg-blue-600 active:bg-blue-700"
+            : "bg-red-600 active:bg-red-700"
+            }`}
         >
           <Text className="text-white font-bold text-base mr-2">
             {isPassed ? "Volver a la ruta" : "Regresar y estudiar"}
@@ -299,7 +300,7 @@ export default function QuizScreen() {
     <View key="quiz-view" className="flex-1 bg-[#0d1117]">
       <View className="flex-row items-center justify-between px-4 pt-12 pb-4 border-b border-gray-800 bg-[#0a0e14]">
         <View className="flex-row items-center gap-3">
-          <View className="w-10 h-10 rounded-full bg-blue-900/20 items-center justify-center border border-blue-500/30">
+          <View className="w-10 h-10 rounded-full bg-blue-900 items-center justify-center border border-blue-500">
             <Text className="text-blue-400 text-sm font-mono font-bold">
               {initials}
             </Text>
@@ -315,7 +316,9 @@ export default function QuizScreen() {
         </View>
 
         <Pressable
-          onPress={() => router.back()}
+          onPress={() => setTimeout(() => {
+            router.back();
+          }, 50)}
           className="w-10 h-10 rounded-full bg-[#161b22] border border-gray-800 items-center justify-center active:bg-[#262a31]"
         >
           <MaterialIcons name="close" size={20} color="#9ca3af" />
@@ -335,7 +338,7 @@ export default function QuizScreen() {
           />
         </View>
 
-        <View className="px-4 py-3 border-b border-[#424754]/30 bg-[#0a0e14]">
+        <View className="px-4 py-3 border-b border-[#424754] bg-[#0a0e14]">
           <Text className="font-mono text-xs text-[#ffb95f] uppercase tracking-widest font-bold">
             Pregunta {currentIndex + 1} de {quizData.length}
           </Text>
@@ -359,15 +362,15 @@ export default function QuizScreen() {
 
               if (isAnswered) {
                 if (isCorrect) {
-                  cardBg = "bg-emerald-900/20 border-emerald-500";
+                  cardBg = "bg-emerald-900 border-emerald-500";
                   letterBg = "bg-emerald-500";
                   letterText = "text-emerald-900";
                 } else if (isSelected && !isCorrect) {
-                  cardBg = "bg-red-900/20 border-red-500";
+                  cardBg = "bg-red-900 border-red-500";
                   letterBg = "bg-red-500";
                   letterText = "text-red-900";
                 } else {
-                  cardBg = "bg-[#181c22] border-[#424754] opacity-50";
+                  cardBg = "bg-[#181c22] border-[#424754]";
                 }
               }
 
@@ -379,7 +382,7 @@ export default function QuizScreen() {
                   className={`w-full p-4 rounded-xl flex-row items-center border ${cardBg}`}
                 >
                   <View
-                    className={`w-8 h-8 rounded-lg flex items-center justify-center border border-transparent mr-4 ${letterBg}`}
+                    className={`w-8 h-8 rounded-lg flex items-center justify-center mr-4 ${letterBg}`}
                   >
                     <Text
                       className={`font-mono text-xs font-bold ${letterText}`}
@@ -407,14 +410,13 @@ export default function QuizScreen() {
         </View>
       </ScrollView>
 
-      <View className="absolute bottom-0 w-full p-4 bg-[#10141a] border-t border-[#424754]/50">
+      <View className="absolute bottom-0 w-full p-4 bg-[#10141a] border-t border-[#424754] mb-12">
         {!isAnswered ? (
           <Pressable
-            className={`w-full py-4 rounded-xl flex-row items-center justify-center ${
-              selectedOption !== null
-                ? "bg-[#adc6ff] active:bg-[#4d8eff]"
-                : "bg-[#1c2026] opacity-50"
-            }`}
+            className={`w-full py-4 rounded-xl flex-row items-center justify-center ${selectedOption !== null
+              ? "bg-[#adc6ff] active:bg-[#4d8eff]"
+              : "bg-[#1c2026]"
+              }`}
             disabled={selectedOption === null || isProcessing}
             onPress={handleEvaluate}
           >
@@ -426,7 +428,7 @@ export default function QuizScreen() {
           </Pressable>
         ) : (
           <Pressable
-            className={`w-full py-4 rounded-xl flex-row items-center justify-center bg-emerald-500 active:bg-emerald-600 ${isProcessing ? "opacity-80" : ""}`}
+            className="w-full py-4 rounded-xl flex-row items-center justify-center bg-emerald-500 active:bg-emerald-600 "
             disabled={isProcessing}
             onPress={handleNext}
           >

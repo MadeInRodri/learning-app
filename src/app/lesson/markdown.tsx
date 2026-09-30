@@ -12,6 +12,7 @@ import {
 import Markdown from "react-native-markdown-display";
 import Toast from "react-native-toast-message";
 
+import { useLanguageStore } from "@/store/languageStore";
 import { useAiQuizStore } from "../../store/aiQuizStore";
 import { useAuthStore } from "../../store/authStore";
 import { useCourseStore } from "../../store/courseStore";
@@ -35,7 +36,14 @@ export default function MarkdownLessonScreen() {
   const startAiQuiz = useAiQuizStore((state) => state.startAiQuiz);
 
   const activeUser = useAuthStore((state) => state.activeUser);
-  const updateGamificationStats = useAuthStore((state) => state.updateGamificationStats);
+  const updateGamificationStats = useAuthStore(
+    (state) => state.updateGamificationStats,
+  );
+
+  const activeLanguage = useLanguageStore
+    .getState()
+    .languages.find((l) => l.id === activeCourseId);
+  const totalGlobal = activeLanguage?.totalModules || 8;
 
   const [isProcessing, setIsProcessing] = useState(false);
   const isScreenFocused = useRef(false);
@@ -113,7 +121,7 @@ export default function MarkdownLessonScreen() {
         pathId!,
         activeModuleId!,
         activeModule?.title || "Módulo",
-        modules.length,
+        totalGlobal,
         activeCourseName,
       );
       completeModule(activeModuleId!);
@@ -148,7 +156,6 @@ export default function MarkdownLessonScreen() {
       setTimeout(() => {
         router.back();
       }, 50);
-
     } catch (error) {
       if (
         requestId === completionRequestId.current &&
@@ -166,26 +173,57 @@ export default function MarkdownLessonScreen() {
   };
 
   return (
-    <View style={{"flex":1,"backgroundColor":"#0d1117"}}>
-      <View style={{"flexDirection":"row","alignItems":"center","justifyContent":"space-between","paddingHorizontal":16,"paddingTop":48,"paddingBottom":16,"borderBottomWidth":1,"borderColor":"#1f2937","backgroundColor":"#0d1117"}}>
+    <View style={{ flex: 1, backgroundColor: "#0d1117" }}>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          paddingHorizontal: 16,
+          paddingTop: 48,
+          paddingBottom: 16,
+          borderBottomWidth: 1,
+          borderColor: "#1f2937",
+          backgroundColor: "#0d1117",
+        }}
+      >
         <Pressable
-          onPress={() => setTimeout(() => {
-            router.back();
-          }, 50)}
+          onPress={() =>
+            setTimeout(() => {
+              router.back();
+            }, 50)
+          }
           disabled={isProcessing}
-          style={{"width":40,"height":40,"borderRadius":9999,"backgroundColor":"#181c22","borderWidth":1,"borderColor":"#374151","alignItems":"center","justifyContent":"center"}}
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 9999,
+            backgroundColor: "#181c22",
+            borderWidth: 1,
+            borderColor: "#374151",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
         >
           <MaterialIcons name="arrow-back" size={24} color="#9ca3af" />
         </Pressable>
 
-        <Text style={{"color":"#ffffff","fontWeight":"700","fontSize":18}}>
+        <Text style={{ color: "#ffffff", fontWeight: "700", fontSize: 18 }}>
           {activeCourseName} - Teoría
         </Text>
-        <View style={{"width":40,"height":40}} />
+        <View style={{ width: 40, height: 40 }} />
       </View>
 
-      <ScrollView style={{"flex":1,"paddingHorizontal":16}}>
-        <View style={{"width":"100%","maxWidth":448,"marginHorizontal":"auto","paddingTop":24,"paddingBottom":96}}>
+      <ScrollView style={{ flex: 1, paddingHorizontal: 16 }}>
+        <View
+          style={{
+            width: "100%",
+            maxWidth: 448,
+            marginHorizontal: "auto",
+            paddingTop: 24,
+            paddingBottom: 96,
+          }}
+        >
           <Markdown style={markdownStyles}>{lessonContent}</Markdown>
 
           <Pressable
@@ -199,20 +237,30 @@ export default function MarkdownLessonScreen() {
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "center",
-              backgroundColor: activeModule?.state === "completed" ? "#374151" : "#2563eb",
+              backgroundColor:
+                activeModule?.state === "completed" ? "#374151" : "#2563eb",
             }}
           >
             {isProcessing ? (
               <ActivityIndicator color="white" />
             ) : (
               <>
-                <Text style={{"color":"#ffffff","fontWeight":"700","marginRight":8,"fontSize":16}}>
+                <Text
+                  style={{
+                    color: "#ffffff",
+                    fontWeight: "700",
+                    marginRight: 8,
+                    fontSize: 16,
+                  }}
+                >
                   {activeModule?.state === "completed"
                     ? "Volver a la ruta"
                     : "¡Entendido! Completar lección"}
                 </Text>
                 <MaterialIcons
-                  name={activeModule?.state === "completed" ? "arrow-back" : "check"}
+                  name={
+                    activeModule?.state === "completed" ? "arrow-back" : "check"
+                  }
                   size={20}
                   color="white"
                 />

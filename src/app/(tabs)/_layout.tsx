@@ -24,13 +24,32 @@ export default function TabsLayout() {
         headerTitleAlign: "center",
         headerTitle: () => (
           // 3. Mostramos el username real o un fallback
-          <Text style={{"color":"#ffffff","fontWeight":"700","fontSize":18}}>
+          <Text style={{ color: "#ffffff", fontWeight: "700", fontSize: 18 }}>
             {activeUser?.nombre || "Desarrollador"}
           </Text>
         ),
         headerLeft: () => (
-          <View style={{"width":32,"height":32,"borderRadius":9999,"backgroundColor":"#1f2937","borderWidth":1,"borderColor":"#374151","alignItems":"center","justifyContent":"center","marginLeft":16}}>
-            <Text style={{"color":"#9ca3af","fontSize":12,"fontFamily":"monospace","fontWeight":"700"}}>
+          <View
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: 9999,
+              backgroundColor: "#1f2937",
+              borderWidth: 1,
+              borderColor: "#374151",
+              alignItems: "center",
+              justifyContent: "center",
+              marginLeft: 16,
+            }}
+          >
+            <Text
+              style={{
+                color: "#9ca3af",
+                fontSize: 12,
+                fontFamily: "monospace",
+                fontWeight: "700",
+              }}
+            >
               {initials}
             </Text>
           </View>
@@ -40,7 +59,7 @@ export default function TabsLayout() {
         tabBarStyle: {
           backgroundColor: "#181c22",
           borderTopColor: "#424754",
-          height: 120,
+          height: 80,
           paddingBottom: 10,
           paddingTop: 5,
         },

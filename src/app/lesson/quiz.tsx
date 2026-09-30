@@ -2,13 +2,13 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import {
-    ActivityIndicator,
-    Pressable,
-    ScrollView,
-    Text,
-    View,
-    type TextStyle,
-    type ViewStyle,
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+  type TextStyle,
+  type ViewStyle,
 } from "react-native";
 import Toast from "react-native-toast-message";
 
@@ -68,8 +68,15 @@ export default function QuizScreen() {
 
   if (quizData.length === 0) {
     return (
-      <View style={{"flex":1,"backgroundColor":"#0d1117","alignItems":"center","justifyContent":"center"}}>
-        <Text style={{"color":"#9ca3af"}}>Cargando cuestionario...</Text>
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: "#0d1117",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Text style={{ color: "#9ca3af" }}>Cargando cuestionario...</Text>
       </View>
     );
   }
@@ -78,28 +85,82 @@ export default function QuizScreen() {
   // Mantenemos tu estructura intacta de return temprano que funcionaba
   if (quizFinished) {
     return (
-      <View style={{"flex":1,"backgroundColor":"#0d1117","alignItems":"center","justifyContent":"center","paddingHorizontal":16}}>
-        <View style={{"alignItems":"center","marginBottom":40}}>
-          <View style={{ width: 128, height: 128, borderRadius: 9999, alignItems: "center", justifyContent: "center", marginBottom: 24, borderWidth: 4, backgroundColor: isPassed ? "#eab308" : "#ef4444", borderColor: isPassed ? "#eab308" : "#ef4444" }}>
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: "#0d1117",
+          alignItems: "center",
+          justifyContent: "center",
+          paddingHorizontal: 16,
+        }}
+      >
+        <View style={{ alignItems: "center", marginBottom: 40 }}>
+          <View
+            style={{
+              width: 128,
+              height: 128,
+              borderRadius: 9999,
+              alignItems: "center",
+              justifyContent: "center",
+              marginBottom: 24,
+              borderWidth: 4,
+              backgroundColor: isPassed ? "#eab308" : "#ef4444",
+              borderColor: isPassed ? "#eab308" : "#ef4444",
+            }}
+          >
             <MaterialIcons
               name={isPassed ? "emoji-events" : "sentiment-dissatisfied"}
               size={64}
-              color={isPassed ? "#eab308" : "#ef4444"}
+              color={isPassed ? "#fff" : "#fff"}
             />
           </View>
-          <Text style={{"fontSize":30,"fontWeight":"700","color":"#ffffff","marginBottom":8,"letterSpacing":-0.25,"textAlign":"center"}}>
+          <Text
+            style={{
+              fontSize: 30,
+              fontWeight: "700",
+              color: "#ffffff",
+              marginBottom: 8,
+              letterSpacing: -0.25,
+              textAlign: "center",
+            }}
+          >
             {isPassed ? "¡Módulo Completado!" : "¡Examen Fallido!"}
           </Text>
-          <Text style={{"color":"#9ca3af","textAlign":"center","fontSize":16,"marginBottom":24}}>
+          <Text
+            style={{
+              color: "#9ca3af",
+              textAlign: "center",
+              fontSize: 16,
+              marginBottom: 24,
+            }}
+          >
             {isPassed
               ? "Has demostrado tu conocimiento."
               : `Obtuviste un ${Math.round((correctAnswersCount / quizData.length) * 100)}%. Necesitas al menos 60% para aprobar.`}
           </Text>
 
           {isPassed && (
-            <View style={{"backgroundColor":"#181c22","borderWidth":1,"borderColor":"#1f2937","borderRadius":12,"paddingHorizontal":24,"paddingVertical":16,"flexDirection":"row","alignItems":"center"}}>
+            <View
+              style={{
+                backgroundColor: "#181c22",
+                borderWidth: 1,
+                borderColor: "#1f2937",
+                borderRadius: 12,
+                paddingHorizontal: 24,
+                paddingVertical: 16,
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
               <MaterialIcons name="bolt" size={24} color="#3b82f6" />
-              <Text style={{"color":"#60a5fa","fontWeight":"700","fontSize":18,"marginLeft":8}}>
+              <Text
+                style={{
+                  color: "#60a5fa",
+                  fontWeight: "700",
+                  fontSize: 18,
+                  marginLeft: 8,
+                }}
+              >
                 +{earnedXP} XP Ganada
               </Text>
             </View>
@@ -107,12 +168,36 @@ export default function QuizScreen() {
         </View>
 
         <Pressable
-          onPress={() => setTimeout(() => {
-            router.back();
-          }, 50)}
-          style={({ pressed }) => ({ width: "100%", maxWidth: 384, borderRadius: 12, paddingVertical: 16, flexDirection: "row", alignItems: "center", justifyContent: "center", backgroundColor: isPassed ? (pressed ? "#1d4ed8" : "#2563eb") : (pressed ? "#b91c1c" : "#dc2626") })}
+          onPress={() =>
+            setTimeout(() => {
+              router.back();
+            }, 50)
+          }
+          style={({ pressed }) => ({
+            width: "100%",
+            maxWidth: 384,
+            borderRadius: 12,
+            paddingVertical: 16,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: isPassed
+              ? pressed
+                ? "#1d4ed8"
+                : "#2563eb"
+              : pressed
+                ? "#b91c1c"
+                : "#dc2626",
+          })}
         >
-          <Text style={{"color":"#ffffff","fontWeight":"700","fontSize":16,"marginRight":8}}>
+          <Text
+            style={{
+              color: "#ffffff",
+              fontWeight: "700",
+              fontSize: 16,
+              marginRight: 8,
+            }}
+          >
             {isPassed ? "Volver a la ruta" : "Regresar y estudiar"}
           </Text>
           <MaterialIcons
@@ -121,7 +206,7 @@ export default function QuizScreen() {
             color="white"
           />
         </Pressable>
-      </View >
+      </View>
     );
   }
 
@@ -233,29 +318,82 @@ export default function QuizScreen() {
     return (
       <View
         key="finished-view"
-        style={{"flex":1,"backgroundColor":"#0d1117","alignItems":"center","justifyContent":"center","paddingHorizontal":16}}
+        style={{
+          flex: 1,
+          backgroundColor: "#0d1117",
+          alignItems: "center",
+          justifyContent: "center",
+          paddingHorizontal: 16,
+        }}
       >
-        <View style={{"alignItems":"center","marginBottom":40}}>
-          <View style={{ width: 128, height: 128, borderRadius: 9999, alignItems: "center", justifyContent: "center", marginBottom: 24, borderWidth: 4, backgroundColor: isPassed ? "#eab308" : "#ef4444", borderColor: isPassed ? "#eab308" : "#ef4444" }}>
+        <View style={{ alignItems: "center", marginBottom: 40 }}>
+          <View
+            style={{
+              width: 128,
+              height: 128,
+              borderRadius: 9999,
+              alignItems: "center",
+              justifyContent: "center",
+              marginBottom: 24,
+              borderWidth: 4,
+              backgroundColor: isPassed ? "#eab308" : "#ef4444",
+              borderColor: isPassed ? "#eab308" : "#ef4444",
+            }}
+          >
             <MaterialIcons
               name={isPassed ? "emoji-events" : "sentiment-dissatisfied"}
               size={64}
               color={isPassed ? "#eab308" : "#ef4444"}
             />
           </View>
-          <Text style={{"fontSize":30,"fontWeight":"700","color":"#ffffff","marginBottom":8,"letterSpacing":-0.25,"textAlign":"center"}}>
+          <Text
+            style={{
+              fontSize: 30,
+              fontWeight: "700",
+              color: "#ffffff",
+              marginBottom: 8,
+              letterSpacing: -0.25,
+              textAlign: "center",
+            }}
+          >
             {isPassed ? "¡Módulo Completado!" : "¡Examen Fallido!"}
           </Text>
-          <Text style={{"color":"#9ca3af","textAlign":"center","fontSize":16,"marginBottom":24,"paddingHorizontal":16}}>
+          <Text
+            style={{
+              color: "#9ca3af",
+              textAlign: "center",
+              fontSize: 16,
+              marginBottom: 24,
+              paddingHorizontal: 16,
+            }}
+          >
             {isPassed
               ? "Has demostrado tu conocimiento y desbloqueado la siguiente lección."
               : `Obtuviste un ${Math.round((correctAnswersCount / quizData.length) * 100)}%. Necesitas al menos un 60% para aprobar.`}
           </Text>
 
           {isPassed && (
-            <View style={{"backgroundColor":"#181c22","borderWidth":1,"borderColor":"#1f2937","borderRadius":12,"paddingHorizontal":24,"paddingVertical":16,"flexDirection":"row","alignItems":"center"}}>
+            <View
+              style={{
+                backgroundColor: "#181c22",
+                borderWidth: 1,
+                borderColor: "#1f2937",
+                borderRadius: 12,
+                paddingHorizontal: 24,
+                paddingVertical: 16,
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
               <MaterialIcons name="bolt" size={24} color="#3b82f6" />
-              <Text style={{"color":"#60a5fa","fontWeight":"700","fontSize":18,"marginLeft":8}}>
+              <Text
+                style={{
+                  color: "#60a5fa",
+                  fontWeight: "700",
+                  fontSize: 18,
+                  marginLeft: 8,
+                }}
+              >
                 +{earnedXP} XP Ganada
               </Text>
             </View>
@@ -263,12 +401,36 @@ export default function QuizScreen() {
         </View>
 
         <Pressable
-          onPress={() => setTimeout(() => {
-            router.back();
-          }, 50)}
-          style={({ pressed }) => ({ width: "100%", maxWidth: 384, borderRadius: 12, paddingVertical: 16, flexDirection: "row", alignItems: "center", justifyContent: "center", backgroundColor: isPassed ? (pressed ? "#1d4ed8" : "#2563eb") : (pressed ? "#b91c1c" : "#dc2626") })}
+          onPress={() =>
+            setTimeout(() => {
+              router.back();
+            }, 50)
+          }
+          style={({ pressed }) => ({
+            width: "100%",
+            maxWidth: 384,
+            borderRadius: 12,
+            paddingVertical: 16,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: isPassed
+              ? pressed
+                ? "#1d4ed8"
+                : "#2563eb"
+              : pressed
+                ? "#b91c1c"
+                : "#dc2626",
+          })}
         >
-          <Text style={{"color":"#ffffff","fontWeight":"700","fontSize":16,"marginRight":8}}>
+          <Text
+            style={{
+              color: "#ffffff",
+              fontWeight: "700",
+              fontSize: 16,
+              marginRight: 8,
+            }}
+          >
             {isPassed ? "Volver a la ruta" : "Regresar y estudiar"}
           </Text>
           <MaterialIcons
@@ -283,54 +445,143 @@ export default function QuizScreen() {
 
   // --- VISTA INTERACTIVA DEL QUIZ ---
   return (
-    <View key="quiz-view" style={{"flex":1,"backgroundColor":"#0d1117"}}>
-      <View style={{"flexDirection":"row","alignItems":"center","justifyContent":"space-between","paddingHorizontal":16,"paddingTop":48,"paddingBottom":16,"borderBottomWidth":1,"borderColor":"#1f2937","backgroundColor":"#0a0e14"}}>
-        <View style={{"flexDirection":"row","alignItems":"center","gap":12}}>
-          <View style={{"width":40,"height":40,"borderRadius":9999,"backgroundColor":"#1e3a8a","alignItems":"center","justifyContent":"center","borderWidth":1,"borderColor":"#3b82f6"}}>
-            <Text style={{"color":"#60a5fa","fontSize":14,"fontFamily":"monospace","fontWeight":"700"}}>
+    <View key="quiz-view" style={{ flex: 1, backgroundColor: "#0d1117" }}>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          paddingHorizontal: 16,
+          paddingTop: 48,
+          paddingBottom: 16,
+          borderBottomWidth: 1,
+          borderColor: "#1f2937",
+          backgroundColor: "#0a0e14",
+        }}
+      >
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+          <View
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 9999,
+              backgroundColor: "#1e3a8a",
+              alignItems: "center",
+              justifyContent: "center",
+              borderWidth: 1,
+              borderColor: "#3b82f6",
+            }}
+          >
+            <Text
+              style={{
+                color: "#60a5fa",
+                fontSize: 14,
+                fontFamily: "monospace",
+                fontWeight: "700",
+              }}
+            >
               {initials}
             </Text>
           </View>
           <View>
-            <Text style={{"color":"#6b7280","fontSize":10,"fontWeight":"700","textTransform":"uppercase","letterSpacing":1.5,"marginBottom":2}}>
+            <Text
+              style={{
+                color: "#6b7280",
+                fontSize: 10,
+                fontWeight: "700",
+                textTransform: "uppercase",
+                letterSpacing: 1.5,
+                marginBottom: 2,
+              }}
+            >
               Experiencia
             </Text>
-            <Text style={{"color":"#ffffff","fontWeight":"700","fontSize":16,"lineHeight":14}}>
+            <Text
+              style={{
+                color: "#ffffff",
+                fontWeight: "700",
+                fontSize: 16,
+                lineHeight: 14,
+              }}
+            >
               {userXP} XP
             </Text>
           </View>
         </View>
 
         <Pressable
-          onPress={() => setTimeout(() => {
-            router.back();
-          }, 50)}
-          style={{"width":40,"height":40,"borderRadius":9999,"backgroundColor":"#161b22","borderWidth":1,"borderColor":"#1f2937","alignItems":"center","justifyContent":"center"}}
+          onPress={() =>
+            setTimeout(() => {
+              router.back();
+            }, 50)
+          }
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 9999,
+            backgroundColor: "#161b22",
+            borderWidth: 1,
+            borderColor: "#1f2937",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
         >
           <MaterialIcons name="close" size={20} color="#9ca3af" />
         </Pressable>
       </View>
 
       <ScrollView
-        style={{"flex":1}}
+        style={{ flex: 1 }}
         contentContainerStyle={{ paddingBottom: 100 }}
       >
-        <View style={{"width":"100%","height":4,"backgroundColor":"#262a31"}}>
-          <View style={{ height: "100%", backgroundColor: "#ffb95f", width: `${((currentIndex + 1) / quizData.length) * 100}%` }} />
+        <View style={{ width: "100%", height: 4, backgroundColor: "#262a31" }}>
+          <View
+            style={{
+              height: "100%",
+              backgroundColor: "#ffb95f",
+              width: `${((currentIndex + 1) / quizData.length) * 100}%`,
+            }}
+          />
         </View>
 
-        <View style={{"paddingHorizontal":16,"paddingVertical":12,"borderBottomWidth":1,"borderColor":"#424754","backgroundColor":"#0a0e14"}}>
-          <Text style={{"fontFamily":"monospace","fontSize":12,"color":"#ffb95f","textTransform":"uppercase","letterSpacing":1.5,"fontWeight":"700"}}>
+        <View
+          style={{
+            paddingHorizontal: 16,
+            paddingVertical: 12,
+            borderBottomWidth: 1,
+            borderColor: "#424754",
+            backgroundColor: "#0a0e14",
+          }}
+        >
+          <Text
+            style={{
+              fontFamily: "monospace",
+              fontSize: 12,
+              color: "#ffb95f",
+              textTransform: "uppercase",
+              letterSpacing: 1.5,
+              fontWeight: "700",
+            }}
+          >
             Pregunta {currentIndex + 1} de {quizData.length}
           </Text>
         </View>
 
-        <View style={{"paddingHorizontal":16,"paddingVertical":32,"flex":1}}>
-          <Text style={{"fontSize":24,"fontWeight":"700","color":"#dfe2eb","letterSpacing":-0.25,"marginBottom":32,"lineHeight":36}}>
+        <View style={{ paddingHorizontal: 16, paddingVertical: 32, flex: 1 }}>
+          <Text
+            style={{
+              fontSize: 24,
+              fontWeight: "700",
+              color: "#dfe2eb",
+              letterSpacing: -0.25,
+              marginBottom: 32,
+              lineHeight: 36,
+            }}
+          >
             {currentQuestion.pregunta}
           </Text>
 
-          <View style={{"flexDirection":"column","gap":16}}>
+          <View style={{ flexDirection: "column", gap: 16 }}>
             {currentQuestion.opciones.map((opcion: any, index: number) => {
               const isSelected = selectedOption === index;
               const isCorrect = opcion.es_correcta;
@@ -338,20 +589,33 @@ export default function QuizScreen() {
               let cardBg: ViewStyle = isSelected
                 ? { backgroundColor: "#1c2026", borderColor: "#adc6ff" }
                 : { backgroundColor: "#181c22", borderColor: "#424754" };
-              let letterBg: ViewStyle = isSelected ? { backgroundColor: "#4d8eff" } : { backgroundColor: "#262a31" };
-              let letterText: TextStyle = isSelected ? { color: "#00285d" } : { color: "#c2c6d6" };
+              let letterBg: ViewStyle = isSelected
+                ? { backgroundColor: "#4d8eff" }
+                : { backgroundColor: "#262a31" };
+              let letterText: TextStyle = isSelected
+                ? { color: "#00285d" }
+                : { color: "#c2c6d6" };
 
               if (isAnswered) {
                 if (isCorrect) {
-                  cardBg = { backgroundColor: "#064e3b", borderColor: "#10b981" };
+                  cardBg = {
+                    backgroundColor: "#064e3b",
+                    borderColor: "#10b981",
+                  };
                   letterBg = { backgroundColor: "#10b981" };
                   letterText = { color: "#022c22" };
                 } else if (isSelected && !isCorrect) {
-                  cardBg = { backgroundColor: "#7f1d1d", borderColor: "#ef4444" };
+                  cardBg = {
+                    backgroundColor: "#7f1d1d",
+                    borderColor: "#ef4444",
+                  };
                   letterBg = { backgroundColor: "#ef4444" };
                   letterText = { color: "#7f1d1d" };
                 } else {
-                  cardBg = { backgroundColor: "#181c22", borderColor: "#424754" };
+                  cardBg = {
+                    backgroundColor: "#181c22",
+                    borderColor: "#424754",
+                  };
                 }
               }
 
@@ -360,14 +624,52 @@ export default function QuizScreen() {
                   key={index}
                   onPress={() => !isAnswered && setSelectedOption(index)}
                   disabled={isAnswered}
-                  style={[{ width: "100%", padding: 16, borderRadius: 12, flexDirection: "row", alignItems: "center", borderWidth: 1 }, cardBg]}
+                  style={[
+                    {
+                      width: "100%",
+                      padding: 16,
+                      borderRadius: 12,
+                      flexDirection: "row",
+                      alignItems: "center",
+                      borderWidth: 1,
+                    },
+                    cardBg,
+                  ]}
                 >
-                  <View style={[{ width: 32, height: 32, borderRadius: 8, alignItems: "center", justifyContent: "center", marginRight: 16 }, letterBg]}>
-                    <Text style={[{ fontFamily: "monospace", fontSize: 12, fontWeight: "700" }, letterText]}>
+                  <View
+                    style={[
+                      {
+                        width: 32,
+                        height: 32,
+                        borderRadius: 8,
+                        alignItems: "center",
+                        justifyContent: "center",
+                        marginRight: 16,
+                      },
+                      letterBg,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        {
+                          fontFamily: "monospace",
+                          fontSize: 12,
+                          fontWeight: "700",
+                        },
+                        letterText,
+                      ]}
+                    >
                       {["A", "B", "C", "D"][index]}
                     </Text>
                   </View>
-                  <Text style={{ flex: 1, fontSize: 16, color: isSelected ? "#dfe2eb" : "#c2c6d6", fontWeight: isSelected ? "700" : "400" }}>
+                  <Text
+                    style={{
+                      flex: 1,
+                      fontSize: 16,
+                      color: isSelected ? "#dfe2eb" : "#c2c6d6",
+                      fontWeight: isSelected ? "700" : "400",
+                    }}
+                  >
                     {opcion.texto}
                   </Text>
                 </Pressable>
@@ -376,8 +678,17 @@ export default function QuizScreen() {
           </View>
 
           {isAnswered && (
-            <View style={{"marginTop":32,"padding":16,"borderRadius":8,"backgroundColor":"#161b22","borderLeftWidth":4,"borderColor":"#3b82f6"}}>
-              <Text style={{"color":"#ffffff","fontSize":16,"lineHeight":24}}>
+            <View
+              style={{
+                marginTop: 32,
+                padding: 16,
+                borderRadius: 8,
+                backgroundColor: "#161b22",
+                borderLeftWidth: 4,
+                borderColor: "#3b82f6",
+              }}
+            >
+              <Text style={{ color: "#ffffff", fontSize: 16, lineHeight: 24 }}>
                 {currentQuestion.explicacion}
               </Text>
             </View>
@@ -385,29 +696,65 @@ export default function QuizScreen() {
         </View>
       </ScrollView>
 
-      <View style={{ position: "absolute", bottom: 0, width: "100%", padding: 16, backgroundColor: "#10141a", borderTopWidth: 1, borderColor: "#424754", marginBottom: 48 }}>
+      <View
+        style={{
+          position: "absolute",
+          bottom: 0,
+          width: "100%",
+          padding: 16,
+          backgroundColor: "#10141a",
+          borderTopWidth: 1,
+          borderColor: "#424754",
+          marginBottom: 48,
+        }}
+      >
         {!isAnswered ? (
           <Pressable
-            style={({ pressed }) => ({ width: "100%", paddingVertical: 16, borderRadius: 12, flexDirection: "row", alignItems: "center", justifyContent: "center", backgroundColor: selectedOption !== null ? (pressed ? "#4d8eff" : "#adc6ff") : "#1c2026" })}
+            style={({ pressed }) => ({
+              width: "100%",
+              paddingVertical: 16,
+              borderRadius: 12,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor:
+                selectedOption !== null
+                  ? pressed
+                    ? "#4d8eff"
+                    : "#adc6ff"
+                  : "#1c2026",
+            })}
             disabled={selectedOption === null || isProcessing}
             onPress={handleEvaluate}
           >
             <Text
-              style={{ fontWeight: "700", fontSize: 16, color: selectedOption !== null ? "#002e6a" : "#8c909f" }}
+              style={{
+                fontWeight: "700",
+                fontSize: 16,
+                color: selectedOption !== null ? "#002e6a" : "#8c909f",
+              }}
             >
               Evaluar
             </Text>
           </Pressable>
         ) : (
           <Pressable
-            style={{"width":"100%","paddingVertical":16,"borderRadius":12,"flexDirection":"row","alignItems":"center","justifyContent":"center","backgroundColor":"#10b981"}}
+            style={{
+              width: "100%",
+              paddingVertical: 16,
+              borderRadius: 12,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "#10b981",
+            }}
             disabled={isProcessing}
             onPress={handleNext}
           >
             {isProcessing ? (
               <ActivityIndicator color="#022c22" />
             ) : (
-              <Text style={{"fontWeight":"700","fontSize":16}}>
+              <Text style={{ fontWeight: "700", fontSize: 16 }}>
                 {isLastQuestion ? "Finalizar" : "Siguiente"}
               </Text>
             )}

@@ -1,4 +1,4 @@
-# Learning App (CodeQuest)
+# Learning App (Code Inventors)
 
 ## Integrantes del grupo
 

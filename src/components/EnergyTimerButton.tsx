@@ -135,7 +135,19 @@ export default function EnergyTimerButton() {
 
   if (isInitializing) {
     return (
-      <View style={{"width":"100%","backgroundColor":"#181c22","borderWidth":1,"borderColor":"#30363d","borderRadius":12,"paddingVertical":16,"flexDirection":"row","alignItems":"center","justifyContent":"center"}}>
+      <View
+        style={{
+          width: "100%",
+          backgroundColor: "#181c22",
+          borderWidth: 1,
+          borderColor: "#30363d",
+          borderRadius: 12,
+          paddingVertical: 16,
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         <ActivityIndicator color="#10b981" />
       </View>
     );
@@ -147,10 +159,31 @@ export default function EnergyTimerButton() {
     <Pressable
       onPress={handleClaimEnergy}
       disabled={isLocked || isProcessing}
-      style={{ width: "100%", borderRadius: 12, paddingVertical: 16, paddingHorizontal: 24, flexDirection: "row", alignItems: "center", justifyContent: "space-between", borderWidth: 2, backgroundColor: isLocked ? "#181c22" : "#059669", borderColor: isLocked ? "#1f2937" : "#10b981" }}
+      style={{
+        width: "100%",
+        borderRadius: 12,
+        paddingVertical: 16,
+        paddingHorizontal: 24,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        borderWidth: 2,
+        backgroundColor: isLocked ? "#181c22" : "#059669",
+        borderColor: isLocked ? "#1f2937" : "#10b981",
+      }}
     >
-      <View style={{"flexDirection":"row","alignItems":"center"}}>
-        <View style={{ width: 40, height: 40, borderRadius: 9999, alignItems: "center", justifyContent: "center", marginRight: 12, backgroundColor: isLocked ? "#1f2937" : "#10b981" }}>
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <View
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 9999,
+            alignItems: "center",
+            justifyContent: "center",
+            marginRight: 12,
+            backgroundColor: isLocked ? "#1f2937" : "#10b981",
+          }}
+        >
           {isProcessing ? (
             <ActivityIndicator color="white" size="small" />
           ) : (
@@ -162,17 +195,38 @@ export default function EnergyTimerButton() {
           )}
         </View>
         <View>
-          <Text style={{ fontWeight: "700", fontSize: 16, color: isLocked ? "#6b7280" : "#34d399" }}>
+          <Text
+            style={{
+              fontWeight: "700",
+              fontSize: 16,
+              color: isLocked ? "#6b7280" : "#fff",
+            }}
+          >
             Recarga Rápida
           </Text>
-          <Text style={{ fontSize: 12, color: isLocked ? "#4b5563" : "#10b981" }}>
+          <Text
+            style={{ fontSize: 12, color: isLocked ? "#4b5563" : "#ffffff73" }}
+          >
             +10 de Energía
           </Text>
         </View>
       </View>
 
-      <View style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6, backgroundColor: isLocked ? "#1f2937" : "#10b981" }}>
-        <Text style={{ fontFamily: "monospace", fontWeight: "700", color: isLocked ? "#9ca3af" : "#ffffff" }}>
+      <View
+        style={{
+          paddingHorizontal: 12,
+          paddingVertical: 6,
+          borderRadius: 6,
+          backgroundColor: isLocked ? "#1f2937" : "#10b981",
+        }}
+      >
+        <Text
+          style={{
+            fontFamily: "monospace",
+            fontWeight: "700",
+            color: isLocked ? "#9ca3af" : "#ffffff",
+          }}
+        >
           {isLocked ? formatTime(timeLeft) : "RECLAMAR"}
         </Text>
       </View>

@@ -27,7 +27,7 @@ interface ProgressState {
     pathId: string,
     moduleId: string,
     moduleTitle: string,
-    totalCourseModules: number,
+    totalGlobalModules: number,
     courseTitle: string,
   ) => Promise<AIQuizData | null>;
 
@@ -107,18 +107,16 @@ export const useProgressStore = create<ProgressState>()(
         }
       },
 
-      // Clases normales, desbloquea solo la siguiente lección
+      //Actualizado, ya usa el número global de cursos
       completeNormalLesson: async (
         courseId,
         pathId,
         moduleId,
         moduleTitle,
-        totalCourseModules,
+        totalGlobalModules,
         courseTitle,
       ) => {
-        //Traigo usuario
         const user = useAuthStore.getState().activeUser;
-
         if (!user) return null;
 
         const cache = get().progressCache[user.id] || {
@@ -129,29 +127,31 @@ export const useProgressStore = create<ProgressState>()(
           completedPaths: [],
         };
 
-        //Creo los id's del modulo, y del siguiente por si lo pasa
         const moduleKey = `${courseId}-${pathId}-${moduleId}`;
         const nextModuleNum = parseInt(moduleId) + 1;
         const nextModuleKey = `${courseId}-${pathId}-${nextModuleNum}`;
 
-        //Si lo completa lo agregamos a los completados
         const newCompletedModules = cache.completedModules?.includes(moduleKey)
           ? cache.completedModules
           : [...(cache.completedModules || []), moduleKey];
 
+        // Solo contar los módulos que pertenezcan a este curso en específico
+        const courseCompletedCount = newCompletedModules.filter((key) =>
+          key.startsWith(`${courseId}-`),
+        ).length;
+
+        // Calculamos usando el conteo filtrado y el total global
         const rawPercentage = Math.round(
-          (newCompletedModules.length / totalCourseModules) * 100,
+          (courseCompletedCount / totalGlobalModules) * 100,
         );
         const percentage = rawPercentage > 100 ? 100 : rawPercentage;
 
-        // Y el siguiente para ser desbloqueado
         const newUnlockedModules = cache.unlockedModules?.includes(
           nextModuleKey,
         )
           ? cache.unlockedModules
           : [...(cache.unlockedModules || []), nextModuleKey];
 
-        //Actualizamos el cache
         set((state) => ({
           progressCache: {
             ...state.progressCache,
@@ -163,14 +163,18 @@ export const useProgressStore = create<ProgressState>()(
           },
         }));
 
+        //Acá lo mando
         try {
           const mysqlCourseId = COURSE_DB_MAP[courseId];
-          const response = await api.post(`/course/${mysqlCourseId}/pass_module`, {
-            percentage,
-            userId: user.id,
-            passedModule: moduleTitle,
-            courseTitle: courseTitle || courseId,
-          });
+          const response = await api.post(
+            `/course/${mysqlCourseId}/pass_module`,
+            {
+              percentage,
+              userId: user.id,
+              passedModule: moduleTitle,
+              courseTitle: courseTitle || courseId,
+            },
+          );
 
           const aiQuiz = response.data?.payload as AIQuizData | null;
           return aiQuiz?.topics?.length ? aiQuiz : null;
@@ -246,12 +250,15 @@ export const useProgressStore = create<ProgressState>()(
         //Además de mandar a la API que ya pasó el módulo
         try {
           const mysqlCourseId = COURSE_DB_MAP[courseId];
-          const response = await api.post(`/course/${mysqlCourseId}/pass_module`, {
-            percentage,
-            userId: user.id,
-            passedModule: moduleTitle,
-            courseTitle: courseTitle || courseId,
-          });
+          const response = await api.post(
+            `/course/${mysqlCourseId}/pass_module`,
+            {
+              percentage,
+              userId: user.id,
+              passedModule: moduleTitle,
+              courseTitle: courseTitle || courseId,
+            },
+          );
 
           const AiQuiz = response.data.payload;
 
@@ -259,7 +266,6 @@ export const useProgressStore = create<ProgressState>()(
             console.log(AiQuiz);
             //Hacer algo
           }
-
         } catch (error) {
           console.error("Error en la API al pasar ruta:", error);
         }

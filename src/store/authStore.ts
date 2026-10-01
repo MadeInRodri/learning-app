@@ -1,5 +1,4 @@
-// 1 -> Revisar updateGamificationStats
-
+import { api } from "@/config/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
@@ -16,6 +15,8 @@ export interface UserPayload {
   protectorRachaBalance: number;
 }
 
+let latestUserFetchId = 0;
+
 //Interfaz para el login, guardo si hay alguien logueado, Que usuario está activo, y su cache
 interface AuthState {
   isLogged: boolean;
@@ -25,9 +26,8 @@ interface AuthState {
 
   //Funciones declaradas, esta recibe los datos del usuario
   login: (userData: UserPayload) => void;
+  fetchUser: (id: number) => Promise<void>;
   logout: () => void;
-  //Esta es para cambiar el XP y la energía
-  updateGamificationStats: (xpChange: number, energyChange: number) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -49,29 +49,28 @@ export const useAuthStore = create<AuthState>()(
           },
         })),
 
-      //Recibe el cambio en el XP y energía (REVISAR SI SE USA)
-      updateGamificationStats: (xpChange, energyChange) =>
-        set((state) => {
-          if (!state.activeUser) return state;
+      fetchUser: async (id) => {
+        const requestId = ++latestUserFetchId;
+        const response = await api.get("/user", { params: { id } });
+        const userData = response.data.payload as UserPayload;
 
-          //Recibe la XP que tenía + la nueva, y la energía + la nueva
-          const updatedUser = {
-            ...state.activeUser,
-            xpTotales: state.activeUser.xpTotales + xpChange,
-            energiaBalance: Math.max(
-              0,
-              state.activeUser.energiaBalance + energyChange,
-            ),
-          };
+        set((state) => {
+          if (
+            requestId !== latestUserFetchId ||
+            state.activeUser?.id !== id
+          ) {
+            return state;
+          }
 
           return {
-            activeUser: updatedUser,
+            activeUser: userData,
             usersCache: {
               ...state.usersCache,
-              [updatedUser.email]: updatedUser,
+              [userData.email]: userData,
             },
           };
-        }),
+        });
+      },
 
       //Solo ponemos todo en false para que la app no intente cargar nada.
       logout: () =>

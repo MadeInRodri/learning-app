@@ -240,23 +240,6 @@ export default function GamifiedHeader() {
         </View>
       </View>
 
-      {/* <Pressable
-        accessibilityRole="button"
-        disabled={isOpeningBoss}
-        onPress={() => handleTriggerAiQuiz()}
-        style={({ pressed }) => [
-          styles.bossButton,
-          pressed && !isOpeningBoss && styles.bossButtonPressed,
-          isOpeningBoss && styles.bossButtonDisabled,
-        ]}
-      >
-        <Text style={styles.bossButtonText}>
-          {isOpeningBoss
-            ? "Abriendo portales infernales..."
-            : "Generar Boss semanal"}
-        </Text>
-      </Pressable> */}
-
       <Pressable
         accessibilityRole="button"
         disabled={isLocked || isOpeningBoss}
@@ -267,13 +250,27 @@ export default function GamifiedHeader() {
           (isLocked || isOpeningBoss) && styles.bossButtonDisabled,
         ]}
       >
+        {/* Agregamos íconos intimidantes que cambian según el estado */}
+        {isLocked ? (
+          <MaterialIcons name="hourglass-empty" size={18} color="#6b7280" />
+        ) : isOpeningBoss ? (
+          <MaterialIcons name="hourglass-top" size={18} color="#f87171" />
+        ) : (
+          <MaterialIcons name="dangerous" size={20} color="#ef4444" />
+        )}
+
         <Text style={styles.bossButtonText}>
           {isLocked
-            ? `Disponible en ${formatTime(timeLeft)}`
+            ? `PREPARATE (${formatTime(timeLeft)})`
             : isOpeningBoss
-              ? "Abriendo portales infernales..."
-              : "Generar Boss semanal"}
+              ? "INVOCANDO..."
+              : "Generar Portal..."}
         </Text>
+
+        {!isLocked && !isOpeningBoss && (
+           <MaterialIcons name="dangerous" size={20} color="#ef4444" />
+           
+        )}
       </Pressable>
     </View>
   );
@@ -325,28 +322,62 @@ const styles = StyleSheet.create({
   padRight: { paddingRight: 8 },
   padLeft: { paddingLeft: 12 },
   padHorizontal: { paddingHorizontal: 8 },
+
+  // =============================================
+  // --- DISEÑO INTIMIDANTE Y ÚNICO DEL BOTÓN ---
+  // =============================================
   bossButton: {
-    minHeight: 44,
-    marginTop: 14,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    backgroundColor: "#34d399",
+    minHeight: 50, // Más alto para dar sensación de importancia
+    marginTop: 18,
+    paddingHorizontal: 16,
+    borderRadius: 4, // Bordes más afilados (menos redondeados)
+    backgroundColor: "#080000", // Negro casi absoluto (abismal)
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 8,
+    gap: 10,
+
+    // --- Bordes Únicos ---
+    borderWidth: 2,
+    borderColor: "#b91c1c", // Rojo sangre profundo
+
+    // --- Sombra/Resplandor (Glow) para iOS ---
+    shadowColor: "#dc2626",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 8,
+
+    // --- Elevación para Android (efecto similar a glow) ---
+    elevation: 8,
   },
-  bossButtonPressed: { backgroundColor: "#2563eb" },
+  bossButtonPressed: {
+    backgroundColor: "#1c1917", // Se aclara ligeramente como piedra caliente
+    borderColor: "#ef4444", // Borde rojo brillante en ignición
+    shadowRadius: 12, // Resplandor intensificado
+  },
   bossButtonDisabled: {
-    backgroundColor: "#30363d",
-    opacity: 0.6, // Da el efecto opaco al estar bloqueado
+    backgroundColor: "#121212", // Gris muy oscuro, apagado
+    borderColor: "#44403c", // Borde color piedra fría/ceniza
+    opacity: 0.7,
+    elevation: 0, // Sin resplandor
+    shadowOpacity: 0,
   },
   bossButtonText: {
-    color: "#FFFFFF",
-    fontWeight: "700",
-    fontSize: 14,
+    // --- Texto Único ---
+    color: "#f87171", // Rojo claro/rosado, como brasas incandescentes
+    fontWeight: "900", // Grosor máximo
+    fontSize: 15,
     textAlign: "center",
+    textTransform: "uppercase", // Agresivo y ruidoso
+    letterSpacing: 1.5, // Espaciado runico
+    fontFamily: "monospace",
+
+    // --- Efecto de quemado en texto ---
+    textShadowColor: "#7f1d1d",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
+  // =============================================
 
   // --- Tipografía Global ---
   labelSmall: {

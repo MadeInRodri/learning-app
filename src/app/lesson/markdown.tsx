@@ -36,9 +36,6 @@ export default function MarkdownLessonScreen() {
   const startAiQuiz = useAiQuizStore((state) => state.startAiQuiz);
 
   const activeUser = useAuthStore((state) => state.activeUser);
-  const updateGamificationStats = useAuthStore(
-    (state) => state.updateGamificationStats,
-  );
 
   const activeLanguage = useLanguageStore
     .getState()
@@ -125,7 +122,6 @@ export default function MarkdownLessonScreen() {
         activeCourseName,
       );
       completeModule(activeModuleId!);
-      updateGamificationStats(100, -20);
 
       if (aiQuiz) {
         startAiQuiz(aiQuiz);

@@ -3,11 +3,22 @@ import { api } from "@/config/api";
 import { useAuthStore } from "@/store/authStore";
 import { calculateLevelInfo } from "@/store/gamificationStore";
 import { TokenStorage } from "@/store/tokenStore";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
+import { useCallback } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
 export default function ProfileScreen() {
-  const { activeUser, logout } = useAuthStore();
+  const { activeUser, fetchUser, logout } = useAuthStore();
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!activeUser?.id) return;
+
+      fetchUser(activeUser.id).catch((error) => {
+        console.error("Error obteniendo el usuario", error);
+      });
+    }, [activeUser?.id, fetchUser]),
+  );
 
   // Desestructuramos el nivel y el progreso en tiempo real usando la XP del backend
   const { level, currentXP, maxXP, progress } = calculateLevelInfo(
@@ -142,11 +153,11 @@ export default function ProfileScreen() {
               >
                 <View
                   style={{
+                    width: `${progress}%`,
                     height: "100%",
                     backgroundColor: "#fb923c",
                     borderRadius: 9999,
                   }}
-                  style={{ width: `${progress}%` }}
                 />
               </View>
             </View>

@@ -12,6 +12,8 @@ export default function RootLayout() {
   const router = useRouter();
   const segments = useSegments();
   const isLogged = useAuthStore((state) => state.isLogged);
+  const activeUserId = useAuthStore((state) => state.activeUser?.id);
+  const fetchUser = useAuthStore((state) => state.fetchUser);
 
   // Estado para saber si Zustand ya cargó los datos de la caché
   const [isHydrated, setIsHydrated] = useState(false);
@@ -36,6 +38,14 @@ export default function RootLayout() {
       router.replace("/(tabs)" as any);
     }
   }, [isLogged, segments, isHydrated]);
+
+  useEffect(() => {
+    if (!isHydrated || !isLogged || !activeUserId) return;
+
+    fetchUser(activeUserId).catch((error) => {
+      console.error("Error actualizando el usuario:", error);
+    });
+  }, [activeUserId, fetchUser, isHydrated, isLogged]);
 
   // Pantalla de carga con nuestro tema oscuro
   if (!isHydrated) {

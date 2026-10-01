@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import Toast from "react-native-toast-message";
 
+import { useGamificationStore } from "@/store/gamificationStore";
 import { useAiQuizStore } from "../../store/aiQuizStore";
 import { useAuthStore } from "../../store/authStore";
 import { useCourseStore } from "../../store/courseStore";
@@ -23,18 +24,18 @@ export default function QuizScreen() {
   const { pathId } = useLocalSearchParams<{ pathId: string }>();
   const { activeCourseId, activeCourseName } = useCourseStore();
   const { modules, activeModuleId, completeModule } = useModuleStore();
+  const claimReward = useGamificationStore((state) => state.claimReward);
   const { completeExam, passModule } = useProgressStore();
-  const { updateGamificationStats, activeUser } = useAuthStore();
+  const activeUser = useAuthStore((state) => state.activeUser);
   const { startAiQuiz } = useAiQuizStore();
 
   const {
     activeQuiz,
     checkAndStartQuiz,
     recordFailure,
-    addXP,
+    addStar,
     nextQuestion,
     finishQuiz,
-    userXP,
   } = useQuizStore();
 
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
@@ -43,6 +44,7 @@ export default function QuizScreen() {
 
   // Estados del quiz
   const [earnedXP, setEarnedXP] = useState(0);
+  const [earnedStars, setEarnedStars] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
   const [correctAnswersCount, setCorrectAnswersCount] = useState(0);
   const [failedTopicsTexts, setFailedTopicsTexts] = useState<string[]>([]);
@@ -82,8 +84,8 @@ export default function QuizScreen() {
   }
 
   // --- VISTA DE RESULTADOS (FIN DEL QUIZ) ---
-  // Mantenemos tu estructura intacta de return temprano que funcionaba
   if (quizFinished) {
+    
     return (
       <View
         style={{
@@ -165,6 +167,9 @@ export default function QuizScreen() {
               </Text>
             </View>
           )}
+          <Text style={{ color: "#facc15", fontWeight: "700", fontSize: 16 }}>
+            Estrellas ganadas: {earnedStars}
+          </Text>
         </View>
 
         <Pressable
@@ -221,7 +226,6 @@ export default function QuizScreen() {
     const isCorrect = currentQuestion.opciones[selectedOption].es_correcta;
 
     if (isCorrect) {
-      addXP(10);
       setEarnedXP((prev) => prev + 10);
       setCorrectAnswersCount((prev) => prev + 1);
     } else {
@@ -244,8 +248,18 @@ export default function QuizScreen() {
       const finalPercentage =
         totalQuestions > 0 ? correctAnswersCount / totalQuestions : 0;
       const passed = finalPercentage >= 0.6;
+      const earnedStars = passed
+        ? correctAnswersCount === totalQuestions
+          ? 3
+          : finalPercentage >= 0.9
+            ? 2
+            : finalPercentage >= 0.7
+              ? 1
+              : 0
+        : 0;
 
       setIsPassed(passed);
+      setEarnedStars(earnedStars);
 
       try {
         // 1. SIEMPRE enviamos el resultado del examen (aprobado o reprobado) para el historial
@@ -277,7 +291,37 @@ export default function QuizScreen() {
             activeCourseName, // <-- Corregido
           );
           completeModule(activeModuleId!);
-          updateGamificationStats(earnedXP, 0);
+
+          const xpBeforeReward =
+            useAuthStore.getState().activeUser?.xpTotales ?? 0;
+          const xpClaimed = await claimReward(
+            "XP",
+            "lesson_completion",
+            "XP_REWARD",
+          );
+          const xpAfterReward =
+            useAuthStore.getState().activeUser?.xpTotales ?? xpBeforeReward;
+          setEarnedXP(
+            xpClaimed ? Math.max(0, xpAfterReward - xpBeforeReward) : 0,
+          );
+          const starReward =
+            earnedStars === 3
+              ? "THREE_STAR_REWARD"
+              : earnedStars === 2
+                ? "DOUBLE_STAR_REWARD"
+                : "ONE_STAR_REWARD";
+          const starsClaimed = earnedStars
+            ? await claimReward("STAR", "lesson_completion", starReward)
+            : true;
+          addStar(earnedStars);
+
+          if (!xpClaimed || !starsClaimed) {
+            Toast.show({
+              type: "error",
+              text1: "No se pudieron actualizar todas las recompensas",
+              text2: "Tus saldos se actualizarán cuando vuelvas a conectarte.",
+            });
+          }
         }
 
         finishQuiz();
@@ -504,7 +548,7 @@ export default function QuizScreen() {
                 lineHeight: 14,
               }}
             >
-              {userXP} XP
+              {activeUser?.xpTotales ?? 0} XP
             </Text>
           </View>
         </View>

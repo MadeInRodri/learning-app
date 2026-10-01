@@ -144,7 +144,7 @@ export default function AiQuizScreen() {
               marginRight: 8,
             }}
           >
-            Volver al Dashboard
+            Volver al Mundo real...
           </Text>
           <MaterialIcons name="arrow-forward" size={20} color="white" />
         </Pressable>
@@ -160,7 +160,7 @@ export default function AiQuizScreen() {
     Toast.show({
       type: "error",
       text1: "¡Oportunidad Única!",
-      text2: "Si sales ahora, perderás la XP de este reto sorpresa.",
+      text2: "Si sales ahora, perderás las recompensas de este reto sorpresa.",
       position: "top",
     });
 

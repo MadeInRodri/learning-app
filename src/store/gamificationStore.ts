@@ -72,6 +72,12 @@ export const useGamificationStore = create<GamificationState>()((set, get) => ({
         { params: { id: user.id, type } },
       );
 
+      try {
+        await useAuthStore.getState().fetchUser(user.id);
+      } catch (error) {
+        console.error("Error actualizando los datos del usuario:", error);
+      }
+
       return true;
     } catch (error) {
       console.error("Error reclamando recompensa:", error);

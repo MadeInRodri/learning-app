@@ -32,6 +32,7 @@ interface QuizState {
   resetQuiz: () => void;
   failedQuestions: FailedQuestion[];
   userXP: number; // Puntaje global temporal del usuario
+  userStar: number;
 
   // Acciones
 
@@ -54,6 +55,8 @@ interface QuizState {
   //Dar XP
   addXP: (amount: number) => void;
 
+  addStar: (amount: number) => void;
+
   //Pasar a la otra pregunta
   nextQuestion: () => void;
 
@@ -67,6 +70,7 @@ export const useQuizStore = create<QuizState>()(
       activeQuiz: null,
       failedQuestions: [],
       userXP: 0,
+      userStar: 0,
 
       // Verifica si se puede iniciar o si hay uno colgado de otra ruta
       checkAndStartQuiz: (languageId, pathId) => {
@@ -110,6 +114,8 @@ export const useQuizStore = create<QuizState>()(
 
       // Suma la experiencia
       addXP: (amount) => set((state) => ({ userXP: state.userXP + amount })),
+
+      addStar: (amount) => set((state)=> ({userStar: state.userStar + amount})),
 
       // Avanza a la siguiente pregunta
       nextQuestion: () =>

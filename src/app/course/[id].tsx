@@ -32,9 +32,6 @@ export default function CourseScreen() {
   const setActiveModule = useModuleStore((state) => state.setActiveModule);
   const activeQuiz = useQuizStore((state) => state.activeQuiz);
   const forceStartQuiz = useQuizStore((state) => state.forceStartQuiz);
-  const updateGamificationStats = useAuthStore(
-    (state) => state.updateGamificationStats,
-  );
   const claimReward = useGamificationStore((state) => state.claimReward);
 
   useEffect(() => {
@@ -88,8 +85,19 @@ export default function CourseScreen() {
         }
 
         // Cobramos la energía antes de entrar
-        await claimReward("ENERGY", "quiz_attempt", "LESS_ENERGY");
-        updateGamificationStats(0, -20);
+        const energyClaimed = await claimReward(
+          "ENERGY",
+          "quiz_attempt",
+          "LESS_ENERGY",
+        );
+        if (!energyClaimed) {
+          Toast.show({
+            type: "error",
+            text1: "No se pudo consumir la energía",
+            text2: "Intenta entrar al examen nuevamente.",
+          });
+          return;
+        }
 
         // Forzamos el inicio limpio para evitar cruces
         forceStartQuiz(activeCourseId!, pathId);

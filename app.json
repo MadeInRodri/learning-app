@@ -14,7 +14,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#0d1117"
-      }
+      },
+      "package": "com.bryninc.learningapp"
     },
     "web": {
       "output": "static",
@@ -36,6 +37,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "ac69452b-9cbb-44c1-a6bc-f78893dc3b57"
+      }
     }
   }
 }

@@ -14,7 +14,7 @@ export default function EnergyTimerButton() {
   const { claimReward } = useGamificationStore();
 
   // Extraemos al activeUser para poder leer su ID único
-  const { activeUser, updateGamificationStats } = useAuthStore();
+  const activeUser = useAuthStore((state) => state.activeUser);
 
   const [timeLeft, setTimeLeft] = useState<number>(0);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -107,8 +107,6 @@ export default function EnergyTimerButton() {
       );
 
       if (success) {
-        updateGamificationStats(0, 10);
-
         // Guardamos el tiempo de reclamo usando su llave única
         const now = Date.now();
         await AsyncStorage.setItem(timerKey, now.toString());
